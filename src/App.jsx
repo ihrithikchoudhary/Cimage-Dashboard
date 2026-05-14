@@ -3064,9 +3064,28 @@ const AdminDashboard = ({ students, loggedInStudents, adminUsers = [], currentAd
   const updateSelectedAttendance = (index, key, value) => {
     if (!selected) return;
     setAttendanceSaved(false);
-    const nextRecords = selectedAttendanceSummary.records.map((record, recordIndex) =>
-      recordIndex === index ? { ...record, [key]: key === "subject" ? value : value === "" ? "" : Number(value) } : record
-    );
+    const nextRecords = selectedAttendanceSummary.records.map((record, recordIndex) => {
+      if (recordIndex !== index) return record;
+      
+      if (key === "subject") {
+        return { ...record, [key]: value };
+      }
+      
+      const numValue = value === "" ? 0 : Number(value) || 0;
+      
+      // If updating held, ensure present doesn't exceed held
+      if (key === "held") {
+        const newHeld = Math.max(0, numValue);
+        return { ...record, held: newHeld, present: Math.min(record.present || 0, newHeld) };
+      }
+      
+      // If updating present, cap it at held value
+      if (key === "present") {
+        return { ...record, present: Math.min(numValue, record.held || 0) };
+      }
+      
+      return { ...record, [key]: numValue };
+    });
     onUpdateStudent(selected.id, { attendanceRecords: nextRecords });
   };
 
@@ -3084,7 +3103,7 @@ const AdminDashboard = ({ students, loggedInStudents, adminUsers = [], currentAd
     onUpdateStudent(selected.id, {
       attendanceRecords: [
         ...selectedAttendanceSummary.records,
-        { id: `subject-${Date.now()}`, subject: "", held: "", present: "" },
+        { id: `subject-${Date.now()}`, subject: "", held: 0, present: 0 },
       ],
     });
   };
@@ -4270,11 +4289,11 @@ const AdminDashboard = ({ students, loggedInStudents, adminUsers = [], currentAd
                         </label>
                         <label style={{ display: "flex", flexDirection: "column", gap: 5 }}>
                           <span style={{ fontSize: 10, fontWeight: 800, color: "#6b7280" }}>Present</span>
-                          <input type="number" min="0" max={record.held || undefined} value={record.present || ""} placeholder="0" onChange={event => updateSelectedAttendance(index, "present", event.target.value)} style={{ ...fieldStyle, padding: "9px 10px" }} />
+                          <input type="number" min="0" max={record.held > 0 ? record.held : 0} value={record.present ?? 0} placeholder="0" disabled={!record.held || record.held === 0} onChange={event => updateSelectedAttendance(index, "present", event.target.value)} style={{ ...fieldStyle, padding: "9px 10px", background: !record.held || record.held === 0 ? "#f9fafb" : "#fff" }} />
                         </label>
                         <label style={{ display: "flex", flexDirection: "column", gap: 5 }}>
                           <span style={{ fontSize: 10, fontWeight: 800, color: "#6b7280" }}>Held</span>
-                          <input type="number" min="0" value={record.held || ""} placeholder="0" onChange={event => updateSelectedAttendance(index, "held", event.target.value)} style={{ ...fieldStyle, padding: "9px 10px" }} />
+                          <input type="number" min="0" value={record.held ?? 0} placeholder="0" onChange={event => updateSelectedAttendance(index, "held", event.target.value)} style={{ ...fieldStyle, padding: "9px 10px" }} />
                         </label>
                         <div style={{ fontSize: 16, fontWeight: 900, color: record.warn ? "#dc2626" : "#111827", fontFamily: "monospace", textAlign: "right", paddingBottom: 9 }}>{record.pct}%</div>
                         <button
@@ -4288,6 +4307,9 @@ const AdminDashboard = ({ students, loggedInStudents, adminUsers = [], currentAd
                       </div>
                       <div style={{ height: 6, background: "#f3f4f6", borderRadius: 99, overflow: "hidden", marginTop: 10 }}>
                         <div style={{ width: `${record.pct}%`, height: "100%", background: record.color, borderRadius: 99 }} />
+                      </div>
+                      <div style={{ fontSize: 10, color: !record.subject ? "#991b1b" : !record.held || record.held === 0 ? "#f59e0b" : record.warn ? "#dc2626" : "#166534", fontWeight: 700, marginTop: 8 }}>
+                        {!record.subject ? "Enter subject name" : !record.held || record.held === 0 ? "Enter classes held" : record.warn ? `Low attendance: ${record.pct}%` : `Good attendance: ${record.pct}%`}
                       </div>
                     </div>
                   )) : (
