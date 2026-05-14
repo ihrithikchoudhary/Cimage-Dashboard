@@ -1,0 +1,971 @@
+{
+  "lecturesBySemester": {
+    "1": [
+
+        {
+        "subject": "Basic Mathematics",
+        "teacher": "Pro. Kundan kumar",
+        "color": "#dc2626",
+        "videos": [
+          {
+            "title": "Set Theory One shot",
+            "duration": "1:10 min",
+            "youtubeId": "cr-kkOrPNbU"
+          },
+          {
+            "title": "Set Theory Problem",
+            "duration": "8:10 min",
+            "youtubeId": "E_YxEBfPXk0"
+          },
+          {
+            "title": "Operation on Set",
+            "duration": "15:00 min",
+            "youtubeId": "xJSjHHDC9Gw"
+          },
+          {
+            "title": "Relation",
+            "duration": "44:58 min",
+            "youtubeId": "jM5x2Yn8g64"
+          },
+          {
+            "title": "Successive Differentiation - 1",
+            "duration": "38:16 min",
+            "youtubeId": "03-jR7IivcA"
+          },
+          {
+            "title": "Successive Differentiation - 2",
+            "duration": "38:16 min",
+            "youtubeId": "H8-fFpZ62e8"
+          },
+          {
+            "title": "Leibnitz Theorem",
+            "duration": "16:38 min",
+            "youtubeId": "PBZERVFP9xk"
+          },
+          {
+            "title": "Leibnitz Problem",
+            "duration": "38:16 min",
+            "youtubeId": "COLMc5f9JtM"
+          },
+          {
+            "title": "Matrix Basics",
+            "duration": "17:43 min",
+            "youtubeId": "cuON0XieSFQ"
+          },
+          {
+            "title": "Differentiation L-1",
+            "duration": "11:43 min",
+            "youtubeId": "VjytHHMEd5M"
+          },
+          {
+            "title": "Differentiation L-2",
+            "duration": "09:10 min",
+            "youtubeId": "oKGHGZ5vlxw"
+          },
+          {
+            "title": "Differentiation L-3",
+            "duration": "07:42 min",
+            "youtubeId": "MFtUYecXNOE"
+          },
+          {
+            "title": "Differentiation L-4",
+            "duration": "14:24 min",
+            "youtubeId": "5yliD7ZCfHA"
+          }
+
+        ]
+      },
+
+      {
+        "subject": "Information Technology",
+        "teacher": "Mr. Murali Manohar",
+        "color": "#185FA5",
+        "videos": [
+          {
+            "title": "Computer Basics",
+            "duration": "15 min",
+            "youtubeId": "y2kg3MOk1sY"
+          },
+          {
+            "title": "Input Output Devices",
+            "duration": "12 min",
+            "youtubeId": "mCq8-xTH7jA"
+          },
+          {
+            "title": "Memory and Storage",
+            "duration": "18 min",
+            "youtubeId": "qfUZBKDh9BY"
+          },
+          {
+            "title": "Number System Basics",
+            "duration": "20 min",
+            "youtubeId": "FFDMzbrEXaE"
+          },
+          {
+            "title": "Operating Computer Safely",
+            "duration": "14 min",
+            "youtubeId": "GjNp0bBrjmU"
+          }
+        ]
+      },
+      {
+        "subject": "Python Programming",
+        "teacher": "Pro. Ravi Soni",
+        "color": "#15803d",
+        "videos": [
+          {
+            "title": "C Programming Introduction",
+            "duration": "20 min",
+            "youtubeId": "KJgsSFOSQv0"
+          },
+          {
+            "title": "Variables and Data Types",
+            "duration": "18 min",
+            "youtubeId": "irqbmMNs2Bo"
+          },
+          {
+            "title": "Operators in C",
+            "duration": "17 min",
+            "youtubeId": "gEJBFKDkqTE"
+          },
+          {
+            "title": "Loops in C",
+            "duration": "22 min",
+            "youtubeId": "JkSQ1M2uzuk"
+          },
+          {
+            "title": "Functions in C",
+            "duration": "24 min",
+            "youtubeId": "zuegQmMdy8M"
+          }
+        ]
+      },
+      
+      {
+        "subject": "Communicative English",
+        "teacher": "Mr. Nilanjan Bose",
+        "color": "#7c3aed",
+        "videos": [
+          {
+            "title": "Communication Skills",
+            "duration": "16 min",
+            "youtubeId": "HAnw168huqA"
+          },
+          {
+            "title": "Presentation Skills",
+            "duration": "14 min",
+            "youtubeId": "MnIPpUiTcRc"
+          },
+          {
+            "title": "Email Writing",
+            "duration": "13 min",
+            "youtubeId": "JkZbBJ75kB4"
+          },
+          {
+            "title": "Group Discussion",
+            "duration": "18 min",
+            "youtubeId": "jzD_yyEcp0M"
+          },
+          {
+            "title": "Interview Communication",
+            "duration": "17 min",
+            "youtubeId": "HG68Ymazo18"
+          }
+        ]
+      },
+      {
+        "subject": "Principle Of Management",
+        "teacher": "Mr. Anil Kumar",
+        "color": "#7c3aed",
+        "videos": [
+          {
+            "title": "Communication Skills",
+            "duration": "16 min",
+            "youtubeId": "HAnw168huqA"
+          },
+          {
+            "title": "Presentation Skills",
+            "duration": "14 min",
+            "youtubeId": "MnIPpUiTcRc"
+          },
+          {
+            "title": "Email Writing",
+            "duration": "13 min",
+            "youtubeId": "JkZbBJ75kB4"
+          },
+          {
+            "title": "Group Discussion",
+            "duration": "18 min",
+            "youtubeId": "jzD_yyEcp0M"
+          },
+          {
+            "title": "Interview Communication",
+            "duration": "17 min",
+            "youtubeId": "HG68Ymazo18"
+          }
+        ]
+      }
+    ],
+
+    "2": [
+      {
+        "subject": "Operating System",
+        "teacher": "Mr. Murali Manohar",
+        "color": "#dc2626",
+        "videos": [
+          {
+            "title": "OOP Concepts",
+            "duration": "21 min",
+            "youtubeId": "pTB0EiLXUC8"
+          },
+          {
+            "title": "Classes and Objects",
+            "duration": "19 min",
+            "youtubeId": "SiBw7os-_zI"
+          },
+          {
+            "title": "Inheritance",
+            "duration": "20 min",
+            "youtubeId": "TnZHaH9i6-0"
+          },
+          {
+            "title": "Polymorphism",
+            "duration": "18 min",
+            "youtubeId": "2hkngtWLGvE"
+          },
+          {
+            "title": "Encapsulation",
+            "duration": "16 min",
+            "youtubeId": "5-K8J470Vk4"
+          }
+        ]
+      },
+      {
+        "subject": "Business English",
+        "teacher": "Mr. Nilanjan Bose",
+        "color": "#0f766e",
+        "videos": [
+          {
+            "title": "Sets and Relations",
+            "duration": "18 min",
+            "youtubeId": "tyDKR4FG3Yw"
+          },
+          {
+            "title": "Graph Theory Basics",
+            "duration": "22 min",
+            "youtubeId": "LFKZLXVO-Dg"
+          },
+          {
+            "title": "Logic and Propositions",
+            "duration": "19 min",
+            "youtubeId": "itrXYg41-V0"
+          },
+          {
+            "title": "Functions",
+            "duration": "17 min",
+            "youtubeId": "kvGsIo1TmsM"
+          },
+          {
+            "title": "Counting Principles",
+            "duration": "21 min",
+            "youtubeId": "M_W8E9Lx0vA"
+          }
+        ]
+      },
+      {
+        "subject": "System Analysis & Design",
+        "teacher": "Pro. Pankaj chandra Sinha",
+        "color": "#ea580c",
+        "videos": [
+          {
+            "title": "HTML CSS Basics",
+            "duration": "17 min",
+            "youtubeId": "G3e-cpL7ofc"
+          },
+          {
+            "title": "Responsive Layout",
+            "duration": "20 min",
+            "youtubeId": "srvUrASNj0s"
+          },
+          {
+            "title": "CSS Flexbox",
+            "duration": "18 min",
+            "youtubeId": "phWxA89Dy94"
+          },
+          {
+            "title": "CSS Grid",
+            "duration": "22 min",
+            "youtubeId": "rg7Fvvl3taU"
+          },
+          {
+            "title": "Forms and Validation",
+            "duration": "19 min",
+            "youtubeId": "fNcJuPIZ2WE"
+          }
+        ]
+      },
+      {
+        "subject": "Mathematics",
+        "teacher": "Pro. Kundan Kumar",
+        "color": "#15803d",
+        "videos": [
+          {
+            "title": "Environment Introduction",
+            "duration": "15 min",
+            "youtubeId": "QQYgCxu988s"
+          },
+          {
+            "title": "Ecosystem Basics",
+            "duration": "18 min",
+            "youtubeId": "SNF8b7KKJ2I"
+          },
+          {
+            "title": "Pollution Control",
+            "duration": "17 min",
+            "youtubeId": "OqHp03RRTDs"
+          },
+          {
+            "title": "Natural Resources",
+            "duration": "20 min",
+            "youtubeId": "XkGoMia7h2M"
+          },
+          {
+            "title": "Sustainable Development",
+            "duration": "19 min",
+            "youtubeId": "zx04Kl8y4dE"
+          }
+        ]
+      },
+
+      {
+        "subject": "Programming in C",
+        "teacher": "Pro. Ravi Soni",
+        "color": "#7c3aed",
+        "videos": [
+          {
+            "title": "Communication Skills",
+            "duration": "16 min",
+            "youtubeId": "HAnw168huqA"
+          },
+          {
+            "title": "Presentation Skills",
+            "duration": "14 min",
+            "youtubeId": "MnIPpUiTcRc"
+          },
+          {
+            "title": "Email Writing",
+            "duration": "13 min",
+            "youtubeId": "JkZbBJ75kB4"
+          },
+          {
+            "title": "Group Discussion",
+            "duration": "18 min",
+            "youtubeId": "jzD_yyEcp0M"
+          },
+          {
+            "title": "Interview Communication",
+            "duration": "17 min",
+            "youtubeId": "HG68Ymazo18"
+          }
+        ]
+      }
+    ],
+
+    "3": [
+      {
+        "subject": "Software Engineering",
+        "teacher": "Pro. Pankaj chandra Sinha",
+        "color": "#185FA5",
+        "videos": [
+          {
+            "title": "Logic Gates",
+            "duration": "18 min",
+            "youtubeId": "JQBRzsPhw2w"
+          },
+          {
+            "title": "Boolean Algebra",
+            "duration": "21 min",
+            "youtubeId": "WW-NPtIzHwk"
+          },
+          {
+            "title": "K Map Simplification",
+            "duration": "24 min",
+            "youtubeId": "RO5alU6PpSU"
+          },
+          {
+            "title": "Flip Flops",
+            "duration": "22 min",
+            "youtubeId": "Hi7rK0hZnfc"
+          },
+          {
+            "title": "Counters",
+            "duration": "20 min",
+            "youtubeId": "F-mpT6MZ8kY"
+          }
+        ]
+      },
+      {
+        "subject": "OOP using C++",
+        "teacher": "Pro. Ravi Soni",
+        "color": "#15803d",
+        "videos": [
+          {
+            "title": "OS Introduction",
+            "duration": "19 min",
+            "youtubeId": "GjNp0bBrjmU"
+          },
+          {
+            "title": "Process Scheduling",
+            "duration": "24 min",
+            "youtubeId": "2h3eWaPx8SA"
+          },
+          {
+            "title": "Deadlock",
+            "duration": "23 min",
+            "youtubeId": "onkWXaXAgbY"
+          },
+          {
+            "title": "Memory Management",
+            "duration": "25 min",
+            "youtubeId": "pJ6qrCB8pDw"
+          },
+          {
+            "title": "File System",
+            "duration": "18 min",
+            "youtubeId": "KN8YgJnShPM"
+          }
+        ]
+      },
+      {
+        "subject": "Internet & Web Design",
+        "teacher": "Pro. Pankaj chandra Sinha",
+        "color": "#7c3aed",
+        "videos": [
+          {
+            "title": "Network Types",
+            "duration": "16 min",
+            "youtubeId": "qiQR5rTSshw"
+          },
+          {
+            "title": "OSI Model",
+            "duration": "22 min",
+            "youtubeId": "Ilk7UXzV_Qc"
+          },
+          {
+            "title": "TCP IP Model",
+            "duration": "20 min",
+            "youtubeId": "OTwp3xtd4dg"
+          },
+          {
+            "title": "IP Addressing",
+            "duration": "19 min",
+            "youtubeId": "LIzTo6e4FgY"
+          },
+          {
+            "title": "Routing Basics",
+            "duration": "21 min",
+            "youtubeId": "tSodBEAJz9Y"
+          }
+        ]
+      },
+      {
+        "subject": "Java Programming",
+        "teacher": "Pro. Ravi Soni",
+        "color": "#0f766e",
+        "videos": [
+          {
+            "title": "Python Basics",
+            "duration": "19 min",
+            "youtubeId": "kqtD5dpn9C8"
+          },
+          {
+            "title": "Lists and Tuples",
+            "duration": "18 min",
+            "youtubeId": "W8KRzm-HUcc"
+          },
+          {
+            "title": "Functions in Python",
+            "duration": "17 min",
+            "youtubeId": "9Os0o3wzS_I"
+          },
+          {
+            "title": "File Handling",
+            "duration": "20 min",
+            "youtubeId": "Uh2ebFW8OYM"
+          },
+          {
+            "title": "Python OOP",
+            "duration": "25 min",
+            "youtubeId": "Ej_02ICOIgs"
+          }
+        ]
+      }
+    ],
+
+    "4": [
+      {
+        "subject": "Digital Electronics",
+        "teacher": "Dr, Amit kumar Shukla",
+        "color": "#185FA5",
+        "videos": [
+          {
+            "title": "React Components and Props",
+            "duration": "18 min",
+            "youtubeId": "SqcY0GlETPk"
+          },
+          {
+            "title": "React Hooks: useState Basics",
+            "duration": "14 min",
+            "youtubeId": "O6P86uwfdR0"
+          },
+          {
+            "title": "React Forms",
+            "duration": "20 min",
+            "youtubeId": "2MoSzSlAuNk"
+          },
+          {
+            "title": "React Router",
+            "duration": "23 min",
+            "youtubeId": "Ul3y1LXxzdU"
+          },
+          {
+            "title": "React Project Structure",
+            "duration": "26 min",
+            "youtubeId": "Rh3tobg7hEo"
+          }
+        ]
+      },
+      {
+        "subject": "Data Structures",
+        "teacher": "Pro. Ravi Soni",
+        "color": "#15803d",
+        "videos": [
+          {
+            "title": "Binary Search Tree Introduction",
+            "duration": "22 min",
+            "youtubeId": "pYT9F8_LFTM"
+          },
+          {
+            "title": "Tree Traversal Explained",
+            "duration": "16 min",
+            "youtubeId": "9RHO6jU--GU"
+          },
+          {
+            "title": "Stack and Queue",
+            "duration": "21 min",
+            "youtubeId": "A3ZUpyrnCbM"
+          },
+          {
+            "title": "Linked List",
+            "duration": "24 min",
+            "youtubeId": "R9PTBwOzceo"
+          },
+          {
+            "title": "Sorting Algorithms",
+            "duration": "28 min",
+            "youtubeId": "kPRA0W1kECg"
+          }
+        ]
+      },
+      {
+        "subject": "Introduction to Statics",
+        "teacher": "Mr. Abhinav Deep",
+        "color": "#185FA5",
+        "videos": [
+          {
+            "title": "SDLC Models",
+            "duration": "20 min",
+            "youtubeId": "Fi3_BjVzpqk"
+          },
+          {
+            "title": "Requirement Engineering",
+            "duration": "17 min",
+            "youtubeId": "gK0Yp6VNjhc"
+          },
+          {
+            "title": "Software Testing",
+            "duration": "21 min",
+            "youtubeId": "u6QfIXgjwGQ"
+          },
+          {
+            "title": "Agile Methodology",
+            "duration": "18 min",
+            "youtubeId": "Z9QbYZh1YXY"
+          },
+          {
+            "title": "UML Diagrams",
+            "duration": "24 min",
+            "youtubeId": "UI6lqHOVHic"
+          }
+        ]
+      },
+      
+      {
+        "subject": "Relational DBMS",
+        "teacher": "Pro. Pankaj chandra Sinha",
+        "color": "#7c3aed",
+        "videos": [
+          {
+            "title": "ER Model and ER Diagram",
+            "duration": "20 min",
+            "youtubeId": "QpdhBUYk7Kk"
+          },
+          {
+            "title": "Normalization in DBMS",
+            "duration": "25 min",
+            "youtubeId": "xoTyrdT9SZI"
+          },
+          {
+            "title": "SQL Basics",
+            "duration": "22 min",
+            "youtubeId": "HXV3zeQKqGY"
+          },
+          {
+            "title": "Joins in SQL",
+            "duration": "18 min",
+            "youtubeId": "9yeOJ0ZMUYw"
+          },
+          {
+            "title": "Transactions",
+            "duration": "20 min",
+            "youtubeId": "5ZjhNTM8XU8"
+          }
+        ]
+      },
+      {
+        "subject": "Advance Excel",
+        "teacher": "Mr Sanjeev Kumar",
+        "color": "#0f766e",
+        "videos": [
+          {
+            "title": "Excel Formulas for Beginners",
+            "duration": "21 min",
+            "youtubeId": "Vl0H-qTclOg"
+          },
+          {
+            "title": "Pivot Tables Crash Course",
+            "duration": "24 min",
+            "youtubeId": "UsdedFoTA68"
+          },
+          {
+            "title": "VLOOKUP and XLOOKUP",
+            "duration": "22 min",
+            "youtubeId": "uyj_OljPlcU"
+          },
+          {
+            "title": "Excel Charts",
+            "duration": "18 min",
+            "youtubeId": "DAU0qqh_I-A"
+          },
+          {
+            "title": "Excel Dashboard",
+            "duration": "27 min",
+            "youtubeId": "K74_FNnlIF8"
+          }
+        ]
+      }
+    ],
+    "5": [
+      {
+        "subject": "Java Programming",
+        "teacher": "Pro. Ravi Soni",
+        "color": "#dc2626",
+        "videos": [
+          {
+            "title": "Java OOP Revision",
+            "duration": "24 min",
+            "youtubeId": "eIrMbAQSU34"
+          },
+          {
+            "title": "Exception Handling",
+            "duration": "18 min",
+            "youtubeId": "1XAfapkBQjk"
+          },
+          {
+            "title": "Collections Framework",
+            "duration": "26 min",
+            "youtubeId": "GdAon80-0KA"
+          },
+          {
+            "title": "Multithreading",
+            "duration": "22 min",
+            "youtubeId": "TCd8QIS-2KI"
+          },
+          {
+            "title": "JDBC Basics",
+            "duration": "20 min",
+            "youtubeId": "3OrEsC-QjUA"
+          }
+        ]
+      },
+      {
+        "subject": "Cloud Computing",
+        "teacher": "Pro. Pankaj chandra Sinha",
+        "color": "#0f766e",
+        "videos": [
+          {
+            "title": "Cloud Computing Basics",
+            "duration": "19 min",
+            "youtubeId": "M988_fsOSWo"
+          },
+          {
+            "title": "IaaS PaaS SaaS",
+            "duration": "15 min",
+            "youtubeId": "36zducUX16w"
+          },
+          {
+            "title": "Virtualization",
+            "duration": "20 min",
+            "youtubeId": "FZR0rG3HKIk"
+          },
+          {
+            "title": "AWS Introduction",
+            "duration": "23 min",
+            "youtubeId": "ulprqHHWlng"
+          },
+          {
+            "title": "Cloud Security",
+            "duration": "18 min",
+            "youtubeId": "kY5HtrkjSj0"
+          }
+        ]
+      },
+      {
+        "subject": "Artificial Intelligence",
+        "teacher": "Mr Sanjeev Kumar",
+        "color": "#7c3aed",
+        "videos": [
+          {
+            "title": "AI Introduction",
+            "duration": "20 min",
+            "youtubeId": "ad79nYk2keg"
+          },
+          {
+            "title": "Machine Learning Basics",
+            "duration": "24 min",
+            "youtubeId": "ukzFI9rgwfU"
+          },
+          {
+            "title": "Search Algorithms",
+            "duration": "22 min",
+            "youtubeId": "OUOB9z7F8zU"
+          },
+          {
+            "title": "Neural Networks",
+            "duration": "25 min",
+            "youtubeId": "aircAruvnKk"
+          },
+          {
+            "title": "AI Applications",
+            "duration": "18 min",
+            "youtubeId": "JMUxmLyrhSk"
+          }
+        ]
+      }
+    ],
+    "6": [
+      {
+        "subject": "Project Work",
+        "teacher": "Pro. Pankaj chandra Sinha",
+        "color": "#15803d",
+        "videos": [
+          {
+            "title": "Final Year Project Planning",
+            "duration": "18 min",
+            "youtubeId": "Tt08KmFfIYQ"
+          },
+          {
+            "title": "Project Presentation Tips",
+            "duration": "16 min",
+            "youtubeId": "MnIPpUiTcRc"
+          },
+          {
+            "title": "Project Documentation",
+            "duration": "20 min",
+            "youtubeId": "pDqT5MkhUlE"
+          },
+          {
+            "title": "Viva Preparation",
+            "duration": "17 min",
+            "youtubeId": "HG68Ymazo18"
+          },
+          {
+            "title": "Deployment Basics",
+            "duration": "24 min",
+            "youtubeId": "nhBVL41-_Cw"
+          }
+        ]
+      },
+      {
+        "subject": "Cyber Security",
+        "teacher": "Dr, Amit kumar Shukla",
+        "color": "#7c3aed",
+        "videos": [
+          {
+            "title": "Cyber Security Basics",
+            "duration": "22 min",
+            "youtubeId": "inWWhr5tnEA"
+          },
+          {
+            "title": "Network Security",
+            "duration": "19 min",
+            "youtubeId": "3QhU9jd03a0"
+          },
+          {
+            "title": "Cryptography Basics",
+            "duration": "23 min",
+            "youtubeId": "jhXCTbFnK8o"
+          },
+          {
+            "title": "Ethical Hacking",
+            "duration": "21 min",
+            "youtubeId": "3Kq1MIfTWCE"
+          },
+          {
+            "title": "Web Security",
+            "duration": "25 min",
+            "youtubeId": "WlmKwIe9z1Q"
+          }
+        ]
+      },
+      {
+        "subject": "Data Analytics",
+        "teacher": "Mr Sanjeev Kumar",
+        "color": "#ea580c",
+        "videos": [
+          {
+            "title": "Data Analytics Introduction",
+            "duration": "20 min",
+            "youtubeId": "yZvFH7B6gKI"
+          },
+          {
+            "title": "Dashboard and Reporting",
+            "duration": "18 min",
+            "youtubeId": "j_sHaBJEHMk"
+          },
+          {
+            "title": "Data Cleaning",
+            "duration": "22 min",
+            "youtubeId": "bDhvCp3_lYw"
+          },
+          {
+            "title": "Charts and Insights",
+            "duration": "19 min",
+            "youtubeId": "DAU0qqh_I-A"
+          },
+          {
+            "title": "Analytics Project",
+            "duration": "27 min",
+            "youtubeId": "K74_FNnlIF8"
+          }
+        ]
+      },
+      {
+        "subject": "Mobile App Development",
+        "teacher": "Pro. Ravi Soni",
+        "color": "#185FA5",
+        "videos": [
+          {
+            "title": "Mobile App Basics",
+            "duration": "18 min",
+            "youtubeId": "0-S5a0eXPoc"
+          },
+          {
+            "title": "Android Layouts",
+            "duration": "21 min",
+            "youtubeId": "BBWyXo-3JGQ"
+          },
+          {
+            "title": "Activity Lifecycle",
+            "duration": "17 min",
+            "youtubeId": "UJN3AL4tiqw"
+          },
+          {
+            "title": "Firebase Basics",
+            "duration": "23 min",
+            "youtubeId": "9kRgVxULbag"
+          },
+          {
+            "title": "Build and Publish App",
+            "duration": "20 min",
+            "youtubeId": "v1NdpJjNtFw"
+          }
+        ]
+      }
+    ]
+  },
+  "personalVideosBySemester": {
+    "1": [
+      {
+        "subject": "Computer Fundamentals",
+        "videos": [
+          {
+            "title": "Your Custom Lecture Title",
+            "duration": "15 min",
+            "youtubeId": "your_youtube_id_here"
+          }
+        ]
+      }
+    ],
+    "2": [
+      {
+        "subject": "Object Oriented Programming",
+        "videos": [
+          {
+            "title": "Your Custom Lecture Title",
+            "duration": "15 min",
+            "youtubeId": "your_youtube_id_here"
+          }
+        ]
+      }
+    ],
+    "3": [
+      {
+        "subject": "Digital Electronics",
+        "videos": [
+          {
+            "title": "Your Custom Lecture Title",
+            "duration": "15 min",
+            "youtubeId": "your_youtube_id_here"
+          }
+        ]
+      }
+    ],
+    "4": [
+      {
+        "subject": "DBMS",
+        "videos": [
+          {
+            "title": "Your Custom Lecture Title",
+            "duration": "15 min",
+            "youtubeId": "your_youtube_id_here"
+          }
+        ]
+      }
+    ],
+    "5": [
+      {
+        "subject": "Software Engineering",
+        "videos": [
+          {
+            "title": "Your Custom Lecture Title",
+            "duration": "15 min",
+            "youtubeId": "your_youtube_id_here"
+          }
+        ]
+      }
+    ],
+    "6": [
+      {
+        "subject": "Project Capstone",
+        "videos": [
+          {
+            "title": "Your Custom Lecture Title",
+            "duration": "15 min",
+            "youtubeId": "your_youtube_id_here"
+          }
+        ]
+      }
+    ]
+  }
+}

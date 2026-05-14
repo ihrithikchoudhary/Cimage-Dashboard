@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import cimageLogo from "./assets/cimagelogo.jpg";
 import portalData from "./data/portalData.json";
+import videosData from "./data/videosData.json";
 import {
   RadialBarChart,
   RadialBar,
@@ -80,7 +81,9 @@ const ANNOUNCEMENTS = portalData.announcements;
 
 const RESULTS = portalData.results;
 
-const LECTURES_BY_SEMESTER = portalData.lecturesBySemester;
+const LECTURES_BY_SEMESTER = videosData.lecturesBySemester;
+
+const PERSONAL_VIDEOS_BY_SEMESTER = videosData.personalVideosBySemester;
 
 const TEST_SETTINGS = portalData.testSettings;
 
@@ -1673,12 +1676,15 @@ const AssignmentsPage = ({ assignments = ASSIGNMENTS }) => {
 
 const LecturesPage = () => {
   const [selectedSemester, setSelectedSemester] = useState(STUDENT.semester);
-  const semesterLectures = LECTURES_BY_SEMESTER[selectedSemester];
+  const [isPersonalVideos, setIsPersonalVideos] = useState(false);
+  
+  const videosSource = isPersonalVideos ? PERSONAL_VIDEOS_BY_SEMESTER : LECTURES_BY_SEMESTER;
+  const semesterLectures = videosSource[selectedSemester];
   const [selectedSubject, setSelectedSubject] = useState(semesterLectures[0]);
   const [selectedVideo, setSelectedVideo] = useState(semesterLectures[0].videos[0]);
 
   const chooseSemester = (semester) => {
-    const nextLectures = LECTURES_BY_SEMESTER[semester];
+    const nextLectures = videosSource[semester];
     setSelectedSemester(semester);
     setSelectedSubject(nextLectures[0]);
     setSelectedVideo(nextLectures[0].videos[0]);
@@ -1689,25 +1695,73 @@ const LecturesPage = () => {
     setSelectedVideo(lecture.videos[0]);
   };
 
+  const toggleVideoSource = (usePersonal) => {
+    setIsPersonalVideos(usePersonal);
+    const newSource = usePersonal ? PERSONAL_VIDEOS_BY_SEMESTER : LECTURES_BY_SEMESTER;
+    const newLectures = newSource[selectedSemester];
+    setSelectedSubject(newLectures[0]);
+    setSelectedVideo(newLectures[0].videos[0]);
+  };
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
       <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 18, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
         <div>
-          <h3 style={{ fontSize: 16, fontWeight: 800, color: "#111827", margin: "0 0 4px" }}>Semester lectures</h3>
-          <div style={{ fontSize: 12, color: "#6b7280" }}>Current semester is selected by default. Change semester to view subject-wise lecture videos.</div>
+          <h3 style={{ fontSize: 16, fontWeight: 800, color: "#111827", margin: "0 0 4px" }}>{isPersonalVideos ? "Personal videos" : "Semester lectures"}</h3>
+          <div style={{ fontSize: 12, color: "#6b7280" }}>
+            {isPersonalVideos 
+              ? "Your personal YouTube videos organized by semester." 
+              : "Official lecture videos organized by semester."}
+          </div>
         </div>
-        <label style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <span style={{ fontSize: 12, fontWeight: 700, color: "#374151" }}>Select semester</span>
-          <select
-            value={selectedSemester}
-            onChange={event => chooseSemester(Number(event.target.value))}
-            style={{ border: "1px solid #d1d5db", borderRadius: 10, padding: "10px 12px", fontSize: 13, color: "#111827", background: "#fff", outline: "none", minWidth: 140 }}
-          >
-            {Array.from({ length: STUDENT.totalSemesters }, (_, index) => index + 1).map(semester => (
-              <option key={semester} value={semester}>Semester {semester}</option>
-            ))}
-          </select>
-        </label>
+        <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", background: "#f3f4f6", borderRadius: 10, padding: 4, gap: 4 }}>
+            <button
+              onClick={() => toggleVideoSource(false)}
+              style={{
+                background: !isPersonalVideos ? "#fff" : "transparent",
+                border: "none",
+                borderRadius: 8,
+                padding: "8px 14px",
+                fontSize: 12,
+                fontWeight: 700,
+                color: !isPersonalVideos ? "#185FA5" : "#6b7280",
+                cursor: "pointer",
+                transition: "all 0.2s",
+              }}
+            >
+              Semester Lectures
+            </button>
+            <button
+              onClick={() => toggleVideoSource(true)}
+              style={{
+                background: isPersonalVideos ? "#fff" : "transparent",
+                border: "none",
+                borderRadius: 8,
+                padding: "8px 14px",
+                fontSize: 12,
+                fontWeight: 700,
+                color: isPersonalVideos ? "#185FA5" : "#6b7280",
+                cursor: "pointer",
+                transition: "all 0.2s",
+              }}
+            >
+              Personal Videos
+            </button>
+          </div>
+          <label style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <span style={{ fontSize: 12, fontWeight: 700, color: "#374151" }}>Select semester</span>
+            <select
+              value={selectedSemester}
+              onChange={event => chooseSemester(Number(event.target.value))}
+              style={{ border: "1px solid #d1d5db", borderRadius: 10, padding: "10px 12px", fontSize: 13, color: "#111827", background: "#fff", outline: "none", minWidth: 140 }}
+            >
+              {Array.from({ length: STUDENT.totalSemesters }, (_, index) => index + 1).map(semester => (
+                <option key={semester} value={semester}>Semester {semester}</option>
+              ))}
+            </select>
+          </label>
+        </div>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", gap: 12 }}>
@@ -1727,11 +1781,11 @@ const LecturesPage = () => {
                 boxShadow: selected ? "0 12px 24px rgba(24, 95, 165, 0.12)" : "none",
               }}
             >
-              <div style={{ width: 36, height: 36, borderRadius: 10, background: lecture.color, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 12 }}>
+              <div style={{ width: 36, height: 36, borderRadius: 10, background: lecture.color || "#185FA5", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 12 }}>
                 <Icon name="lectures" size={17} />
               </div>
               <div style={{ fontSize: 14, fontWeight: 800, color: "#111827", marginBottom: 4 }}>{lecture.subject}</div>
-              <div style={{ fontSize: 11, color: "#6b7280" }}>{getOfficialTeacherName(lecture.subject, lecture.teacher)}</div>
+              {lecture.teacher && <div style={{ fontSize: 11, color: "#6b7280" }}>{getOfficialTeacherName(lecture.subject, lecture.teacher)}</div>}
               <div style={{ fontSize: 11, color: "#185FA5", fontWeight: 700, marginTop: 10 }}>{lecture.videos.length} videos</div>
             </button>
           );
@@ -1743,7 +1797,7 @@ const LecturesPage = () => {
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, marginBottom: 14 }}>
             <div>
               <h3 style={{ fontSize: 16, fontWeight: 800, color: "#111827", margin: "0 0 4px" }}>{selectedVideo.title}</h3>
-              <div style={{ fontSize: 12, color: "#6b7280" }}>{selectedSubject.subject} · {getOfficialTeacherName(selectedSubject.subject, selectedSubject.teacher)}</div>
+              <div style={{ fontSize: 12, color: "#6b7280" }}>{selectedSubject.subject} {selectedSubject.teacher && `· ${getOfficialTeacherName(selectedSubject.subject, selectedSubject.teacher)}`}</div>
             </div>
             <span style={{ fontSize: 11, background: "#dcfce7", color: "#166534", padding: "4px 9px", borderRadius: 999, fontWeight: 700 }}>{selectedVideo.duration}</span>
           </div>
@@ -1786,7 +1840,7 @@ const LecturesPage = () => {
                   </div>
                   <div style={{ minWidth: 0 }}>
                     <div style={{ fontSize: 12, fontWeight: 800, color: "#111827", marginBottom: 3 }}>{video.title}</div>
-                    <div style={{ fontSize: 11, color: "#6b7280" }}>{getOfficialTeacherName(selectedSubject.subject, selectedSubject.teacher)} · {video.duration}</div>
+                    <div style={{ fontSize: 11, color: "#6b7280" }}>{selectedSubject.teacher ? getOfficialTeacherName(selectedSubject.subject, selectedSubject.teacher) : "Personal video"} · {video.duration}</div>
                   </div>
                 </button>
               );
