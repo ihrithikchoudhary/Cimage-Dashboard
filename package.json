@@ -1,6 +1,8 @@
 {
   "name": "student-dashboard",
   "homepage": "https://ihrithikchoudhary.github.io/Cimage-Dashboard/",
+  "predeploy": "npm run build",
+"deploy": "gh-pages -d dist"
   "private": true,
   "version": "0.0.0",
   "type": "module",
