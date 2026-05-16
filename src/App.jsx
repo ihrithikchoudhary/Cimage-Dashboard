@@ -26,6 +26,8 @@ const STUDENT = portalData.student;
 
 const DEFAULT_PROFILE = portalData.defaultProfile;
 
+const DEVELOPER = portalData.developer || {};
+
 const STORAGE_PREFIX = "cimage-student-dashboard:";
 
 const readStoredValue = (key, fallback) => {
@@ -2901,6 +2903,10 @@ const SettingsPage = ({ profile, student = STUDENT, onSave, onActivity, onPushNo
 
 const AboutPortalPage = ({ student = STUDENT }) => {
   const currentStudent = normalizeStudentRecord(student);
+  const developerSocialLinks = DEVELOPER.socialLinks || {};
+  const developerName = DEVELOPER.name || "Developer";
+  const developerRole = DEVELOPER.role || "Developer";
+  const developerDescription = DEVELOPER.description || "Designed and developed for the CIMAGE Student Dashboard experience.";
   const featureGroups = [
     ["Academic Access", "Attendance, courses, lectures, PYQs, assignments, and published internal results."],
     ["Student Services", "Fee status, announcements, complaint support, activities history, profile settings, and downloadable/printable marksheet views."],
@@ -2914,11 +2920,12 @@ const AboutPortalPage = ({ student = STUDENT }) => {
     "Profile photo when uploaded by the student, used inside profile, ID, and printable result views.",
   ];
   const socialLinks = [
-    ["Portfolio", "https://github.com/", "profile"],
-    ["GitHub", "https://github.com/", "courses"],
-    ["LinkedIn", "https://www.linkedin.com/", "activities"],
-    ["Email", "mailto:developer@example.com", "send"],
-  ];
+    ["Portfolio", developerSocialLinks.portfolio, "profile"],
+    ["GitHub", developerSocialLinks.github, "courses"],
+    ["LinkedIn", developerSocialLinks.linkedin, "activities"],
+    ["Instagram", developerSocialLinks.instagram, "gallery"],
+    ["Email", DEVELOPER.email ? `mailto:${DEVELOPER.email}` : "", "send"],
+  ].filter(([, href]) => href);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
@@ -2982,16 +2989,20 @@ const AboutPortalPage = ({ student = STUDENT }) => {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16, flexWrap: "wrap" }}>
           <div>
             <h3 style={{ fontSize: 17, fontWeight: 900, color: "#111827", margin: "0 0 6px" }}>Developer Details</h3>
-            <div style={{ fontSize: 12, color: "#4b5563", lineHeight: 1.6 }}>Designed and developed for the CIMAGE Student Dashboard experience.</div>
-            <div style={{ marginTop: 10, fontSize: 13, fontWeight: 900, color: "#111827" }}>Hrithik Kumar</div>
-            <div style={{ fontSize: 11, color: "#6b7280", marginTop: 3 }}>Frontend Developer · Student Portal UI/UX</div>
+            <div style={{ fontSize: 12, color: "#4b5563", lineHeight: 1.6 }}>{developerDescription}</div>
+            <div style={{ marginTop: 10, fontSize: 13, fontWeight: 900, color: "#111827" }}>{developerName}</div>
+            <div style={{ fontSize: 11, color: "#6b7280", marginTop: 3 }}>{developerRole}</div>
           </div>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            {socialLinks.map(([label, href, icon]) => (
+            {socialLinks.length > 0 ? socialLinks.map(([label, href, icon]) => (
               <a key={label} href={href} target={href.startsWith("mailto:") ? undefined : "_blank"} rel={href.startsWith("mailto:") ? undefined : "noreferrer"} style={{ display: "inline-flex", alignItems: "center", gap: 7, minHeight: 38, border: "1px solid #e5e7eb", borderRadius: 10, padding: "0 12px", color: "#185FA5", background: "#f9fafb", textDecoration: "none", fontSize: 12, fontWeight: 900 }}>
                 <Icon name={icon} size={14} /> {label}
               </a>
-            ))}
+            )) : (
+              <div style={{ border: "1px dashed #cbd5e1", borderRadius: 10, padding: "10px 12px", color: "#64748b", background: "#f8fafc", fontSize: 12, fontWeight: 800 }}>
+                Social links not added yet.
+              </div>
+            )}
           </div>
         </div>
       </div>

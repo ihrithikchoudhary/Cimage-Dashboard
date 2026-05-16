@@ -28,11 +28,24 @@
     "photo": ""
   },
 
+  "developer": {
+    "name": "Hrithik Choudhary",
+    "role": "Developer \u00b7 Student Portal UI/UX",
+    "description": "Designed and developed for the CIMAGE Student Dashboard experience.",
+    "email": "ihrithikchy@gmail.com",
+    "socialLinks": {
+      "portfolio": "https://www.linkedin.com/in/ihrithikchoudhary",
+      "github": "https://github.com/ihrithikchoudhary",
+      "linkedin": "https://www.linkedin.com/in/ihrithikchoudhary",
+      "instagram": "https://www.instagram.com/ihrithikchoudhary"
+    }
+  },
+
   "adminCredentials": {
     "email": "admin@cimage.in",
     "password": "admin123"
   },
-  
+
   "studentDirectory": [
     {
       "id": "310-28283",
