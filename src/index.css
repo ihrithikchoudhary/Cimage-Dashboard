@@ -47,7 +47,7 @@ body {
 
 .mobile-sidebar-toggle,
 .mobile-sidebar-backdrop {
-  display: none;
+  display: none !important;
 }
 
 @media (max-width: 900px) {
@@ -126,10 +126,6 @@ body {
     display: block;
     opacity: 1;
     pointer-events: auto;
-  }
-
-  .student-shell .mobile-sidebar-toggle {
-    display: inline-flex;
   }
 
   .student-shell .app-sidebar {
@@ -491,6 +487,10 @@ body {
 }
 
 @media screen and (max-width: 640px) {
+  .student-shell .mobile-sidebar-toggle {
+    display: inline-flex !important;
+  }
+
   .app-nav-button {
     min-width: 76px !important;
     font-size: 9px !important;
