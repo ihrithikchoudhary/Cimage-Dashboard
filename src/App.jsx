@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/set-state-in-effect, react-hooks/purity, react-hooks/exhaustive-deps */
 import { useEffect, useRef, useState } from "react";
 import cimageLogo from "./assets/cimagelogo.jpg";
+import { usePersistentState } from "./services/portalStorage";
 import portalData from "./data/portalData.json";
 import videosData from "./data/videosData.json";
 import commonData from "./data/commonData.json";
@@ -27,39 +28,6 @@ const STUDENT = portalData.student;
 const DEFAULT_PROFILE = portalData.defaultProfile;
 
 const DEVELOPER = portalData.developer || {};
-
-const STORAGE_PREFIX = "cimage-student-dashboard:";
-
-const readStoredValue = (key, fallback) => {
-  if (typeof window === "undefined") return fallback;
-
-  try {
-    const stored = window.localStorage.getItem(`${STORAGE_PREFIX}${key}`);
-    return stored ? JSON.parse(stored) : fallback;
-  } catch {
-    return fallback;
-  }
-};
-
-const writeStoredValue = (key, value) => {
-  if (typeof window === "undefined") return;
-
-  try {
-    window.localStorage.setItem(`${STORAGE_PREFIX}${key}`, JSON.stringify(value));
-  } catch {
-    // Storage can fail in private mode or when the browser quota is full.
-  }
-};
-
-const usePersistentState = (key, fallback) => {
-  const [value, setValue] = useState(() => readStoredValue(key, fallback));
-
-  useEffect(() => {
-    writeStoredValue(key, value);
-  }, [key, value]);
-
-  return [value, setValue];
-};
 
 // Teachers list
 const TEACHER_BY_ID = commonData.teachers || {};
@@ -160,6 +128,7 @@ const Icon = ({ name, size = 18 }) => {
     chevronDown: <><polyline points="6 9 12 15 18 9"/></>,
     clipboard: <><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 14l2 2 4-4"/></>,
     check: <><path d="m20 6-11 11-5-5"/></>,
+    trash: <><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></>,
     download: <><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></>,
     upload: <><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></>,
     eye: <><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></>,
@@ -255,6 +224,35 @@ const getActivityTimestamp = () => {
     time: now.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" }),
     iso: now.toISOString(),
   };
+};
+
+const parseHistoryDate = (item = {}) => {
+  if (item.iso) {
+    const parsedIso = new Date(item.iso);
+    if (!Number.isNaN(parsedIso.getTime())) return parsedIso;
+  }
+
+  const dateText = item.date || item.testDate || item.completionDate || "";
+  const inputDate = toDateInputValue(dateText);
+  if (!inputDate) return null;
+
+  const [year, month, day] = inputDate.split("-").map(Number);
+  const parsedDate = new Date(year, month - 1, day);
+  const timeText = String(item.time || item.completionTime || "").trim();
+  const timeMatch = timeText.match(/^(\d{1,2}):(\d{2})(?:\s*(am|pm))?$/i);
+
+  if (timeMatch) {
+    let hours = Number(timeMatch[1]);
+    const minutes = Number(timeMatch[2]);
+    const meridiem = timeMatch[3]?.toLowerCase();
+
+    if (meridiem === "pm" && hours < 12) hours += 12;
+    if (meridiem === "am" && hours === 12) hours = 0;
+
+    parsedDate.setHours(hours, minutes, 0, 0);
+  }
+
+  return Number.isNaN(parsedDate.getTime()) ? null : parsedDate;
 };
 
 const getDateInputValue = (date = new Date()) => {
@@ -2289,15 +2287,82 @@ const OnlineTestPage = ({ testReports, onSaveReport }) => {
   );
 };
 
-const ActivitiesPage = ({ testReports, complaints, activityRecords = [] }) => {
+const HISTORY_DELETE_FILTERS = [
+  { id: "2-days", label: "2 days old", days: 2 },
+  { id: "7-days", label: "7 days old", days: 7 },
+  { id: "1-month", label: "1 month old", days: 30 },
+  { id: "all", label: "All history", days: null },
+];
+
+const ActivitiesPage = ({ testReports = [], complaints = [], activityRecords = [], onDeleteHistory }) => {
   const [selectedComplaint, setSelectedComplaint] = useState(null);
+  const [historyFilter, setHistoryFilter] = useState(HISTORY_DELETE_FILTERS[1].id);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deleteMessage, setDeleteMessage] = useState("");
   const visibleComplaints = normalizeComplaints(complaints);
   const visibleActivityRecords = (Array.isArray(activityRecords) ? activityRecords : [])
     .filter(record => record && record.title)
     .sort((a, b) => new Date(b.iso || `${b.date} ${b.time}`).getTime() - new Date(a.iso || `${a.date} ${a.time}`).getTime());
+  const selectedFilter = HISTORY_DELETE_FILTERS.find(filter => filter.id === historyFilter) || HISTORY_DELETE_FILTERS[1];
+  const cutoffDate = new Date(Date.now() - selectedFilter.days * 24 * 60 * 60 * 1000);
+  const isOlderThanFilter = (item) => {
+    if (selectedFilter.id === "all") return true;
+
+    const parsedDate = parseHistoryDate(item);
+    return parsedDate ? parsedDate <= cutoffDate : false;
+  };
+  const deletionTargets = {
+    activityIds: visibleActivityRecords.filter(isOlderThanFilter).map(record => record.id),
+    complaintIds: visibleComplaints.filter(isOlderThanFilter).map(complaint => complaint.id),
+    testReportIds: (Array.isArray(testReports) ? testReports : []).filter(isOlderThanFilter).map(report => report.id),
+  };
+  const deleteCount = deletionTargets.activityIds.length + deletionTargets.complaintIds.length + deletionTargets.testReportIds.length;
+
+  const requestDeleteHistory = () => {
+    setDeleteMessage("");
+    if (!deleteCount) {
+      setDeleteMessage(selectedFilter.id === "all" ? "No history found to delete." : `No history found older than ${selectedFilter.label}.`);
+      return;
+    }
+
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDeleteHistory = () => {
+    if (!deleteCount) return;
+
+    onDeleteHistory?.(deletionTargets);
+    setDeleteConfirmOpen(false);
+    setDeleteMessage(`${deleteCount} history item${deleteCount === 1 ? "" : "s"} deleted.`);
+  };
 
   return (
     <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr)", gap: 16, alignItems: "start" }}>
+      <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 14, padding: 14, display: "inline-flex", width: "fit-content", maxWidth: "100%", justifySelf: "end", justifyContent: "space-between", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
+        <div>
+          <div style={{ fontSize: 15, fontWeight: 900, color: "#111827", marginBottom: 4 }}>History controls</div>
+          <div style={{ fontSize: 11, color: "#6b7280" }}>Filter older history, then delete matching activity records from this dashboard.</div>
+        </div>
+        <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 8, flexWrap: "wrap", marginLeft: "auto" }}>
+          <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <span style={{ fontSize: 11, fontWeight: 900, color: "#374151", whiteSpace: "nowrap" }}>Older than</span>
+            <select value={historyFilter} onChange={event => setHistoryFilter(event.target.value)} style={{ border: "1px solid #d1d5db", borderRadius: 10, padding: "9px 11px", background: "#fff", color: "#111827", fontSize: 12, fontWeight: 800 }}>
+              {HISTORY_DELETE_FILTERS.map(filter => (
+                <option key={filter.id} value={filter.id}>{filter.label}</option>
+              ))}
+            </select>
+          </label>
+          <button type="button" onClick={requestDeleteHistory} title="Delete selected history" style={{ display: "inline-flex", width: "fit-content", maxWidth: "max-content", flex: "0 0 auto", alignItems: "center", justifyContent: "center", gap: 7, border: "1px solid #fecaca", background: "#fff5f5", color: "#b91c1c", borderRadius: 9, padding: "8px 10px", fontSize: 12, lineHeight: 1, fontWeight: 900, cursor: "pointer", whiteSpace: "nowrap", boxShadow: "none" }}>
+            <Icon name="trash" size={14} /> Delete
+          </button>
+        </div>
+        {deleteMessage && (
+          <div style={{ flexBasis: "100%", border: "1px solid #bfdbfe", background: "#eff6ff", color: "#1e40af", borderRadius: 10, padding: "9px 11px", fontSize: 12, fontWeight: 800 }}>
+            {deleteMessage}
+          </div>
+        )}
+      </div>
+
       <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
         {visibleActivityRecords.map(record => (
           <div key={record.id} style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 12, padding: "11px 14px" }}>
@@ -2395,6 +2460,27 @@ const ActivitiesPage = ({ testReports, complaints, activityRecords = [] }) => {
                 <div style={{ fontSize: 12, fontWeight: 900, color: "#374151", marginBottom: 6 }}>Complaint details</div>
                 <div style={{ border: "1px solid #e5e7eb", borderRadius: 12, padding: 14, fontSize: 13, color: "#374151", lineHeight: 1.55 }}>{selectedComplaint.details}</div>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {deleteConfirmOpen && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(15,23,42,0.45)", zIndex: 75, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+          <div style={{ width: "min(460px, 100%)", background: "#fff", borderRadius: 18, boxShadow: "0 28px 80px rgba(15,23,42,0.28)", overflow: "hidden" }}>
+            <div style={{ padding: 18, borderBottom: "1px solid #f3f4f6" }}>
+              <div style={{ fontSize: 16, fontWeight: 900, color: "#111827", marginBottom: 5 }}>Delete older history?</div>
+              <div style={{ fontSize: 12, color: "#6b7280", lineHeight: 1.45 }}>
+                This will permanently delete {deleteCount} history item{deleteCount === 1 ? "" : "s"} {selectedFilter.id === "all" ? "from all history" : `older than ${selectedFilter.label}`}. This action cannot be undone.
+              </div>
+            </div>
+            <div style={{ padding: 16, display: "flex", justifyContent: "flex-end", gap: 10, flexWrap: "wrap" }}>
+              <button type="button" onClick={() => setDeleteConfirmOpen(false)} style={{ border: "1px solid #e5e7eb", background: "#fff", color: "#374151", borderRadius: 10, padding: "10px 14px", fontSize: 12, fontWeight: 900, cursor: "pointer" }}>
+                Cancel
+              </button>
+              <button type="button" onClick={confirmDeleteHistory} style={{ border: "1px solid #dc2626", background: "#dc2626", color: "#fff", borderRadius: 10, padding: "10px 14px", fontSize: 12, fontWeight: 900, cursor: "pointer" }}>
+                Delete now
+              </button>
             </div>
           </div>
         </div>
@@ -5343,6 +5429,33 @@ export default function App() {
     setSeenComplaintIds([]);
   };
 
+  const handleDeleteActivityHistory = ({ activityIds = [], complaintIds = [], testReportIds = [] } = {}) => {
+    const activityIdSet = new Set(activityIds.map(String));
+    const complaintIdSet = new Set(complaintIds.map(String));
+    const testReportIdSet = new Set(testReportIds.map(String));
+
+    if (activityIdSet.size) {
+      setStudentActivityRecords(current =>
+        (Array.isArray(current) ? current : []).filter(record => !activityIdSet.has(String(record.id)))
+      );
+    }
+
+    if (complaintIdSet.size) {
+      setComplaints(current =>
+        normalizeComplaints(current).filter(complaint => !complaintIdSet.has(String(complaint.id)))
+      );
+      setSeenComplaintIds(current =>
+        (Array.isArray(current) ? current : []).filter(seenId => !complaintIdSet.has(String(seenId)))
+      );
+    }
+
+    if (testReportIdSet.size) {
+      setTestReports(current =>
+        (Array.isArray(current) ? current : []).filter(report => !testReportIdSet.has(String(report.id)))
+      );
+    }
+  };
+
   const handleViewComplaints = (ids) => {
     const nextIds = (Array.isArray(ids) ? ids : []).map(String).filter(Boolean);
     if (!nextIds.length) return;
@@ -5416,7 +5529,7 @@ export default function App() {
     assignments: <AssignmentsPage assignments={visibleAssignments} />,
     results: <ResultsPage student={currentStudent} profile={profile} publishedResults={visiblePublishedResults} facultyMembers={visibleFacultyMembers} />,
     announcements: <AnnouncementsPage announcements={visibleAnnouncements} onMarkRead={handleReadAnnouncement} />,
-    activities: <ActivitiesPage testReports={testReports} complaints={visibleComplaints} activityRecords={visibleStudentActivityRecords} />,
+    activities: <ActivitiesPage testReports={testReports} complaints={visibleComplaints} activityRecords={visibleStudentActivityRecords} onDeleteHistory={handleDeleteActivityHistory} />,
     about: <AboutPortalPage student={currentStudent} />,
     settings: <SettingsPage profile={profile} student={currentStudent} onSave={setProfile} onActivity={addStudentActivityRecord} onPushNotificationsDisabled={markAllStudentTabsSeen} />,
   };
