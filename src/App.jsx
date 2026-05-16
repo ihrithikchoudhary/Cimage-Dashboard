@@ -1165,12 +1165,12 @@ const DashboardPage = ({ profile, student = STUDENT, announcements = ANNOUNCEMEN
         <div className="dashboard-welcome-copy" style={{ zIndex: 1 }}>
           <h2 style={{ fontSize: 22, fontWeight: 700, color: "#fff", marginBottom: 4 }}>Welcome back, {(currentStudent.name || profile.name).split(" ")[0]} 👋</h2>
           <p style={{ color: "rgba(255,255,255,0.7)", fontSize: 13, marginBottom: 14 }}>{currentStudent.course} — Semester {currentStudent.semester} · {currentStudent.university}</p>
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 14 }}>
+          <div className="dashboard-identity-strip" style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 14 }}>
             {[
               { label: "University Registration No.", value: currentStudent.regNo || "Not set", copyable: Boolean(currentStudent.regNo) },
               { label: "College", value: currentStudent.university },
             ].map(({ label, value, copyable }) => (
-              <div key={label} style={{ background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.18)", borderRadius: 10, padding: "8px 10px", minWidth: 170 }}>
+              <div className={`dashboard-identity-chip ${copyable ? "is-registration" : ""}`} key={label} style={{ background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.18)", borderRadius: 10, padding: "8px 10px", minWidth: 170 }}>
                 <div style={{ fontSize: 9, color: "rgba(255,255,255,0.62)", textTransform: "uppercase", fontWeight: 800, marginBottom: 3 }}>{label}</div>
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <div style={{ fontSize: 12, color: "#fff", fontWeight: 900, lineHeight: 1.25, minWidth: 0 }}>{value}</div>
