@@ -3324,6 +3324,102 @@ const fieldStyle = {
   boxSizing: "border-box",
 };
 
+const AppDropdown = ({ value, options = [], placeholder = "Select option", onChange, disabled = false }) => {
+  const [open, setOpen] = useState(false);
+  const selectedOption = options.find(option => String(option.value) === String(value));
+
+  const chooseOption = (nextValue) => {
+    onChange?.(nextValue);
+    setOpen(false);
+  };
+
+  return (
+    <>
+      <button
+        type="button"
+        disabled={disabled}
+        onClick={() => !disabled && setOpen(true)}
+        style={{
+          ...fieldStyle,
+          minHeight: 42,
+          background: disabled ? "#f9fafb" : "#fff",
+          color: selectedOption ? "#111827" : "#9ca3af",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 10,
+          cursor: disabled ? "not-allowed" : "pointer",
+          textAlign: "left",
+        }}
+      >
+        <span style={{ minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+          {selectedOption?.label || placeholder}
+        </span>
+        <Icon name="chevronDown" size={16} />
+      </button>
+
+      {open && (
+        <div
+          role="presentation"
+          onClick={() => setOpen(false)}
+          style={{ position: "fixed", inset: 0, zIndex: 120, background: "rgba(15,23,42,0.42)", backdropFilter: "blur(4px)", display: "flex", alignItems: "flex-end", justifyContent: "center", padding: "16px 12px" }}
+        >
+          <div
+            role="listbox"
+            aria-label={placeholder}
+            onClick={event => event.stopPropagation()}
+            style={{ width: "min(430px, 100%)", maxHeight: "70dvh", background: "#fff", border: "1px solid #e5e7eb", borderRadius: "22px 22px 18px 18px", boxShadow: "0 28px 80px rgba(15,23,42,0.28)", overflow: "hidden" }}
+          >
+            <div style={{ padding: "14px 16px 10px", borderBottom: "1px solid #f1f5f9", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 900, color: "#111827" }}>{placeholder}</div>
+                <div style={{ fontSize: 11, color: "#64748b", marginTop: 3 }}>Choose one option</div>
+              </div>
+              <button
+                type="button"
+                aria-label="Close options"
+                onClick={() => setOpen(false)}
+                style={{ width: 36, height: 36, borderRadius: 12, border: "1px solid #e5e7eb", background: "#f8fafc", color: "#64748b", display: "inline-flex", alignItems: "center", justifyContent: "center", cursor: "pointer", padding: 0, flexShrink: 0 }}
+              >
+                <Icon name="x" size={15} />
+              </button>
+            </div>
+
+            <div style={{ padding: 10, display: "flex", flexDirection: "column", gap: 6, overflowY: "auto", maxHeight: "calc(70dvh - 72px)" }}>
+              {options.length ? options.map(option => {
+                const active = String(option.value) === String(value);
+
+                return (
+                  <button
+                    type="button"
+                    role="option"
+                    aria-selected={active}
+                    key={option.value}
+                    onClick={() => chooseOption(option.value)}
+                    style={{ width: "100%", border: `1px solid ${active ? "#bfdbfe" : "#e5e7eb"}`, background: active ? "#eff6ff" : "#fff", color: active ? "#185FA5" : "#111827", borderRadius: 14, padding: "12px 13px", display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center", textAlign: "left", cursor: "pointer" }}
+                  >
+                    <span style={{ minWidth: 0 }}>
+                      <span style={{ display: "block", fontSize: 13, fontWeight: 900, overflowWrap: "anywhere" }}>{option.label}</span>
+                      {option.description && (
+                        <span style={{ display: "block", fontSize: 11, color: active ? "#1e40af" : "#64748b", marginTop: 4 }}>{option.description}</span>
+                      )}
+                    </span>
+                    {active && <Icon name="check" size={16} />}
+                  </button>
+                );
+              }) : (
+                <div style={{ border: "1px dashed #cbd5e1", borderRadius: 14, padding: 16, color: "#64748b", background: "#f8fafc", fontSize: 12, fontWeight: 800, textAlign: "center" }}>
+                  No options available.
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
 const LoginPage = ({ students = [], adminUsers = [], onLogin }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -5038,16 +5134,16 @@ const AdminDashboard = ({ students, loggedInStudents, adminUsers = [], currentAd
                   <label key={key} style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                     <span style={{ fontSize: 12, fontWeight: 700, color: "#374151" }}>{label}</span>
                     {key === "semester" ? (
-                      <select
+                      <AppDropdown
                         value={selected.semester || ""}
-                        onChange={event => updateSelected("semester", event.target.value === "" ? "" : Number(event.target.value))}
-                        style={fieldStyle}
-                      >
-                        <option value="">Select semester</option>
-                        {SEMESTER_OPTIONS.map(semester => (
-                          <option key={semester} value={semester}>Semester {semester}</option>
-                        ))}
-                      </select>
+                        placeholder="Select semester"
+                        options={SEMESTER_OPTIONS.map(semester => ({
+                          value: semester,
+                          label: `Semester ${semester}`,
+                          description: `${getSemesterSubjects(semester).length} subjects available`,
+                        }))}
+                        onChange={nextValue => updateSelected("semester", nextValue === "" ? "" : Number(nextValue))}
+                      />
                     ) : (
                       <input
                         type={type}
@@ -5110,16 +5206,16 @@ const AdminDashboard = ({ students, loggedInStudents, adminUsers = [], currentAd
                       <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.6fr 0.6fr 0.45fr 36px", gap: 8, alignItems: "end" }}>
                         <label style={{ display: "flex", flexDirection: "column", gap: 5 }}>
                           <span style={{ fontSize: 10, fontWeight: 800, color: "#6b7280" }}>Subject</span>
-                          <select
+                          <AppDropdown
                             value={selectedSemesterSubjects.some(subject => subject.subject === record.subject) ? record.subject : ""}
-                            onChange={event => updateSelectedAttendance(index, "subject", event.target.value)}
-                            style={{ ...fieldStyle, padding: "9px 10px", background: "#fff" }}
-                          >
-                            <option value="">Select subject</option>
-                            {selectedSemesterSubjects.map(subject => (
-                              <option key={subject.id} value={subject.subject}>{subject.subject}</option>
-                            ))}
-                          </select>
+                            placeholder="Select subject"
+                            options={selectedSemesterSubjects.map(subject => ({
+                              value: subject.subject,
+                              label: subject.subject,
+                              description: resolveTeacherName(subject.teacherId, "Faculty"),
+                            }))}
+                            onChange={nextValue => updateSelectedAttendance(index, "subject", nextValue)}
+                          />
                           <span style={{ fontSize: 10, color: "#6b7280", fontWeight: 700 }}>
                             {selectedSemesterSubjects.some(subject => subject.subject === record.subject)
                               ? resolveTeacherName(getSemesterSubjectMeta(selected.semester, record.subject).teacherId || record.teacherId, "Select subject")
