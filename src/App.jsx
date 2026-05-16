@@ -3438,6 +3438,7 @@ const AdminDashboard = ({ students, loggedInStudents, adminUsers = [], currentAd
   const [attendanceSaved, setAttendanceSaved] = useState(false);
   const [studentDetailsSaved, setStudentDetailsSaved] = useState(false);
   const [adminDetailsSaved, setAdminDetailsSaved] = useState(false);
+  const [adminSidebarOpen, setAdminSidebarOpen] = useState(false);
   const loggedInCount = students.filter(student => loggedInStudents.includes(student.email)).length;
   const facultyEditorActive = Boolean(facultyEditorOpen && (creatingFaculty || selectedFaculty));
   const canSaveFaculty = Boolean(String(facultyDraft.name || "").trim() && String(facultyDraft.subject || "").trim());
@@ -3987,24 +3988,46 @@ const AdminDashboard = ({ students, loggedInStudents, adminUsers = [], currentAd
     { id: "complaints", label: "Complaint Inbox", icon: "inbox", badge: unseenComplaintCount > 0 ? unseenComplaintCount : null },
   ];
   const activeAdminPage = adminNavItems.find(item => item.id === adminPage) || adminNavItems[0];
+  const goToAdminPage = (page) => {
+    setAdminPage(page);
+    setAdminSidebarOpen(false);
+  };
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh", background: "#f8fafc", fontFamily: "'Sora', 'Segoe UI', system-ui, sans-serif" }}>
-      <aside style={{ width: 220, background: "#fff", borderRight: "1px solid #e5e7eb", display: "flex", flexDirection: "column", flexShrink: 0, position: "fixed", left: 0, top: 0, bottom: 0, height: "100vh", overflowY: "auto", zIndex: 30 }}>
-        <div style={{ padding: "20px 16px 18px", borderBottom: "1px solid #f3f4f6", marginBottom: 8 }}>
-          <div style={{ width: 44, height: 44, border: "1px solid #e5e7eb", borderRadius: 11, padding: 5, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 10 }}>
-            <img src={cimageLogo} alt="Cimage College" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+    <div className="admin-shell" style={{ display: "flex", minHeight: "100vh", background: "#f8fafc", fontFamily: "'Sora', 'Segoe UI', system-ui, sans-serif" }}>
+      <button
+        type="button"
+        className={`admin-sidebar-backdrop ${adminSidebarOpen ? "is-open" : ""}`}
+        aria-label="Close admin menu"
+        onClick={() => setAdminSidebarOpen(false)}
+      />
+      <aside className={`admin-sidebar ${adminSidebarOpen ? "is-open" : ""}`} style={{ width: 220, background: "#fff", borderRight: "1px solid #e5e7eb", display: "flex", flexDirection: "column", flexShrink: 0, position: "fixed", left: 0, top: 0, bottom: 0, height: "100vh", overflowY: "auto", zIndex: 30 }}>
+        <div className="admin-sidebar-brand" style={{ padding: "20px 16px 18px", borderBottom: "1px solid #f3f4f6", marginBottom: 8 }}>
+          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
+            <div style={{ width: 44, height: 44, border: "1px solid #e5e7eb", borderRadius: 11, padding: 5, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 10 }}>
+              <img src={cimageLogo} alt="Cimage College" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+            </div>
+            <button
+              type="button"
+              className="admin-sidebar-close"
+              aria-label="Close admin menu"
+              title="Close menu"
+              onClick={() => setAdminSidebarOpen(false)}
+            >
+              <Icon name="x" size={16} />
+            </button>
           </div>
           <div style={{ fontSize: 14, fontWeight: 900, color: "#111827" }}>Admin Portal</div>
           <div style={{ fontSize: 10, color: "#9ca3af", marginTop: 3 }}>Cimage College</div>
         </div>
 
         <div style={{ fontSize: 9, fontWeight: 800, color: "#9ca3af", letterSpacing: "0.1em", textTransform: "uppercase", padding: "10px 16px 5px" }}>Management</div>
-        <div style={{ display: "flex", flexDirection: "column" }}>
+        <div className="admin-nav-scroll" style={{ display: "flex", flexDirection: "column" }}>
           {adminNavItems.map(item => (
             <button
+              className="admin-nav-button"
               key={item.id}
-              onClick={() => setAdminPage(item.id)}
+              onClick={() => goToAdminPage(item.id)}
               style={{
                 width: "100%",
                 border: "none",
@@ -4043,14 +4066,25 @@ const AdminDashboard = ({ students, loggedInStudents, adminUsers = [], currentAd
         </div>
       </aside>
 
-      <div style={{ flex: 1, minWidth: 0, marginLeft: 220 }}>
-        <div style={{ background: "#fff", borderBottom: "1px solid #e5e7eb", padding: "13px 24px", display: "flex", justifyContent: "space-between", alignItems: "center", position: "fixed", top: 0, left: 220, right: 0, zIndex: 25 }}>
-          <div>
+      <div className="admin-main" style={{ flex: 1, minWidth: 0, marginLeft: 220 }}>
+        <div className="admin-topbar" style={{ background: "#fff", borderBottom: "1px solid #e5e7eb", padding: "13px 24px", display: "flex", justifyContent: "space-between", alignItems: "center", position: "fixed", top: 0, left: 220, right: 0, zIndex: 25 }}>
+          <div className="admin-topbar-title" style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
+            <button
+              type="button"
+              className="admin-sidebar-toggle"
+              aria-label={adminSidebarOpen ? "Close admin menu" : "Open admin menu"}
+              aria-expanded={adminSidebarOpen}
+              onClick={() => setAdminSidebarOpen(open => !open)}
+            >
+              <Icon name={adminSidebarOpen ? "x" : "menu"} size={18} />
+            </button>
+            <div style={{ minWidth: 0 }}>
             <div style={{ fontSize: 16, fontWeight: 900, color: "#111827" }}>{activeAdminPage.label}</div>
             <div style={{ fontSize: 11, color: "#6b7280", marginTop: 3 }}>Manage student portal data</div>
+            </div>
           </div>
           <button
-            onClick={() => setAdminPage("complaints")}
+            onClick={() => goToAdminPage("complaints")}
             style={{ ...btnStyle, position: "relative", padding: "8px 12px", background: adminPage === "complaints" ? "#185FA5" : "#eff6ff", color: adminPage === "complaints" ? "#fff" : "#185FA5", borderColor: adminPage === "complaints" ? "#185FA5" : "#bfdbfe" }}
           >
             <Icon name="inbox" size={14} /> Inbox
@@ -4062,7 +4096,7 @@ const AdminDashboard = ({ students, loggedInStudents, adminUsers = [], currentAd
           </button>
         </div>
 
-      <main style={{ padding: "86px 24px 24px", display: "flex", flexDirection: "column", gap: 18 }}>
+      <main className="admin-content" style={{ padding: "86px 24px 24px", display: "flex", flexDirection: "column", gap: 18 }}>
         {adminPage === "complaints" ? (
           <AdminComplaintInbox
             complaints={visibleComplaints}
