@@ -2546,140 +2546,168 @@ const ResultsPage = ({ student = STUDENT, profile = DEFAULT_PROFILE, publishedRe
     if (!marksheet) return;
 
     const clonedMarksheet = marksheet.cloneNode(true);
-    const printWindow = window.open("", "_blank", "width=900,height=1200");
+    const printHtml = `
+      <!doctype html>
+      <html>
+        <head>
+          <meta charset="utf-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <title>${escapeHtml(selectedResult?.studentName || currentStudent.name || "Student")} Marksheet</title>
+          <style>
+            @page {
+              size: A4 portrait;
+              margin: 8mm;
+            }
 
-    if (printWindow) {
-      printWindow.document.write(`
-        <!doctype html>
-        <html>
-          <head>
-            <meta charset="utf-8" />
-            <meta name="viewport" content="width=device-width, initial-scale=1" />
-            <title>${escapeHtml(selectedResult?.studentName || currentStudent.name || "Student")} Marksheet</title>
-            <style>
-              @page {
-                size: A4;
-                margin: 8mm;
-              }
+            * {
+              box-sizing: border-box;
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
+            }
 
-              * {
-                box-sizing: border-box;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-              }
+            html,
+            body {
+              margin: 0;
+              padding: 0;
+              width: 210mm;
+              min-height: 297mm;
+              background: #ffffff;
+              color: #111827;
+              font-family: Arial, "Segoe UI", sans-serif;
+              text-rendering: geometricPrecision;
+              -webkit-font-smoothing: antialiased;
+            }
 
+            body {
+              display: block;
+            }
+
+            .marksheet-print-card {
+              width: 194mm !important;
+              max-width: 194mm !important;
+              margin: 0 auto !important;
+              border: 1.5px solid #64748b !important;
+              border-radius: 0 !important;
+              box-shadow: none !important;
+              overflow: hidden !important;
+              page-break-inside: avoid !important;
+              break-inside: avoid !important;
+              background: #ffffff !important;
+            }
+
+            .marksheet-screen-only {
+              display: none !important;
+            }
+
+            table {
+              border-collapse: collapse;
+            }
+
+            img,
+            svg {
+              max-width: 100%;
+              print-color-adjust: exact;
+              -webkit-print-color-adjust: exact;
+            }
+
+            @media screen {
               html,
               body {
-                margin: 0;
-                padding: 0;
                 width: 100%;
                 min-height: 100%;
-                background: #ffffff;
-                color: #111827;
-                font-family: Arial, "Segoe UI", sans-serif;
-                text-rendering: geometricPrecision;
-                -webkit-font-smoothing: antialiased;
               }
 
               body {
-                display: flex;
-                justify-content: center;
-                align-items: flex-start;
-                padding: 8mm;
+                background: #eef2f7;
+                padding: 18px;
               }
 
               .marksheet-print-card {
-                width: 194mm !important;
-                max-width: 194mm !important;
-                margin: 0 auto !important;
-                border: 1.5px solid #64748b !important;
-                border-radius: 0 !important;
-                box-shadow: none !important;
-                overflow: hidden !important;
-                page-break-inside: avoid !important;
-                break-inside: avoid !important;
+                width: min(194mm, 100%) !important;
+                box-shadow: 0 18px 48px rgba(15, 23, 42, 0.16) !important;
+              }
+            }
+
+            @media print {
+              html,
+              body {
+                width: 210mm;
+                min-height: 297mm;
+                padding: 0;
                 background: #ffffff !important;
               }
 
-              .marksheet-screen-only {
-                display: none !important;
+              .marksheet-print-card {
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 0 auto !important;
               }
+            }
+          </style>
+        </head>
+        <body>${clonedMarksheet.outerHTML}</body>
+      </html>
+    `;
 
-              table {
-                border-collapse: collapse;
-              }
+    document.getElementById("marksheet-print-frame")?.remove();
+    const iframe = document.createElement("iframe");
+    iframe.id = "marksheet-print-frame";
+    iframe.title = "Print marksheet";
+    iframe.setAttribute("aria-hidden", "true");
+    iframe.style.position = "fixed";
+    iframe.style.right = "0";
+    iframe.style.bottom = "0";
+    iframe.style.width = "210mm";
+    iframe.style.height = "297mm";
+    iframe.style.border = "0";
+    iframe.style.opacity = "0";
+    iframe.style.pointerEvents = "none";
+    iframe.style.zIndex = "-1";
+    document.body.appendChild(iframe);
 
-              img,
-              svg {
-                max-width: 100%;
-                print-color-adjust: exact;
-                -webkit-print-color-adjust: exact;
-              }
+    const frameWindow = iframe.contentWindow;
+    const frameDocument = iframe.contentDocument || frameWindow?.document;
 
-              @media screen {
-                body {
-                  background: #eef2f7;
-                  padding: 18px;
-                }
+    if (frameWindow && frameDocument) {
+      const cleanupFrame = () => {
+        frameWindow.removeEventListener("afterprint", cleanupFrame);
+        setTimeout(() => iframe.remove(), 500);
+      };
 
-                .marksheet-print-card {
-                  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.16) !important;
-                }
-              }
+      const printFrame = () => {
+        const images = Array.from(frameDocument.images);
+        const imageLoads = images.map(image =>
+          image.complete
+            ? Promise.resolve()
+            : new Promise(resolve => {
+                image.onload = resolve;
+                image.onerror = resolve;
+              })
+        );
 
-              @media print {
-                html,
-                body {
-                  display: block;
-                  width: 210mm;
-                  min-height: 297mm;
-                  padding: 0;
-                  background: #ffffff !important;
-                }
+        Promise.all(imageLoads).then(() => {
+          frameWindow.addEventListener("afterprint", cleanupFrame);
+          setTimeout(() => {
+            frameWindow.focus();
+            frameWindow.print();
+            setTimeout(cleanupFrame, 2500);
+          }, 250);
+        });
+      };
 
-                .marksheet-print-card {
-                  width: 100% !important;
-                  max-width: 100% !important;
-                  margin: 0 auto !important;
-                }
-              }
-            </style>
-          </head>
-          <body>
-            ${clonedMarksheet.outerHTML}
-            <script>
-              const printWhenReady = () => {
-                const images = Array.from(document.images);
-                const imageLoads = images.map((img) => img.complete ? Promise.resolve() : new Promise((resolve) => {
-                  img.onload = resolve;
-                  img.onerror = resolve;
-                }));
+      frameDocument.open();
+      frameDocument.write(printHtml);
+      frameDocument.close();
 
-                Promise.all(imageLoads).then(() => {
-                  setTimeout(() => {
-                    window.focus();
-                    window.print();
-                  }, 250);
-                });
-              };
-
-              window.addEventListener("afterprint", () => {
-                setTimeout(() => window.close(), 250);
-              });
-
-              if (document.readyState === "complete") {
-                printWhenReady();
-              } else {
-                window.addEventListener("load", printWhenReady);
-              }
-            </script>
-          </body>
-        </html>
-      `);
-      printWindow.document.close();
+      if (frameDocument.readyState === "complete") {
+        printFrame();
+      } else {
+        iframe.onload = printFrame;
+      }
       return;
     }
 
+    iframe.remove();
     document.getElementById("print-marksheet-root")?.remove();
     const printRoot = document.createElement("div");
     printRoot.id = "print-marksheet-root";
