@@ -5554,8 +5554,19 @@ export default function App() {
       {/* Sidebar */}
       <div className={`student-sidebar app-sidebar ${studentSidebarOpen ? "is-open" : ""}`} style={{ width: 200, background: "#fff", borderRight: "1px solid #e5e7eb", display: "flex", flexDirection: "column", paddingTop: 20, flexShrink: 0, position: "fixed", left: 0, top: 0, bottom: 0, height: "100vh", overflow: "hidden", zIndex: 30, boxSizing: "border-box" }}>
           <div className="app-sidebar-brand" style={{ padding: "0 16px 20px", borderBottom: "1px solid #f3f4f6", marginBottom: 8 }}>
-            <div style={{ width: 42, height: 42, background: "#fff", border: "1px solid #e5e7eb", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 8, overflow: "hidden", padding: 4 }}>
-              <img src={cimageLogo} alt="Cimage College" style={{ width: "100%", height: "100%", objectFit: "contain", display: "block" }} />
+            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
+              <div style={{ width: 42, height: 42, background: "#fff", border: "1px solid #e5e7eb", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 8, overflow: "hidden", padding: 4 }}>
+                <img src={cimageLogo} alt="Cimage College" style={{ width: "100%", height: "100%", objectFit: "contain", display: "block" }} />
+              </div>
+              <button
+                type="button"
+                className="mobile-sidebar-close"
+                aria-label="Close student menu"
+                title="Close menu"
+                onClick={() => setStudentSidebarOpen(false)}
+              >
+                <Icon name="x" size={16} />
+              </button>
             </div>
             <div style={{ fontSize: 13, fontWeight: 600, color: "#111827" }}>Cimage College</div>
             <div style={{ fontSize: 10, color: "#9ca3af" }}>Student Portal</div>
@@ -5699,8 +5710,19 @@ export default function App() {
                       <div style={{ fontSize: 14, fontWeight: 700, color: "#111827" }}>Announcements</div>
                       <div style={{ fontSize: 11, color: "#6b7280" }}>{unreadAnnouncements} new notice{unreadAnnouncements === 1 ? "" : "s"}</div>
                     </div>
-                    <div style={{ width: 32, height: 32, borderRadius: 9, background: "#dbeafe", color: "#185FA5", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <Icon name="megaphone" size={16} />
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <div style={{ width: 32, height: 32, borderRadius: 9, background: "#dbeafe", color: "#185FA5", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <Icon name="megaphone" size={16} />
+                      </div>
+                      <button
+                        type="button"
+                        aria-label="Close announcements"
+                        title="Close"
+                        onClick={() => setNotificationOpen(false)}
+                        style={{ width: 32, height: 32, borderRadius: 9, border: "1px solid #e5e7eb", background: "#f9fafb", color: "#64748b", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", padding: 0 }}
+                      >
+                        <Icon name="x" size={14} />
+                      </button>
                     </div>
                   </div>
 
@@ -5792,10 +5814,19 @@ export default function App() {
                 }}>
                   <div style={{ padding: 16, borderBottom: "1px solid #f3f4f6", display: "flex", alignItems: "center", gap: 12 }}>
                     <Avatar profile={{ ...profile, name: currentStudent.name || profile.name }} size={42} fontSize={14} />
-                    <div>
+                    <div style={{ minWidth: 0, flex: 1 }}>
                       <div style={{ fontSize: 14, fontWeight: 700, color: "#111827" }}>{currentStudent.name || profile.name}</div>
                       <div style={{ fontSize: 11, color: "#6b7280" }}>{currentStudent.course} · Semester {currentStudent.semester}</div>
                     </div>
+                    <button
+                      type="button"
+                      aria-label="Close profile menu"
+                      title="Close"
+                      onClick={() => setProfileOpen(false)}
+                      style={{ width: 32, height: 32, borderRadius: 9, border: "1px solid #e5e7eb", background: "#f9fafb", color: "#64748b", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", padding: 0, flexShrink: 0 }}
+                    >
+                      <Icon name="x" size={14} />
+                    </button>
                   </div>
 
                   <div style={{ padding: 16, display: "flex", flexDirection: "column", gap: 10 }}>
