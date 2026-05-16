@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+  <title id="title">Database normalization solution diagram</title>
+  <desc id="desc">Step diagram showing 1NF, 2NF and 3NF for database normalization.</desc>
+  <rect width="960" height="540" rx="28" fill="#f8fafc"/>
+  <rect x="38" y="38" width="884" height="464" rx="24" fill="#ffffff" stroke="#dbeafe" stroke-width="3"/>
+  <text x="70" y="94" fill="#111827" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="800">Database Normalization</text>
+  <text x="70" y="130" fill="#64748b" font-family="Segoe UI, Arial, sans-serif" font-size="18">Reduce duplicate data and improve consistency by moving through normal forms.</text>
+  <g font-family="Segoe UI, Arial, sans-serif" transform="translate(86 190)">
+    <rect width="210" height="185" rx="18" fill="#eff6ff" stroke="#bfdbfe" stroke-width="3"/>
+    <text x="105" y="48" fill="#185fa5" font-size="30" font-weight="900" text-anchor="middle">1NF</text>
+    <text x="105" y="88" fill="#111827" font-size="19" font-weight="800" text-anchor="middle">Atomic values</text>
+    <text x="105" y="124" fill="#475569" font-size="16" text-anchor="middle">No repeating groups</text>
+    <text x="105" y="150" fill="#475569" font-size="16" text-anchor="middle">One value per cell</text>
+    <path d="M232 92h68" stroke="#94a3b8" stroke-width="5" stroke-linecap="round"/>
+    <path d="M288 78l20 14-20 14" fill="none" stroke="#94a3b8" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <g font-family="Segoe UI, Arial, sans-serif" transform="translate(386 190)">
+    <rect width="210" height="185" rx="18" fill="#ecfdf5" stroke="#bbf7d0" stroke-width="3"/>
+    <text x="105" y="48" fill="#0f766e" font-size="30" font-weight="900" text-anchor="middle">2NF</text>
+    <text x="105" y="88" fill="#111827" font-size="19" font-weight="800" text-anchor="middle">Full dependency</text>
+    <text x="105" y="124" fill="#475569" font-size="16" text-anchor="middle">No partial dependency</text>
+    <text x="105" y="150" fill="#475569" font-size="16" text-anchor="middle">on composite key</text>
+    <path d="M232 92h68" stroke="#94a3b8" stroke-width="5" stroke-linecap="round"/>
+    <path d="M288 78l20 14-20 14" fill="none" stroke="#94a3b8" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <g font-family="Segoe UI, Arial, sans-serif" transform="translate(686 190)">
+    <rect width="210" height="185" rx="18" fill="#fef3c7" stroke="#fde68a" stroke-width="3"/>
+    <text x="105" y="48" fill="#b45309" font-size="30" font-weight="900" text-anchor="middle">3NF</text>
+    <text x="105" y="88" fill="#111827" font-size="19" font-weight="800" text-anchor="middle">No transitive</text>
+    <text x="105" y="124" fill="#475569" font-size="16" text-anchor="middle">Non-key fields depend</text>
+    <text x="105" y="150" fill="#475569" font-size="16" text-anchor="middle">only on the key</text>
+  </g>
+  <text x="480" y="440" fill="#334155" font-family="Segoe UI, Arial, sans-serif" font-size="21" font-weight="800" text-anchor="middle">Goal: less redundancy, fewer update anomalies, cleaner tables</text>
+</svg>

@@ -1,7 +1,11 @@
+/* eslint-disable react-hooks/set-state-in-effect, react-hooks/purity, react-hooks/exhaustive-deps */
 import { useEffect, useRef, useState } from "react";
 import cimageLogo from "./assets/cimagelogo.jpg";
 import portalData from "./data/portalData.json";
 import videosData from "./data/videosData.json";
+import commonData from "./data/commonData.json";
+import pyqsQuestions from "./data/pyqsQuestions.json";
+import facultyImagesData from "./data/facultyImages.json";
 import {
   RadialBarChart,
   RadialBar,
@@ -55,8 +59,11 @@ const usePersistentState = (key, fallback) => {
   return [value, setValue];
 };
 
-//Teachers list 
-const TEACHERS = portalData.teachers;
+// Teachers list
+const TEACHER_BY_ID = commonData.teachers || {};
+const FACULTY_IMAGE_BY_ID = facultyImagesData.facultyImages || {};
+const TEACHERS = Object.values(TEACHER_BY_ID);
+const DEFAULT_HEAD_OF_DEPARTMENT_IDS = new Set(["amit-kumar-shukla", "murali-manohar"]);
 
 const OFFICIAL_TEACHER_BY_SUBJECT = Object.fromEntries(
   TEACHERS.map(teacher => [teacher.subject, teacher])
@@ -64,12 +71,19 @@ const OFFICIAL_TEACHER_BY_SUBJECT = Object.fromEntries(
 
 const FACULTY_SUBJECT_MAP = portalData.facultySubjectMap || {};
 
-const getOfficialTeacherName = (subject, fallback = "Faculty") =>
-  FACULTY_SUBJECT_MAP[subject] || OFFICIAL_TEACHER_BY_SUBJECT[subject]?.name || fallback;
+const resolveTeacherName = (teacherRef, fallback = "Faculty") => {
+  if (!teacherRef) return fallback;
+  return TEACHER_BY_ID[teacherRef]?.name || teacherRef;
+};
+
+const getOfficialTeacherName = (subject, teacherRef) =>
+  FACULTY_SUBJECT_MAP[subject] ||
+  OFFICIAL_TEACHER_BY_SUBJECT[subject]?.name ||
+  resolveTeacherName(teacherRef, "Faculty");
+
+const isHeadOfDepartment = (faculty = {}) => Boolean(faculty.isHod);
 
 const ADMIN_CREDENTIALS = portalData.adminCredentials;
-
-const STUDENT_DIRECTORY = portalData.studentDirectory;
 
 const ATTENDANCE_DATA = portalData.attendanceData;
 
@@ -83,13 +97,30 @@ const RESULTS = portalData.results;
 
 const LECTURES_BY_SEMESTER = videosData.lecturesBySemester;
 
-const PERSONAL_VIDEOS_BY_SEMESTER = videosData.personalVideosBySemester;
-
 const TEST_SETTINGS = portalData.testSettings;
 
 const TEST_QUESTIONS = portalData.testQuestions;
 
-const GALLERY_EVENTS = portalData.galleryEvents;
+const PYQS_DATA = pyqsQuestions.pyqsQuestions || [];
+
+const getPyqsSolutionImage = (question) => {
+  const image = question?.solutionImage || question?.solutionImageUrl || question?.answerImage || question?.image;
+
+  if (!image) return null;
+  if (typeof image === "string") {
+    return {
+      src: image,
+      alt: "PYQS answer image",
+      caption: "Image solution",
+    };
+  }
+
+  return {
+    src: image.src || image.url || image.link,
+    alt: image.alt || "PYQS answer image",
+    caption: image.caption || image.title || "",
+  };
+};
 
 const NAV_ITEMS = portalData.navItems;
 
@@ -105,8 +136,10 @@ const Icon = ({ name, size = 18 }) => {
     results: <><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></>,
     lectures: <><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m10 9 5 3-5 3V9z"/><path d="M7 21h10"/></>,
     gallery: <><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></>,
+    pyqs: <><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="7" y1="8" x2="17" y2="8"/><line x1="7" y1="12" x2="17" y2="12"/><line x1="7" y1="16" x2="13" y2="16"/></>,
     onlineTest: <><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></>,
     activities: <><path d="M3 3v18h18"/><path d="m7 14 3-3 3 2 5-6"/><circle cx="7" cy="14" r="1"/><circle cx="10" cy="11" r="1"/><circle cx="13" cy="13" r="1"/><circle cx="18" cy="7" r="1"/></>,
+    about: <><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></>,
     settings: <><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></>,
     logout: <><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></>,
     bell: <><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></>,
@@ -123,6 +156,7 @@ const Icon = ({ name, size = 18 }) => {
     download: <><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></>,
     upload: <><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></>,
     eye: <><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></>,
+    eyeOff: <><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 11 7 11 7a13.16 13.16 0 0 1-2.15 2.95"/><path d="M6.61 6.61C3.5 8.7 1 12 1 12s4 7 11 7a10.8 10.8 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/><path d="M9.88 9.88A3 3 0 0 0 12 15a3 3 0 0 0 2.12-.88"/></>,
     menu: <><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></>,
     x: <><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></>,
   };
@@ -134,16 +168,6 @@ const Icon = ({ name, size = 18 }) => {
 };
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
-
-const GradeChip = ({ grade }) => {
-  const map = { O: "#166534", "A+": "#185FA5", A: "#854F0B", B: "#6b7280" };
-  const bg = { O: "#dcfce7", "A+": "#dbeafe", A: "#fef3c7", B: "#f3f4f6" };
-  return (
-    <span style={{ background: bg[grade] || "#f3f4f6", color: map[grade] || "#374151", fontSize: 12, fontWeight: 700, padding: "2px 10px", borderRadius: 999 }}>
-      {grade}
-    </span>
-  );
-};
 
 const getInitials = (name) =>
   name
@@ -165,18 +189,37 @@ const getWhatsAppHref = (phone, teacherName) => {
 const createFacultyId = (faculty = {}) =>
   faculty.id || `${String(faculty.name || "faculty").toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${String(faculty.subject || "subject").toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
 
+const resolveFacultyPhoto = (faculty = {}) => {
+  if (faculty.id && FACULTY_IMAGE_BY_ID[faculty.id]) return FACULTY_IMAGE_BY_ID[faculty.id];
+
+  const generatedId = createFacultyId(faculty);
+  if (generatedId && FACULTY_IMAGE_BY_ID[generatedId]) return FACULTY_IMAGE_BY_ID[generatedId];
+
+  if (faculty.photo) return faculty.photo;
+
+  return "";
+};
+
 const normalizeFacultyMembers = (facultyMembers = []) =>
-  (Array.isArray(facultyMembers) ? facultyMembers : []).map((faculty, index) => ({
-    id: createFacultyId(faculty) || `faculty-${index + 1}`,
-    name: "",
-    subject: "",
-    education: "",
-    joined: "",
-    photo: "",
-    phone: "",
-    whatsapp: "",
-    ...faculty,
-  }));
+  (Array.isArray(facultyMembers) ? facultyMembers : []).map((faculty, index) => {
+    const normalized = {
+      id: createFacultyId(faculty) || `faculty-${index + 1}`,
+      name: "",
+      subject: "",
+      education: "",
+      joined: "",
+      photo: "",
+      phone: "",
+      whatsapp: "",
+      isHod: DEFAULT_HEAD_OF_DEPARTMENT_IDS.has(createFacultyId(faculty)),
+      ...faculty,
+    };
+
+    return {
+      ...normalized,
+      photo: resolveFacultyPhoto(normalized),
+    };
+  });
 
 const normalizeAnnouncements = (announcements = []) =>
   (Array.isArray(announcements) ? announcements : []).map((announcement, index) => ({
@@ -190,6 +233,15 @@ const normalizeAnnouncements = (announcements = []) =>
 
 const getAnnouncementDate = () =>
   new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+
+const getActivityTimestamp = () => {
+  const now = new Date();
+  return {
+    date: now.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }),
+    time: now.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" }),
+    iso: now.toISOString(),
+  };
+};
 
 const getDateInputValue = (date = new Date()) => {
   const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
@@ -282,8 +334,13 @@ const getResultGrade = (percentage) => {
   return "F";
 };
 
+const getMarksNumber = (value) => {
+  const match = String(value ?? "").match(/\d+(\.\d+)?/);
+  return match ? Number(match[0]) : 0;
+};
+
 const getResultTotals = (subjects = []) => {
-  const totalObtained = subjects.reduce((sum, subject) => sum + (Number(subject.obtainedMarks) || 0), 0);
+  const totalObtained = subjects.reduce((sum, subject) => sum + getMarksNumber(subject.obtainedMarks), 0);
   const totalMarks = subjects.reduce((sum, subject) => sum + (Number(subject.maxMarks) || 0), 0);
   const percentage = totalMarks > 0 ? Number(((totalObtained / totalMarks) * 100).toFixed(2)) : 0;
 
@@ -295,33 +352,6 @@ const getResultTotals = (subjects = []) => {
   };
 };
 
-const getSemesterResultSubjects = (semester, student = {}, facultyMembers = []) => {
-  const facultySubjects = normalizeFacultyMembers(facultyMembers).filter(faculty => faculty.name && faculty.subject);
-  if (facultySubjects.length) {
-    return facultySubjects.map((faculty, index) => ({
-      id: `${faculty.id || String(faculty.subject).toLowerCase().replace(/[^a-z0-9]+/g, "-")}-result-${index + 1}`,
-      facultyId: faculty.id,
-      subject: faculty.subject,
-      teacher: faculty.name,
-      obtainedMarks: "",
-      maxMarks: 40,
-    }));
-  }
-
-  const semesterSubjects = LECTURES_BY_SEMESTER?.[semester] || LECTURES_BY_SEMESTER?.[String(semester)] || [];
-  const fallbackSubjects = getAttendanceSummary(student.attendanceRecords || []).records;
-  const source = semesterSubjects.length ? semesterSubjects : fallbackSubjects;
-
-  return source.map((item, index) => ({
-    id: `${String(item.subject || `subject-${index + 1}`).toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${index + 1}`,
-    facultyId: "",
-    subject: item.subject || `Subject ${index + 1}`,
-    teacher: getOfficialTeacherName(item.subject, item.teacher),
-    obtainedMarks: "",
-    maxMarks: 40,
-  }));
-};
-
 const normalizePublishedResults = (results = []) =>
   (Array.isArray(results) ? results : []).map((result, index) => {
     const subjects = (Array.isArray(result.subjects) ? result.subjects : []).map((subject, subjectIndex) => ({
@@ -329,7 +359,7 @@ const normalizePublishedResults = (results = []) =>
       facultyId: subject.facultyId || "",
       subject: subject.subject || `Subject ${subjectIndex + 1}`,
       teacher: subject.teacher || getOfficialTeacherName(subject.subject, "Faculty"),
-      obtainedMarks: subject.obtainedMarks === "" || subject.obtainedMarks === undefined ? "" : Number(subject.obtainedMarks),
+      obtainedMarks: subject.obtainedMarks === "" || subject.obtainedMarks === undefined ? "" : String(subject.obtainedMarks),
       maxMarks: Number(subject.maxMarks) || 40,
     }));
     const totals = getResultTotals(subjects);
@@ -360,8 +390,6 @@ const normalizeComplaints = (complaints = []) =>
   (Array.isArray(complaints) ? complaints : []).map((complaint, index) => {
     const id = String(complaint.id || complaint.referenceNo || 83000000 + index + 1);
     return {
-      id,
-      referenceNo: String(complaint.referenceNo || id),
       name: "",
       email: "",
       phone: "",
@@ -412,7 +440,7 @@ const printComplaintPdf = (complaint) => {
     ["Course", item.course],
     ["Semester", item.semester],
     ["Department", item.department],
-    ["Session", item.session],
+    ["Course Session", item.session],
   ];
 
   printWindow.document.write(`
@@ -518,8 +546,6 @@ const getNameFromEmail = (email = "") =>
     .map(part => `${part[0]?.toUpperCase() || ""}${part.slice(1)}`)
     .join(" ") || "Student";
 
-const DEFAULT_STUDENT_PASSWORD = "student123";
-
 const getDefaultAdminUsers = () => [
   {
     id: "admin-root",
@@ -587,6 +613,8 @@ const normalizeStudentRecord = (student = {}, index = 0) => {
 const normalizeStudentRecords = (students = []) =>
   (Array.isArray(students) ? students : []).map((student, index) => normalizeStudentRecord(student, index));
 
+const PROFILE_PHOTO_COOLDOWN_MS = 2 * 60 * 1000;
+
 const createStudentRecord = (index = 0) =>
   normalizeStudentRecord({
     id: `student-${Date.now()}`,
@@ -618,42 +646,6 @@ const Avatar = ({ profile, size = 34, fontSize = 12 }) => (
     ) : (
       getInitials(profile.name)
     )}
-  </div>
-);
-
-const VirtualIdCard = ({ profile, student = STUDENT }) => (
-  <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 18, overflow: "hidden", boxShadow: "0 18px 40px rgba(15, 23, 42, 0.08)" }}>
-    <div style={{ background: "#111827", padding: 16, color: "#fff", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-      <div>
-        <div style={{ fontSize: 13, fontWeight: 900 }}>Virtual ID Card</div>
-        <div style={{ fontSize: 10, color: "rgba(255,255,255,0.65)" }}>{student.university}</div>
-      </div>
-      <img src={cimageLogo} alt="Cimage College" style={{ width: 40, height: 40, objectFit: "contain", background: "#fff", borderRadius: 10, padding: 4 }} />
-    </div>
-    <div style={{ padding: 18 }}>
-      <div style={{ display: "flex", gap: 14, alignItems: "center", marginBottom: 16 }}>
-        <Avatar profile={profile} size={72} fontSize={21} />
-        <div>
-          <div style={{ fontSize: 16, fontWeight: 900, color: "#111827" }}>{student.name || profile.name}</div>
-          <div style={{ fontSize: 11, color: "#6b7280" }}>{student.course} · Session {student.session}</div>
-        </div>
-      </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-        {[
-          ["Father", student.fatherName || "Not set"],
-          ["ID No.", student.studentId || "Not set"],
-          ["Course", student.course],
-          ["Session", student.session],
-          ["Contact", student.phone || profile.phone],
-          ["Blood", student.bloodGroup || "Not set"],
-        ].map(([label, value]) => (
-          <div key={label} style={{ background: "#f9fafb", border: "1px solid #f3f4f6", borderRadius: 10, padding: "9px 10px" }}>
-            <div style={{ fontSize: 9, color: "#6b7280", marginBottom: 3 }}>{label}</div>
-            <div style={{ fontSize: 11, fontWeight: 900, color: "#111827" }}>{value}</div>
-          </div>
-        ))}
-      </div>
-    </div>
   </div>
 );
 
@@ -713,18 +705,18 @@ const getAiReply = (question, profile, testReports = [], facultyMembers = TEACHE
     return reply(`Lecture videos are organized semester-wise. Your current Semester ${currentStudent.semester} subjects include ${currentSubjectsText}. You can select a subject and watch videos inside the portal.`, [{ label: "Open lectures", page: "lectures" }]);
   }
 
-  if (words("gallery", "photo", "image", "event", "download image", "college photo")) {
-    return reply("The Gallery shows photos by fixed categories like All images, Today uploaded, Annual Tech Fest, Placement/Workshop, and Cultural Event. Each image has its upload date and download button.", [{ label: "Open gallery", page: "gallery" }]);
+  if (words("pyqs", "previous year", "exam questions", "practice questions", "past exam", "sample questions")) {
+    return reply("PYQs (Previous Year Questions) section contains previous year exam questions organized by year, semester, and subject. You can select from dropdowns and view detailed answers for each question. Answers include explanations tailored to the marks value.", [{ label: "Open PYQs", page: "pyqs" }]);
   }
 
   if (words("test", "quiz", "mcq", "online exam", "exam")) {
     const completed = testReports.length;
-    return reply(`Online tests are available by semester and subject. MCQs are loaded from portalData.json, each question has ${TEST_SETTINGS?.marksPerQuestion || 2} marks, and you can retake a subject anytime. You have saved ${completed} test attempt${completed === 1 ? "" : "s"} so far.`, [{ label: "Start test", page: "onlineTest" }, { label: "View activities", page: "activities" }]);
+    return reply(`Online test access is currently removed from the student sidebar. Your saved test attempt count is ${completed}. Contact admin if test access needs to be enabled again.`, [{ label: "Open dashboard", page: "dashboard" }]);
   }
 
   if (words("activity", "activities", "test report", "history", "score history", "marks history")) {
     if (!testReports.length) {
-      return reply("No test activity report is saved yet. Complete an online test and your marks, date, time, subject, and teacher details will appear here.", [{ label: "Take online test", page: "onlineTest" }]);
+      return reply("No test activity report is saved yet. Complaint records and saved activity history will appear in Activities automatically.", [{ label: "Open activities", page: "activities" }]);
     }
     const best = [...testReports].sort((a, b) => b.obtainedMarks - a.obtainedMarks)[0];
     return reply(`You have ${testReports.length} saved test report${testReports.length === 1 ? "" : "s"}. Your best score is ${best.obtainedMarks}/${best.totalMarks} in ${best.subject}.`, [{ label: "Open activities", page: "activities" }]);
@@ -754,7 +746,7 @@ const getAiReply = (question, profile, testReports = [], facultyMembers = TEACHE
   }
 
   if (trained("identity")) {
-    return reply(`${currentStudent.name || profile.name}'s portal details: Student ID ${currentStudent.studentId}, roll ${currentStudent.rollNo || "not set"}, registration ${currentStudent.regNo || "not set"}, ${currentStudent.course} semester ${currentStudent.semester}, session ${currentStudent.session}, department ${currentStudent.department}.`, [{ label: "Open settings", page: "settings" }, { label: "Open dashboard", page: "dashboard" }]);
+    return reply(`${currentStudent.name || profile.name}'s portal details: Student ID ${currentStudent.studentId}, roll ${currentStudent.rollNo || "not set"}, registration ${currentStudent.regNo || "not set"}, ${currentStudent.course} semester ${currentStudent.semester}, course session ${currentStudent.session}, department ${currentStudent.department}.`, [{ label: "Open settings", page: "settings" }, { label: "Open dashboard", page: "dashboard" }]);
   }
 
   if (trained("facultyHelp")) {
@@ -768,9 +760,9 @@ const getAiReply = (question, profile, testReports = [], facultyMembers = TEACHE
       firstLow ? `Attend or revise ${firstLow.subject} first because it is at ${firstLow.pct}% attendance` : "Keep attendance steady because all subjects are above 75%",
       firstPending ? `Finish ${firstPending.title} before ${firstPending.deadline}` : "No pending assignment is blocking you right now",
       `Revise one current subject today: ${currentSubjects[0]}`,
-      testReports.length ? `Review your best test score: ${bestTest.obtainedMarks}/${bestTest.totalMarks} in ${bestTest.subject}` : "Attempt one online test to create your first activity report",
+      testReports.length ? `Review your best test score: ${bestTest.obtainedMarks}/${bestTest.totalMarks} in ${bestTest.subject}` : "Revise one lecture topic and check pending assignments",
     ];
-    return reply(`Today's dashboard plan: ${plan.join(". ")}.`, [{ label: "Open dashboard", page: "dashboard" }, { label: firstPending ? "Open assignments" : "Take online test", page: firstPending ? "assignments" : "onlineTest" }]);
+    return reply(`Today's dashboard plan: ${plan.join(". ")}.`, [{ label: "Open dashboard", page: "dashboard" }, { label: firstPending ? "Open assignments" : "Open lectures", page: firstPending ? "assignments" : "lectures" }]);
   }
 
   if (trained("riskCheck")) {
@@ -804,10 +796,9 @@ const getAiReply = (question, profile, testReports = [], facultyMembers = TEACHE
     return reply("For Advance Excel, practice formulas, sorting, filtering, charts, pivot tables, VLOOKUP/XLOOKUP, and dashboards. These are useful for reports and office work.", [{ label: "Watch Excel videos", page: "lectures" }]);
   }
 
-  return reply(`Hi ${profile.name.split(" ")[0]}, I can help with the whole portal: attendance, fees, assignments, lectures, gallery, online tests, activities, results, announcements, profile, and study topics. Ask naturally, like "show my pending assignments" or "open my test reports".`, [
+  return reply(`Hi ${profile.name.split(" ")[0]}, I can help with the portal: attendance, fees, assignments, lectures, pyqs, activities, results, announcements, profile, and study topics. Ask naturally, like "show my pending assignments" or "open my results".`, [
     { label: "Complaint form", action: "complaint" },
     { label: "Dashboard", page: "dashboard" },
-    { label: "Online test", page: "onlineTest" },
     { label: "Activities", page: "activities" },
   ]);
 };
@@ -826,7 +817,7 @@ const AiChatPanel = ({ open, onClose, profile, student, testReports, facultyMemb
       actions: [
         { label: "Dashboard summary", prompt: "Give my dashboard summary" },
         { label: "Today's plan", prompt: "What should I do today?" },
-        { label: "Online test", page: "onlineTest" },
+        { label: "Lectures", page: "lectures" },
       ],
     },
   ]);
@@ -1051,7 +1042,7 @@ const ComplaintModal = ({ open, profile, student = STUDENT, onClose, onSubmit })
 
         <div style={{ padding: 20, display: "flex", flexDirection: "column", gap: 14 }}>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 10 }}>
-            {[["Name", currentStudent.name || profile.name], ["Student ID", currentStudent.studentId], ["Reg. No.", currentStudent.regNo], ["Session", currentStudent.session]].map(([label, value]) => (
+            {[["Name", currentStudent.name || profile.name], ["Student ID", currentStudent.studentId], ["Reg. No.", currentStudent.regNo], ["Course Session", currentStudent.session]].map(([label, value]) => (
               <div key={label} style={{ background: "#f9fafb", border: "1px solid #f3f4f6", borderRadius: 11, padding: "10px 12px" }}>
                 <div style={{ fontSize: 10, color: "#6b7280", marginBottom: 3 }}>{label}</div>
                 <div style={{ fontSize: 12, fontWeight: 900, color: "#111827" }}>{value}</div>
@@ -1098,7 +1089,6 @@ const DashboardPage = ({ profile, student = STUDENT, announcements = ANNOUNCEMEN
   const visibleAnnouncements = normalizeAnnouncements(announcements);
   const visibleAssignments = normalizeAssignments(assignments);
   const pendingAssignments = visibleAssignments.filter(item => item.status === "pending");
-  const latestAnnouncement = visibleAnnouncements[0];
   const [registrationCopied, setRegistrationCopied] = useState(false);
 
   const copyRegistrationNumber = async () => {
@@ -1267,25 +1257,7 @@ const DashboardPage = ({ profile, student = STUDENT, announcements = ANNOUNCEMEN
 
         {/* Right column */}
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          <VirtualIdCard profile={{ ...profile, name: currentStudent.name || profile.name }} student={currentStudent} />
-
-          {/* Today's Focus */}
-          <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 20, flex: 1 }}>
-            <h3 style={{ fontSize: 14, fontWeight: 700, color: "#111827", marginBottom: 14 }}>Today's focus</h3>
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {[
-                ["Lecture", "Continue React.js videos for Semester 4", "#eff6ff", "#185FA5"],
-                ["Test", "Online MCQ practice is available subject-wise", "#f0fdf4", "#166534"],
-                ["Notice", latestAnnouncement?.title || "No new notice", "#fef3c7", "#92400e"],
-              ].map(([label, value, bg, color]) => (
-                <div key={label} style={{ background: bg, border: "1px solid #e5e7eb", borderRadius: 12, padding: "11px 12px" }}>
-                  <div style={{ fontSize: 10, color, fontWeight: 800, textTransform: "uppercase", marginBottom: 4 }}>{label}</div>
-                  <div style={{ fontSize: 12, color: "#111827", fontWeight: 700, lineHeight: 1.35 }}>{value}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-
+          <CurrentMonthCalendar />
         </div>
       </div>
 
@@ -1352,7 +1324,7 @@ const CurrentMonthCalendar = () => {
     <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 18, height: "100%", boxSizing: "border-box" }}>
       <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center", marginBottom: 14 }}>
         <div>
-          <h3 style={{ fontSize: 15, fontWeight: 900, color: "#111827", margin: 0 }}>This Month calender</h3>
+          <h3 style={{ fontSize: 15, fontWeight: 900, color: "#111827", margin: 0 }}>This Month Calendar</h3>
           <div style={{ fontSize: 11, color: "#6b7280", marginTop: 4 }}>{monthName}</div>
         </div>
         <div style={{ width: 38, height: 38, borderRadius: 11, background: "#eff6ff", color: "#185FA5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 900, fontFamily: "monospace", flexShrink: 0 }}>
@@ -1421,7 +1393,7 @@ const AttendancePage = ({ student = STUDENT }) => {
         </div>
       ))}
     </div>
-    <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(280px, 340px)", gap: 16, alignItems: "stretch" }}>
+    <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 16, alignItems: "stretch" }}>
       <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 24, minWidth: 0 }}>
         <h3 style={{ fontSize: 16, fontWeight: 600, color: "#111827", marginBottom: 20 }}>Subject-wise attendance</h3>
         <ResponsiveContainer width="100%" height={260}>
@@ -1435,7 +1407,6 @@ const AttendancePage = ({ student = STUDENT }) => {
           </BarChart>
         </ResponsiveContainer>
       </div>
-      <CurrentMonthCalendar />
     </div>
     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 12 }}>
       {attendanceSummary.records.map(s => (
@@ -1457,7 +1428,7 @@ const AttendancePage = ({ student = STUDENT }) => {
 };
 
 const CoursesPage = ({ facultyMembers = TEACHERS }) => {
-  const visibleFacultyMembers = normalizeFacultyMembers(facultyMembers);
+  const visibleFacultyMembers = [...normalizeFacultyMembers(facultyMembers)].sort((a, b) => Number(isHeadOfDepartment(b)) - Number(isHeadOfDepartment(a)));
 
   return (
   <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
@@ -1504,9 +1475,19 @@ const CoursesPage = ({ facultyMembers = TEACHERS }) => {
         <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 20 }}>
           <h3 style={{ fontSize: 15, fontWeight: 900, color: "#111827", margin: "0 0 14px" }}>Faculty members</h3>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 14 }}>
-            {visibleFacultyMembers.map(teacher => (
-              <div key={teacher.id} style={{ border: "1px solid #e5e7eb", borderRadius: 14, padding: 14, background: "#fff" }}>
-                <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 12 }}>
+            {visibleFacultyMembers.map(teacher => {
+              const hod = isHeadOfDepartment(teacher);
+
+              return (
+              <div key={teacher.id} style={{ border: "1px solid #e5e7eb", borderRadius: 14, padding: 14, background: "#fff", position: "relative" }}>
+                {hod && (
+                  <div title="Head of Department" aria-label="Head of Department" style={{ position: "absolute", top: 10, right: 10, width: 28, height: 28, borderRadius: 9, background: "#fff", border: "1px solid #e5e7eb", color: "#f59e0b", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path d="m12 2.6 2.9 5.88 6.49.94-4.7 4.58 1.11 6.46L12 17.41l-5.8 3.05L7.31 14l-4.7-4.58 6.49-.94L12 2.6Z" />
+                    </svg>
+                  </div>
+                )}
+                <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 12, paddingRight: hod ? 34 : 0 }}>
                   <div style={{ width: 58, height: 58, borderRadius: 14, overflow: "hidden", border: "1px solid #e5e7eb", background: "#f8fafc", flexShrink: 0 }}>
                     <img
                       src={teacher.photo || cimageLogo}
@@ -1554,7 +1535,8 @@ const CoursesPage = ({ facultyMembers = TEACHERS }) => {
                   </a>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
@@ -1676,15 +1658,13 @@ const AssignmentsPage = ({ assignments = ASSIGNMENTS }) => {
 
 const LecturesPage = () => {
   const [selectedSemester, setSelectedSemester] = useState(STUDENT.semester);
-  const [isPersonalVideos, setIsPersonalVideos] = useState(false);
   
-  const videosSource = isPersonalVideos ? PERSONAL_VIDEOS_BY_SEMESTER : LECTURES_BY_SEMESTER;
-  const semesterLectures = videosSource[selectedSemester];
+  const semesterLectures = LECTURES_BY_SEMESTER[selectedSemester];
   const [selectedSubject, setSelectedSubject] = useState(semesterLectures[0]);
   const [selectedVideo, setSelectedVideo] = useState(semesterLectures[0].videos[0]);
 
   const chooseSemester = (semester) => {
-    const nextLectures = videosSource[semester];
+    const nextLectures = LECTURES_BY_SEMESTER[semester];
     setSelectedSemester(semester);
     setSelectedSubject(nextLectures[0]);
     setSelectedVideo(nextLectures[0].videos[0]);
@@ -1695,73 +1675,25 @@ const LecturesPage = () => {
     setSelectedVideo(lecture.videos[0]);
   };
 
-  const toggleVideoSource = (usePersonal) => {
-    setIsPersonalVideos(usePersonal);
-    const newSource = usePersonal ? PERSONAL_VIDEOS_BY_SEMESTER : LECTURES_BY_SEMESTER;
-    const newLectures = newSource[selectedSemester];
-    setSelectedSubject(newLectures[0]);
-    setSelectedVideo(newLectures[0].videos[0]);
-  };
-
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
       <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 18, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
         <div>
-          <h3 style={{ fontSize: 16, fontWeight: 800, color: "#111827", margin: "0 0 4px" }}>{isPersonalVideos ? "Personal videos" : "Semester lectures"}</h3>
-          <div style={{ fontSize: 12, color: "#6b7280" }}>
-            {isPersonalVideos 
-              ? "Your personal YouTube videos organized by semester." 
-              : "Official lecture videos organized by semester."}
-          </div>
+          <h3 style={{ fontSize: 16, fontWeight: 800, color: "#111827", margin: "0 0 4px" }}>Semester lectures</h3>
+          <div style={{ fontSize: 12, color: "#6b7280" }}>Official lecture videos organized by semester and subject.</div>
         </div>
-        <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
-          <div style={{ display: "flex", background: "#f3f4f6", borderRadius: 10, padding: 4, gap: 4 }}>
-            <button
-              onClick={() => toggleVideoSource(false)}
-              style={{
-                background: !isPersonalVideos ? "#fff" : "transparent",
-                border: "none",
-                borderRadius: 8,
-                padding: "8px 14px",
-                fontSize: 12,
-                fontWeight: 700,
-                color: !isPersonalVideos ? "#185FA5" : "#6b7280",
-                cursor: "pointer",
-                transition: "all 0.2s",
-              }}
-            >
-              Semester Lectures
-            </button>
-            <button
-              onClick={() => toggleVideoSource(true)}
-              style={{
-                background: isPersonalVideos ? "#fff" : "transparent",
-                border: "none",
-                borderRadius: 8,
-                padding: "8px 14px",
-                fontSize: 12,
-                fontWeight: 700,
-                color: isPersonalVideos ? "#185FA5" : "#6b7280",
-                cursor: "pointer",
-                transition: "all 0.2s",
-              }}
-            >
-              Personal Videos
-            </button>
-          </div>
-          <label style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <span style={{ fontSize: 12, fontWeight: 700, color: "#374151" }}>Select semester</span>
-            <select
-              value={selectedSemester}
-              onChange={event => chooseSemester(Number(event.target.value))}
-              style={{ border: "1px solid #d1d5db", borderRadius: 10, padding: "10px 12px", fontSize: 13, color: "#111827", background: "#fff", outline: "none", minWidth: 140 }}
-            >
-              {Array.from({ length: STUDENT.totalSemesters }, (_, index) => index + 1).map(semester => (
-                <option key={semester} value={semester}>Semester {semester}</option>
-              ))}
-            </select>
-          </label>
-        </div>
+        <label style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <span style={{ fontSize: 12, fontWeight: 700, color: "#374151" }}>Select semester</span>
+          <select
+            value={selectedSemester}
+            onChange={event => chooseSemester(Number(event.target.value))}
+            style={{ border: "1px solid #d1d5db", borderRadius: 10, padding: "10px 12px", fontSize: 13, color: "#111827", background: "#fff", outline: "none", minWidth: 140 }}
+          >
+            {Array.from({ length: STUDENT.totalSemesters }, (_, index) => index + 1).map(semester => (
+              <option key={semester} value={semester}>Semester {semester}</option>
+            ))}
+          </select>
+        </label>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", gap: 12 }}>
@@ -1785,7 +1717,7 @@ const LecturesPage = () => {
                 <Icon name="lectures" size={17} />
               </div>
               <div style={{ fontSize: 14, fontWeight: 800, color: "#111827", marginBottom: 4 }}>{lecture.subject}</div>
-              {lecture.teacher && <div style={{ fontSize: 11, color: "#6b7280" }}>{getOfficialTeacherName(lecture.subject, lecture.teacher)}</div>}
+              {lecture.teacherId && <div style={{ fontSize: 11, color: "#6b7280" }}>{resolveTeacherName(lecture.teacherId)}</div>}
               <div style={{ fontSize: 11, color: "#185FA5", fontWeight: 700, marginTop: 10 }}>{lecture.videos.length} videos</div>
             </button>
           );
@@ -1797,7 +1729,7 @@ const LecturesPage = () => {
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, marginBottom: 14 }}>
             <div>
               <h3 style={{ fontSize: 16, fontWeight: 800, color: "#111827", margin: "0 0 4px" }}>{selectedVideo.title}</h3>
-              <div style={{ fontSize: 12, color: "#6b7280" }}>{selectedSubject.subject} {selectedSubject.teacher && `· ${getOfficialTeacherName(selectedSubject.subject, selectedSubject.teacher)}`}</div>
+              <div style={{ fontSize: 12, color: "#6b7280" }}>{selectedSubject.subject} {selectedSubject.teacherId && `· ${resolveTeacherName(selectedSubject.teacherId)}`}</div>
             </div>
             <span style={{ fontSize: 11, background: "#dcfce7", color: "#166534", padding: "4px 9px", borderRadius: 999, fontWeight: 700 }}>{selectedVideo.duration}</span>
           </div>
@@ -1817,10 +1749,10 @@ const LecturesPage = () => {
           <h3 style={{ fontSize: 14, fontWeight: 800, color: "#111827", marginBottom: 12 }}>Video list</h3>
           <div style={{ display: "flex", flexDirection: "column", gap: 10, maxHeight: 520, overflowY: "auto", paddingRight: 4 }}>
             {selectedSubject.videos.map((video, index) => {
-              const selected = selectedVideo.title === video.title;
+              const selected = selectedVideo.youtubeId === video.youtubeId && selectedVideo.title === video.title;
               return (
                 <button
-                  key={video.title}
+                  key={`${video.youtubeId}-${index}`}
                   onClick={() => setSelectedVideo(video)}
                   style={{
                     display: "flex",
@@ -1840,7 +1772,7 @@ const LecturesPage = () => {
                   </div>
                   <div style={{ minWidth: 0 }}>
                     <div style={{ fontSize: 12, fontWeight: 800, color: "#111827", marginBottom: 3 }}>{video.title}</div>
-                    <div style={{ fontSize: 11, color: "#6b7280" }}>{selectedSubject.teacher ? getOfficialTeacherName(selectedSubject.subject, selectedSubject.teacher) : "Personal video"} · {video.duration}</div>
+                    <div style={{ fontSize: 11, color: "#6b7280" }}>{selectedSubject.teacherId ? resolveTeacherName(selectedSubject.teacherId) : "Faculty"} · {video.duration}</div>
                   </div>
                 </button>
               );
@@ -1852,206 +1784,300 @@ const LecturesPage = () => {
   );
 };
 
-const GalleryPage = () => {
-  const [selectedCollectionId, setSelectedCollectionId] = useState("all");
-  const [galleryEvents, setGalleryEvents] = useState(GALLERY_EVENTS);
+const PYQsPage = () => {
+  const [selectedYear, setSelectedYear] = useState("2025");
+  const [selectedSemester, setSelectedSemester] = useState(4);
+  const [selectedQuestionId, setSelectedQuestionId] = useState(null);
 
-  useEffect(() => {
-    let ignore = false;
+  const availableYears = [...new Set(PYQS_DATA.map(item => item.year))].sort().reverse();
 
-    const loadLocalImages = async () => {
-      const paths = ["/imgs/images.json", "/imgs/imgages.json"];
+  const semesterSubjects = LECTURES_BY_SEMESTER[selectedSemester] || LECTURES_BY_SEMESTER[String(selectedSemester)] || [];
+  const availableSubjects = semesterSubjects.map(item => item.subject);
+  const defaultSubject = availableSubjects[0] || "";
 
-      for (const path of paths) {
-        try {
-          const response = await fetch(path);
-          if (!response.ok) continue;
+  const [selectedSubject, setSelectedSubject] = useState(defaultSubject);
+  const activeSubject = availableSubjects.includes(selectedSubject) ? selectedSubject : defaultSubject;
 
-          const records = await response.json();
-          const images = records
-            .map((record, index) => {
-              const imageSource = typeof record === "string" ? record : record.file || record.path || record.image || record.url || record.src;
-              if (!imageSource) return null;
-              const url = imageSource.startsWith("data:") || imageSource.startsWith("http") || imageSource.startsWith("/")
-                ? imageSource
-                : `/imgs/${imageSource}`;
-
-              return {
-                title: record.title || `College photo ${index + 1}`,
-                description: record.description || "Uploaded college gallery image.",
-                uploadDate: record.uploadDate || "13 May 2026",
-                url,
-                hd: record.hd || url,
-              };
-            })
-            .filter(Boolean);
-
-          if (!ignore && images.length > 0) {
-            const localCollection = {
-              id: "local-images",
-              title: "My uploaded images",
-              date: "13 May 2026",
-              venue: path.replace("/", "public/"),
-              description: "Images loaded directly from the frontend public image JSON file.",
-              images,
-            };
-
-            setGalleryEvents([localCollection, ...GALLERY_EVENTS]);
-          }
-          return;
-        } catch {
-          // Try the next known filename.
-        }
-      }
-    };
-
-    loadLocalImages();
-
-    return () => {
-      ignore = true;
-    };
-  }, []);
-
-  const downloadImage = async (image, eventTitle) => {
-    const link = document.createElement("a");
-    const fileName = `${eventTitle}-${image.title}`
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "");
-
-    try {
-      const response = await fetch(image.hd);
-      const blob = await response.blob();
-      const objectUrl = URL.createObjectURL(blob);
-
-      link.href = objectUrl;
-      link.download = `${fileName}.jpg`;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      URL.revokeObjectURL(objectUrl);
-    } catch {
-      link.href = image.hd;
-      link.download = `${fileName}.jpg`;
-      link.target = "_blank";
-      link.rel = "noreferrer";
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    }
-  };
-
-  const todayUploadDate = new Intl.DateTimeFormat("en-GB", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(new Date());
-  const galleryImages = galleryEvents.flatMap(event =>
-    event.images.map(image => ({ ...image, collectionTitle: event.title }))
+  const questions = PYQS_DATA.filter(
+    item => item.year === selectedYear && item.semester === selectedSemester && item.subject === activeSubject
   );
-  const categoryIncludes = (image, terms) => {
-    const text = `${image.collectionTitle} ${image.title} ${image.description || ""}`.toLowerCase();
-    return terms.some(term => text.includes(term));
+  const selectedQuestion = questions.find(question => question.id === selectedQuestionId) || questions[0];
+
+  const getMarksColor = (marks) => {
+    if (marks >= 10) return "#dc2626";
+    if (marks >= 6) return "#f59e0b";
+    return "#3b82f6";
   };
-  const collections = [
-    {
-      id: "all",
-      title: "All images",
-      images: galleryImages,
-    },
-    {
-      id: "today-uploaded",
-      title: "Today uploaded",
-      images: galleryImages.filter(image => image.uploadDate === todayUploadDate),
-    },
-    {
-      id: "annual-tech-fest",
-      title: "Annual Tech Fest",
-      images: galleryImages.filter(image => categoryIncludes(image, ["annual", "tech fest", "coding competition", "project presentation"])),
-    },
-    {
-      id: "placement-workshop",
-      title: "Placement / Workshop",
-      images: galleryImages.filter(image => categoryIncludes(image, ["placement", "workshop", "resume", "interview", "group discussion"])),
-    },
-    {
-      id: "cultural-event",
-      title: "Cultural Event",
-      images: galleryImages.filter(image => categoryIncludes(image, ["cultural", "freshers", "stage performance", "award ceremony"])),
-    },
-  ];
-  const selectedCollection = collections.find(collection => collection.id === selectedCollectionId) || collections[0];
+
+  const getMarksBackground = (marks) => {
+    if (marks >= 10) return "#fee2e2";
+    if (marks >= 6) return "#fef3c7";
+    return "#dbeafe";
+  };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      <div style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 2 }}>
-        {collections.map(collection => {
-          const selected = collection.id === selectedCollection.id;
+    <div style={{ display: "flex", flexDirection: "column", gap: 18, minHeight: "calc(100vh - 150px)" }}>
+      <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 20 }}>
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 18, flexWrap: "wrap", marginBottom: 18 }}>
+          <div>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+              <div style={{ width: 38, height: 38, borderRadius: 11, border: "1px solid #dbeafe", background: "#eff6ff", color: "#185FA5", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                  <path d="M14 2v6h6" />
+                  <path d="M8 13h8" />
+                  <path d="M8 17h6" />
+                </svg>
+              </div>
+              <h3 style={{ fontSize: 22, fontWeight: 900, color: "#111827", margin: 0 }}>Internal Previous Year Questions</h3>
+            </div>
+            <div style={{ fontSize: 12, color: "#6b7280" }}>Choose all filters to open the question paper with ready-to-read answers.</div>
+          </div>
+          <a
+            href="https://www.akubihar.com/bca.html"
+            target="_blank"
+            rel="noreferrer"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 9,
+              minHeight: 42,
+              padding: "0 16px",
+              borderRadius: 12,
+              border: "1px solid #d1d5db",
+              background: "#fff",
+              color: "#185FA5",
+              textDecoration: "none",
+              fontSize: 12,
+              fontWeight: 900,
+              boxShadow: "0 1px 2px rgba(15, 23, 42, 0.04)",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Explore University PYQs
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M7 17L17 7" />
+              <path d="M9 7h8v8" />
+            </svg>
+          </a>
+        </div>
 
-          return (
-            <button
-              key={collection.id}
-              type="button"
-              onClick={() => setSelectedCollectionId(collection.id)}
-              style={{
-                border: `1px solid ${selected ? "#185FA5" : "#d1d5db"}`,
-                background: selected ? "#185FA5" : "#fff",
-                color: selected ? "#fff" : "#374151",
-                borderRadius: 999,
-                padding: "9px 14px",
-                fontSize: 12,
-                fontWeight: 900,
-                cursor: "pointer",
-                whiteSpace: "nowrap",
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-              }}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: 14 }}>
+          <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            <span style={{ fontSize: 11, fontWeight: 800, color: "#374151" }}>Year</span>
+            <select 
+              value={selectedYear} 
+              onChange={(e) => {
+                setSelectedYear(e.target.value);
+              }} 
+              style={{ border: "1px solid #d1d5db", borderRadius: 10, padding: "10px 12px", fontSize: 13, color: "#111827", background: "#fff" }}
             >
-              {collection.title}
-              <span style={{
-                minWidth: 22,
-                height: 22,
-                padding: "0 7px",
-                borderRadius: 999,
-                background: selected ? "rgba(255,255,255,0.18)" : "#eff6ff",
-                color: selected ? "#fff" : "#185FA5",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: 11,
-              }}>
-                {collection.images.length}
-              </span>
-            </button>
-          );
-        })}
+              {availableYears.map(year => (
+                <option key={year} value={year}>{year}</option>
+              ))}
+            </select>
+          </label>
+
+          <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            <span style={{ fontSize: 11, fontWeight: 800, color: "#374151" }}>Semester</span>
+            <select 
+              value={selectedSemester} 
+              onChange={(e) => setSelectedSemester(Number(e.target.value))} 
+              style={{ border: "1px solid #d1d5db", borderRadius: 10, padding: "10px 12px", fontSize: 13, color: "#111827", background: "#fff" }}
+            >
+              {[1, 2, 3, 4, 5, 6].map(sem => (
+                <option key={sem} value={sem}>Semester {sem}</option>
+              ))}
+            </select>
+          </label>
+
+          <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            <span style={{ fontSize: 11, fontWeight: 800, color: "#374151" }}>Subject</span>
+            <select 
+              value={activeSubject} 
+              onChange={(e) => setSelectedSubject(e.target.value)} 
+              style={{ border: "1px solid #d1d5db", borderRadius: 10, padding: "10px 12px", fontSize: 13, color: "#111827", background: "#fff" }}
+            >
+              {availableSubjects.map(subject => (
+                <option key={subject} value={subject}>{subject}</option>
+              ))}
+            </select>
+          </label>
+        </div>
       </div>
 
-      {selectedCollection.images.length === 0 ? (
-        <div style={{ border: "1px dashed #d1d5db", borderRadius: 12, padding: 24, textAlign: "center", color: "#6b7280", fontSize: 13 }}>
-          No images in this category.
+      {questions.length === 0 ? (
+        <div style={{ flex: 1, border: "1px dashed #d1d5db", borderRadius: 16, padding: 40, textAlign: "center", color: "#6b7280", fontSize: 13, background: "#fff", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          No PYQ questions available for this selection. Try another year, semester, or subject.
         </div>
       ) : (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 14 }}>
-          {selectedCollection.images.map((image, index) => (
-            <div key={`${image.collectionTitle}-${image.title}-${index}`} style={{ position: "relative", borderRadius: 12, overflow: "hidden", background: "#111827", aspectRatio: "4 / 3", border: "1px solid #e5e7eb" }}>
-              <img src={image.url} alt={image.title} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
-              <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, padding: 10, background: "linear-gradient(180deg, rgba(17,24,39,0), rgba(17,24,39,0.82))", display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 10 }}>
-                <span style={{ color: "#fff", fontSize: 11, fontWeight: 900, background: "rgba(17,24,39,0.65)", border: "1px solid rgba(255,255,255,0.22)", borderRadius: 999, padding: "6px 9px", backdropFilter: "blur(8px)" }}>
-                  {image.uploadDate}
-                </span>
-                <button
-                  type="button"
-                  aria-label={`Download ${image.title}`}
-                  onClick={() => downloadImage(image, image.collectionTitle)}
-                  style={{ width: 36, height: 36, borderRadius: 10, border: "1px solid rgba(255,255,255,0.45)", background: "rgba(17,24,39,0.76)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", backdropFilter: "blur(8px)", flexShrink: 0 }}
-                >
-                  <Icon name="download" size={16} />
-                </button>
+        <div className="pyqs-workspace" style={{ display: "grid", gridTemplateColumns: "minmax(300px, 0.82fr) minmax(520px, 2fr)", gap: 16, alignItems: "stretch", flex: 1, width: "100%" }}>
+          <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 14, minHeight: 420, overflow: "hidden" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 12 }}>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 900, color: "#111827" }}>Question Paper</div>
+                <div style={{ fontSize: 11, color: "#6b7280", marginTop: 3 }}>{selectedYear} · Semester {selectedSemester} · {activeSubject}</div>
+              </div>
+              <span style={{ flexShrink: 0, fontSize: 11, fontWeight: 800, color: "#185FA5", background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: 999, padding: "5px 9px" }}>
+                {questions.length} Qs
+              </span>
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 10, maxHeight: "calc(100vh - 345px)", minHeight: 330, overflowY: "auto", paddingRight: 4 }}>
+              {questions.map((question, index) => {
+                const selected = selectedQuestion?.id === question.id;
+                const marksColor = getMarksColor(question.marks);
+                const marksBg = getMarksBackground(question.marks);
+
+                return (
+                  <button
+                    key={question.id}
+                    onClick={() => setSelectedQuestionId(question.id)}
+                    aria-pressed={selected}
+                    style={{
+                      width: "100%",
+                      border: `1px solid ${selected ? "#93c5fd" : "#e5e7eb"}`,
+                      background: selected ? "#eff6ff" : "#fff",
+                      borderRadius: 12,
+                      padding: 12,
+                      cursor: "pointer",
+                      textAlign: "left",
+                      display: "grid",
+                      gridTemplateColumns: "34px 1fr",
+                      gap: 11,
+                      boxShadow: selected ? "0 10px 24px rgba(24,95,165,0.12)" : "none",
+                      transition: "all 0.2s"
+                    }}
+                  >
+                    <div style={{ width: 34, height: 34, borderRadius: 10, background: selected ? "#185FA5" : "#f3f4f6", color: selected ? "#fff" : "#4b5563", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, fontSize: 13 }}>
+                      {index + 1}
+                    </div>
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ fontSize: 13, fontWeight: 800, color: "#111827", lineHeight: 1.35, marginBottom: 8 }}>
+                        {question.question}
+                      </div>
+                      <span style={{ background: marksBg, color: marksColor, padding: "4px 9px", borderRadius: 999, fontSize: 11, fontWeight: 800 }}>
+                        {question.marks} marks
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, minHeight: 420, overflow: "hidden", display: "flex", flexDirection: "column" }}>
+            {(() => {
+              const selectedSolutionImage = getPyqsSolutionImage(selectedQuestion);
+
+              return (
+                <>
+            <div
+              style={{
+                padding: "18px 20px",
+                background: "linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%)",
+                borderBottom: "1px solid #e5e7eb",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "flex-start",
+                gap: 14,
+              }}
+            >
+              <div>
+                <div style={{ fontSize: 11, fontWeight: 900, color: "#185FA5", textTransform: "uppercase", letterSpacing: 0 }}>
+                  Answer View
+                </div>
+                <h4 style={{ margin: "8px 0 0", fontSize: 20, lineHeight: 1.3, color: "#111827", fontWeight: 900 }}>
+                  {selectedQuestion?.question}
+                </h4>
+              </div>
+              <span style={{ flexShrink: 0, background: getMarksBackground(selectedQuestion?.marks || 0), color: getMarksColor(selectedQuestion?.marks || 0), padding: "7px 11px", borderRadius: 999, fontSize: 12, fontWeight: 900 }}>
+                {selectedQuestion?.marks} marks
+              </span>
+            </div>
+
+            <div style={{ padding: 20, flex: 1, display: "grid", gridTemplateRows: "1fr auto", gap: 18 }}>
+              <div
+                style={{
+                  background: "#f9fafb",
+                  border: "1px solid #e5e7eb",
+                  borderRadius: 14,
+                  padding: 18,
+                  lineHeight: 1.7,
+                  fontSize: 14,
+                  color: "#374151",
+                  whiteSpace: "pre-wrap",
+                  wordBreak: "break-word",
+                  minHeight: 260,
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                  <span style={{ width: 8, height: 8, borderRadius: 999, background: "#16a34a" }} />
+                  <span style={{ fontWeight: 900, color: "#111827", fontSize: 13 }}>Recommended Answer</span>
+                </div>
+                {selectedQuestion?.answer}
+                {selectedSolutionImage?.src && (
+                  <figure style={{ margin: "18px 0 0", border: "1px solid #e5e7eb", borderRadius: 14, overflow: "hidden", background: "#fff" }}>
+                    <img
+                      src={selectedSolutionImage.src}
+                      alt={selectedSolutionImage.alt}
+                      style={{ display: "block", width: "100%", height: "auto" }}
+                    />
+                    {selectedSolutionImage.caption && (
+                      <figcaption style={{ padding: "10px 12px", borderTop: "1px solid #e5e7eb", color: "#475569", fontSize: 12, fontWeight: 800, background: "#fff" }}>
+                        {selectedSolutionImage.caption}
+                      </figcaption>
+                    )}
+                  </figure>
+                )}
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 10 }}>
+                {[
+                  ["Year", selectedYear],
+                  ["Subject", activeSubject],
+                ].map(([label, value]) => (
+                  <div key={label} style={{ border: "1px solid #e5e7eb", borderRadius: 12, padding: "10px 12px", background: "#fff" }}>
+                    <div style={{ fontSize: 10, fontWeight: 900, color: "#6b7280", textTransform: "uppercase" }}>{label}</div>
+                    <div style={{ fontSize: 13, fontWeight: 800, color: "#111827", marginTop: 5, overflowWrap: "anywhere" }}>{value}</div>
+                  </div>
+                ))}
               </div>
             </div>
-          ))}
+                </>
+              );
+            })()}
+          </div>
+
+          <div className="pyqs-all-answers" style={{ gridColumn: "1 / -1", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 12 }}>
+            {questions.map((question, index) => {
+              const solutionImage = getPyqsSolutionImage(question);
+
+              return (
+                <div
+                  key={`${question.id}-compact`}
+                  style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 14, padding: 14 }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, marginBottom: 10 }}>
+                    <div style={{ fontSize: 12, fontWeight: 900, color: "#185FA5" }}>Q{index + 1}</div>
+                    <span style={{ background: getMarksBackground(question.marks), color: getMarksColor(question.marks), padding: "4px 8px", borderRadius: 999, fontSize: 11, fontWeight: 800 }}>
+                      {question.marks} marks
+                    </span>
+                  </div>
+                  <div style={{ fontSize: 13, lineHeight: 1.45, fontWeight: 800, color: "#111827", marginBottom: 10 }}>{question.question}</div>
+                  <div style={{ fontSize: 12, lineHeight: 1.6, color: "#4b5563" }}>{question.answer}</div>
+                  {solutionImage?.src && (
+                    <img
+                      src={solutionImage.src}
+                      alt={solutionImage.alt}
+                      style={{ display: "block", width: "100%", height: "auto", border: "1px solid #e5e7eb", borderRadius: 10, marginTop: 12 }}
+                    />
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
     </div>
@@ -2245,45 +2271,52 @@ const OnlineTestPage = ({ testReports, onSaveReport }) => {
   );
 };
 
-const ActivitiesPage = ({ testReports, complaints }) => {
+const ActivitiesPage = ({ testReports, complaints, activityRecords = [] }) => {
   const [selectedComplaint, setSelectedComplaint] = useState(null);
   const visibleComplaints = normalizeComplaints(complaints);
-  const totalCompleted = testReports.length;
-  const averageCorrect = totalCompleted
-    ? (testReports.reduce((sum, report) => sum + report.correctCount, 0) / totalCompleted).toFixed(1)
-    : "0.0";
-  const bestBySubject = Object.values(testReports.reduce((map, report) => {
-    const current = map[report.subject];
-    if (!current || report.obtainedMarks > current.obtainedMarks) {
-      map[report.subject] = report;
-    }
-    return map;
-  }, {})).sort((a, b) => b.obtainedMarks - a.obtainedMarks);
+  const visibleActivityRecords = (Array.isArray(activityRecords) ? activityRecords : [])
+    .filter(record => record && record.title)
+    .sort((a, b) => new Date(b.iso || `${b.date} ${b.time}`).getTime() - new Date(a.iso || `${a.date} ${a.time}`).getTime());
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) 320px", gap: 16, alignItems: "start" }}>
+    <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr)", gap: 16, alignItems: "start" }}>
       <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-        <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 20 }}>
-          <h3 style={{ fontSize: 16, fontWeight: 800, color: "#111827", margin: "0 0 6px" }}>Extra curriculum activities</h3>
-          <p style={{ fontSize: 12, color: "#6b7280", margin: 0 }}>Every online test attempt and complaint record is saved here with full details.</p>
-        </div>
+        {visibleActivityRecords.map(record => (
+          <div key={record.id} style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 12, padding: "11px 14px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) auto", gap: 14, alignItems: "center" }}>
+              <div style={{ display: "flex", gap: 10, minWidth: 0, alignItems: "center" }}>
+                <div style={{ width: 28, height: 28, borderRadius: 9, background: "#eff6ff", color: "#185FA5", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <Icon name="activities" size={14} />
+                </div>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 2 }}>
+                    <span style={{ fontSize: 13, fontWeight: 900, color: "#111827" }}>{record.title}</span>
+                    <span style={{ background: "#f3f4f6", color: "#4b5563", borderRadius: 999, padding: "2px 7px", fontSize: 9, fontWeight: 900, whiteSpace: "nowrap" }}>{record.category || "Activity"}</span>
+                  </div>
+                  <div style={{ fontSize: 11, color: "#374151", lineHeight: 1.35 }}>{record.details}</div>
+                </div>
+              </div>
+              <div style={{ fontSize: 10, color: "#6b7280", fontWeight: 800, whiteSpace: "nowrap", textAlign: "right" }}>{record.date} · {record.time}</div>
+            </div>
+          </div>
+        ))}
 
         {visibleComplaints.map(complaint => (
-          <button key={complaint.id} type="button" onClick={() => setSelectedComplaint(complaint)} style={{ background: "#fff", border: "1px solid #bfdbfe", borderRadius: 16, padding: 20, textAlign: "left", cursor: "pointer" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", gap: 14, alignItems: "flex-start", marginBottom: 12 }}>
+          <button key={complaint.id} type="button" onClick={() => setSelectedComplaint(complaint)} style={{ background: "#fff", border: "1px solid #bfdbfe", borderRadius: 12, padding: "12px 14px", textAlign: "left", cursor: "pointer", width: "100%" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", gap: 14, alignItems: "center", marginBottom: 6 }}>
               <div>
-                <div style={{ fontSize: 15, fontWeight: 900, color: "#111827", marginBottom: 4 }}>Complaint #{complaint.referenceNo}</div>
-                <div style={{ fontSize: 12, color: "#6b7280" }}>{complaint.type} · {complaint.date}, {complaint.time}</div>
+                <div style={{ fontSize: 13, fontWeight: 900, color: "#111827", marginBottom: 2 }}>Complaint #{complaint.referenceNo}</div>
+                <div style={{ fontSize: 11, color: "#6b7280" }}>{complaint.type} · {complaint.date}, {complaint.time}</div>
               </div>
-              <span style={{ background: "#dbeafe", color: "#1e40af", borderRadius: 999, padding: "5px 10px", fontSize: 10, fontWeight: 900 }}>{complaint.status}</span>
+              <span style={{ background: "#dbeafe", color: "#1e40af", borderRadius: 999, padding: "3px 8px", fontSize: 9, fontWeight: 900 }}>{complaint.status}</span>
             </div>
-            <p style={{ fontSize: 12, color: "#374151", lineHeight: 1.45, margin: 0, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{complaint.details}</p>
+            <p style={{ fontSize: 11, color: "#374151", lineHeight: 1.35, margin: 0, display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{complaint.details}</p>
           </button>
         ))}
 
-        {testReports.length === 0 && visibleComplaints.length === 0 ? (
+        {testReports.length === 0 && visibleComplaints.length === 0 && visibleActivityRecords.length === 0 ? (
           <div style={{ background: "#fff", border: "1px dashed #d1d5db", borderRadius: 16, padding: 24, textAlign: "center", color: "#6b7280", fontSize: 13 }}>
-            No activity record yet. Complete a test or raise a complaint to add your first record.
+            No activity record yet. Profile changes, notification changes, and complaints will appear here with date and time.
           </div>
         ) : (
           testReports.map((report, index) => (
@@ -2319,47 +2352,6 @@ const ActivitiesPage = ({ testReports, complaints }) => {
         )}
       </div>
 
-      <aside style={{ display: "flex", flexDirection: "column", gap: 14, position: "sticky", top: 82 }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-          <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 14, padding: 16 }}>
-            <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 6 }}>Test attempts</div>
-            <div style={{ fontSize: 28, fontWeight: 900, color: "#111827", fontFamily: "monospace" }}>{totalCompleted}</div>
-          </div>
-          <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 14, padding: 16 }}>
-            <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 6 }}>Avg. correct</div>
-            <div style={{ fontSize: 28, fontWeight: 900, color: "#111827", fontFamily: "monospace" }}>{averageCorrect}</div>
-          </div>
-        </div>
-
-        <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 18 }}>
-          <h3 style={{ fontSize: 14, fontWeight: 800, color: "#111827", margin: "0 0 4px" }}>Best marks by subject</h3>
-          <div style={{ fontSize: 11, color: "#6b7280", marginBottom: 14 }}>Repeated subjects are merged. Highest mark is shown.</div>
-
-          {bestBySubject.length === 0 ? (
-            <div style={{ border: "1px dashed #d1d5db", borderRadius: 12, padding: 16, textAlign: "center", fontSize: 12, color: "#6b7280" }}>
-              No graph data yet.
-            </div>
-          ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              {bestBySubject.map(report => {
-                const pct = Math.round((report.obtainedMarks / report.totalMarks) * 100);
-                return (
-                  <div key={report.subject}>
-                    <div style={{ display: "flex", justifyContent: "space-between", gap: 10, fontSize: 11, marginBottom: 5 }}>
-                      <span style={{ color: "#374151", fontWeight: 800 }}>{report.subject}</span>
-                      <span style={{ color: "#111827", fontFamily: "monospace", fontWeight: 900 }}>{report.obtainedMarks}/{report.totalMarks}</span>
-                    </div>
-                    <div style={{ height: 10, background: "#f3f4f6", borderRadius: 999, overflow: "hidden" }}>
-                      <div style={{ width: `${pct}%`, height: "100%", background: "linear-gradient(90deg, #185FA5, #22c55e)", borderRadius: 999 }} />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      </aside>
-
       {selectedComplaint && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(15,23,42,0.45)", zIndex: 70, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
           <div style={{ width: "min(620px, 100%)", background: "#fff", borderRadius: 18, boxShadow: "0 28px 80px rgba(15,23,42,0.28)", overflow: "hidden" }}>
@@ -2374,7 +2366,7 @@ const ActivitiesPage = ({ testReports, complaints }) => {
             </div>
             <div style={{ padding: 20, display: "flex", flexDirection: "column", gap: 14 }}>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 10 }}>
-                {[["Name", selectedComplaint.name], ["Student ID", selectedComplaint.studentId], ["Reference No.", selectedComplaint.referenceNo || selectedComplaint.id], ["Session", selectedComplaint.session], ["Date", `${selectedComplaint.date}, ${selectedComplaint.time}`]].map(([label, value]) => (
+                {[["Name", selectedComplaint.name], ["Student ID", selectedComplaint.studentId], ["Reference No.", selectedComplaint.referenceNo || selectedComplaint.id], ["Course Session", selectedComplaint.session], ["Date", `${selectedComplaint.date}, ${selectedComplaint.time}`]].map(([label, value]) => (
                   <div key={label} style={{ background: "#f9fafb", border: "1px solid #f3f4f6", borderRadius: 11, padding: "10px 12px" }}>
                     <div style={{ fontSize: 10, color: "#6b7280", marginBottom: 3 }}>{label}</div>
                     <div style={{ fontSize: 12, fontWeight: 900, color: "#111827" }}>{value}</div>
@@ -2393,7 +2385,7 @@ const ActivitiesPage = ({ testReports, complaints }) => {
   );
 };
 
-const ResultsPage = ({ student = STUDENT, publishedResults = [], facultyMembers = TEACHERS }) => {
+const ResultsPage = ({ student = STUDENT, profile = DEFAULT_PROFILE, publishedResults = [], facultyMembers = TEACHERS }) => {
   const currentStudent = normalizeStudentRecord(student);
   const officialFacultyMembers = normalizeFacultyMembers(facultyMembers);
   const studentResults = normalizePublishedResults(publishedResults)
@@ -2410,6 +2402,33 @@ const ResultsPage = ({ student = STUDENT, publishedResults = [], facultyMembers 
       || officialFacultyMembers.find(faculty => faculty.name === subject.teacher);
     return officialFaculty ? { ...subject, facultyId: officialFaculty.id, subject: officialFaculty.subject, teacher: officialFaculty.name } : subject;
   }) || [];
+  const resultRemark = selectedResult?.grade === "F" ? "FAIL" : "PASS";
+  const marksheetId = selectedResult ? `student-marksheet-${selectedResult.id}` : "student-marksheet";
+  const studentPhoto = profile?.photo || currentStudent.photo || "";
+  const marksheetSession = selectedResult?.session || currentStudent.session || "Not set";
+
+  const printMarksheet = () => {
+    if (typeof window === "undefined") return;
+    const marksheet = document.getElementById(marksheetId);
+    if (!marksheet) return;
+
+    document.getElementById("print-marksheet-root")?.remove();
+    const printRoot = document.createElement("div");
+    printRoot.id = "print-marksheet-root";
+    printRoot.appendChild(marksheet.cloneNode(true));
+    document.body.appendChild(printRoot);
+    document.body.classList.add("printing-marksheet");
+
+    const cleanup = () => {
+      document.body.classList.remove("printing-marksheet");
+      document.getElementById("print-marksheet-root")?.remove();
+      window.removeEventListener("afterprint", cleanup);
+    };
+
+    window.addEventListener("afterprint", cleanup);
+    window.print();
+    setTimeout(cleanup, 1000);
+  };
 
   useEffect(() => {
     if (!studentResults.length) {
@@ -2445,75 +2464,164 @@ const ResultsPage = ({ student = STUDENT, publishedResults = [], facultyMembers 
       </div>
 
       {selectedResult && (
-        <div style={{ background: "#fff", border: "1px solid #dbeafe", borderRadius: 18, overflow: "hidden" }}>
-          <div style={{ background: "linear-gradient(135deg,#185FA5,#0f766e)", color: "#fff", padding: 22, display: "flex", justifyContent: "space-between", gap: 18, alignItems: "flex-start", flexWrap: "wrap" }}>
-            <div>
-              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.7)", marginBottom: 5 }}>Cimage Professional College</div>
-              <h3 style={{ fontSize: 22, fontWeight: 900, margin: 0 }}>Internal Examination Marksheet</h3>
-              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.75)", marginTop: 6 }}>{selectedResult.examName} · {selectedResult.sessional}</div>
-            </div>
-            <div style={{ background: "rgba(255,255,255,0.14)", border: "1px solid rgba(255,255,255,0.22)", borderRadius: 14, padding: "12px 16px", textAlign: "center", minWidth: 120 }}>
-              <div style={{ fontSize: 28, fontWeight: 900, fontFamily: "monospace" }}>{selectedResult.percentage}%</div>
-              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.72)" }}>Overall</div>
-            </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <div style={{ display: "flex", justifyContent: "flex-end" }}>
+            <button onClick={printMarksheet} style={{ ...btnStyle, padding: "10px 14px", background: "#185FA5", color: "#fff", borderColor: "#185FA5", fontWeight: 900 }}>
+              <Icon name="download" size={14} /> Print Marksheet
+            </button>
           </div>
 
-          <div style={{ padding: 20 }}>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", gap: 10, marginBottom: 18 }}>
-              {[
-                ["Student name", selectedResult.studentName],
-                ["Student ID", selectedResult.studentId],
-                ["Registration No.", selectedResult.regNo],
-                ["Roll No.", selectedResult.rollNo],
-                ["Course", selectedResult.course],
-                ["Session", selectedResult.session],
-                ["Published", `${selectedResult.publishedDate || "Not set"} ${selectedResult.publishedTime || ""}`],
-              ].map(([label, value]) => (
-                <div key={label} style={{ background: "#f9fafb", border: "1px solid #f3f4f6", borderRadius: 11, padding: "10px 12px" }}>
-                  <div style={{ fontSize: 10, color: "#6b7280", marginBottom: 4 }}>{label}</div>
-                  <div style={{ fontSize: 12, fontWeight: 900, color: "#111827", overflowWrap: "anywhere" }}>{value || "Not set"}</div>
-                </div>
-              ))}
+          <div id={marksheetId} className="marksheet-print-card" style={{ width: "100%", maxWidth: 794, margin: "0 auto", background: "#fff", border: "1.5px solid #64748b", borderRadius: 4, overflow: "hidden", position: "relative", boxShadow: "0 18px 42px rgba(15, 23, 42, 0.08)" }}>
+            <div
+              aria-hidden="true"
+              style={{
+                position: "absolute",
+                inset: 0,
+                backgroundImage: `url(${cimageLogo})`,
+                backgroundRepeat: "repeat",
+                backgroundSize: "112px 112px",
+                backgroundPosition: "24px 24px",
+                opacity: 0.055,
+                pointerEvents: "none",
+                zIndex: 0,
+              }}
+            />
+            <div
+              aria-hidden="true"
+              style={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%) rotate(-28deg)",
+                color: "#185FA5",
+                opacity: 0.18,
+                fontSize: 52,
+                fontWeight: 700,
+                letterSpacing: 1,
+                textTransform: "uppercase",
+                whiteSpace: "nowrap",
+                pointerEvents: "none",
+                zIndex: 3,
+              }}
+            >
+              WEB COPY RESULT
             </div>
 
-            <div style={{ overflowX: "auto", border: "1px solid #e5e7eb", borderRadius: 14 }}>
-              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
-                <thead>
-                  <tr style={{ background: "#f9fafb" }}>
-                    {["Subject", "Faculty", "Obtained marks", "Maximum marks", "Percentage"].map(head => (
-                      <th key={head} style={{ padding: "11px 14px", textAlign: "left", fontSize: 11, fontWeight: 900, color: "#6b7280", borderBottom: "1px solid #e5e7eb" }}>{head}</th>
+            <div style={{ position: "relative", zIndex: 1, padding: 18 }}>
+              <div style={{ border: "1px solid #cbd5e1", padding: 12, display: "grid", gridTemplateColumns: "76px 1fr 82px", gap: 12, alignItems: "center", background: "rgba(255,255,255,0.94)" }}>
+                <div style={{ width: 70, height: 70, display: "flex", alignItems: "center", justifyContent: "center", padding: 3, background: "#fff" }}>
+                  <img src={cimageLogo} alt="CIMAGE logo" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+                </div>
+                <div style={{ textAlign: "center" }}>
+                  <div style={{ fontSize: 22, fontWeight: 600, color: "#111827", letterSpacing: 0, textTransform: "uppercase", whiteSpace: "nowrap" }}>CIMAGE Group Of Institutions</div>
+                  <div style={{ fontSize: 11, color: "#374151", fontWeight: 400, marginTop: 5, whiteSpace: "nowrap" }}>Professional education for computer applications and management studies</div>
+                  <div style={{ margin: "10px auto 0", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 7, border: "1px solid #94a3b8", padding: "6px 16px", fontSize: 14, fontWeight: 500, letterSpacing: 0, textTransform: "uppercase", background: "#f9fafb", whiteSpace: "nowrap" }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path d="M4.75 3h14.5A2.75 2.75 0 0 1 22 5.75v12.5A2.75 2.75 0 0 1 19.25 21H4.75A2.75 2.75 0 0 1 2 18.25V5.75A2.75 2.75 0 0 1 4.75 3Zm0 2A.75.75 0 0 0 4 5.75v12.5c0 .41.34.75.75.75h14.5c.41 0 .75-.34.75-.75V5.75a.75.75 0 0 0-.75-.75H4.75ZM7 8h9.5a1 1 0 1 1 0 2H7a1 1 0 0 1 0-2Zm0 4h6.5a1 1 0 1 1 0 2H7a1 1 0 1 1 0-2Zm0 4h3.5a1 1 0 1 1 0 2H7a1 1 0 1 1 0-2Z" />
+                    </svg>
+                    INTERNAL SEMESTER EXAM RESULT
+                  </div>
+                  <div style={{ fontSize: 12, color: "#111827", fontWeight: 500, marginTop: 9, textTransform: "uppercase", whiteSpace: "nowrap" }}>
+                    {selectedResult.examName} · {selectedResult.sessional}
+                  </div>
+                </div>
+                <div className="marksheet-screen-only" style={{ textAlign: "right", fontSize: 10, color: "#4b5563", fontWeight: 400, lineHeight: 1.6, whiteSpace: "nowrap" }}>
+                  <div>Published</div>
+                  <div style={{ color: "#111827" }}>{selectedResult.publishedDate || "Not set"}</div>
+                </div>
+              </div>
+
+              <div style={{ marginTop: 14, border: "1px solid #cbd5e1", background: "rgba(255,255,255,0.94)" }}>
+                <div style={{ background: "#f3f4f6", borderBottom: "1px solid #cbd5e1", padding: "8px 12px", fontSize: 11, fontWeight: 500, textTransform: "uppercase", whiteSpace: "nowrap" }}>Student Personal & Academic Details</div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 104px", alignItems: "stretch" }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 0 }}>
+                    {[
+                      ["Student Name", selectedResult.studentName],
+                      ["Student ID", selectedResult.studentId],
+                      ["Father Name", currentStudent.fatherName],
+                      ["Registration No.", selectedResult.regNo],
+                      ["Roll No.", selectedResult.rollNo],
+                      ["Course", selectedResult.course],
+                      ["Department", selectedResult.department || currentStudent.department],
+                      ["Course Session", marksheetSession],
+                    ].map(([label, value]) => (
+                      <div key={label} style={{ display: "grid", gridTemplateColumns: "112px 1fr", borderBottom: "1px solid #e5e7eb", borderRight: "1px solid #e5e7eb", minHeight: 36 }}>
+                        <div style={{ padding: "8px 9px", fontSize: 9, color: "#374151", fontWeight: 500, textTransform: "uppercase", background: "rgba(249,250,251,0.94)", whiteSpace: "nowrap" }}>{label}</div>
+                        <div style={{ padding: "8px 9px", fontSize: 11, color: "#111827", fontWeight: 400, overflowWrap: "anywhere", lineHeight: 1.35 }}>{value || "Not set"}</div>
+                      </div>
                     ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {selectedResultSubjects.map((subject, index) => {
-                    const pct = subject.maxMarks ? Math.round((Number(subject.obtainedMarks || 0) / Number(subject.maxMarks)) * 100) : 0;
-                    return (
-                      <tr key={subject.id} style={{ background: index % 2 === 0 ? "#fff" : "#fafafa" }}>
-                        <td style={{ padding: "12px 14px", fontWeight: 800, color: "#111827", borderBottom: "1px solid #f3f4f6" }}>{subject.subject}</td>
-                        <td style={{ padding: "12px 14px", color: "#4b5563", borderBottom: "1px solid #f3f4f6" }}>{subject.teacher}</td>
-                        <td style={{ padding: "12px 14px", color: "#111827", borderBottom: "1px solid #f3f4f6", fontWeight: 900, fontFamily: "monospace" }}>{subject.obtainedMarks}</td>
-                        <td style={{ padding: "12px 14px", color: "#4b5563", borderBottom: "1px solid #f3f4f6", fontFamily: "monospace" }}>{subject.maxMarks}</td>
-                        <td style={{ padding: "12px 14px", color: pct < 40 ? "#dc2626" : "#166534", borderBottom: "1px solid #f3f4f6", fontFamily: "monospace", fontWeight: 900 }}>{pct}%</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-
-            <div style={{ marginTop: 16, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 10 }}>
-              {[
-                ["Total marks", `${selectedResult.totalObtained}/${selectedResult.totalMarks}`],
-                ["Percentage", `${selectedResult.percentage}%`],
-                ["Grade", selectedResult.grade],
-                ["Result status", selectedResult.grade === "F" ? "Needs improvement" : "Published"],
-              ].map(([label, value]) => (
-                <div key={label} style={{ background: label === "Grade" ? "#eff6ff" : "#f9fafb", border: `1px solid ${label === "Grade" ? "#bfdbfe" : "#f3f4f6"}`, borderRadius: 12, padding: "12px 14px" }}>
-                  <div style={{ fontSize: 10, color: "#6b7280", marginBottom: 4 }}>{label}</div>
-                  <div style={{ fontSize: 18, fontWeight: 900, color: label === "Grade" ? "#185FA5" : "#111827", fontFamily: "monospace" }}>{value}</div>
+                  </div>
+                  <div style={{ padding: 7, borderLeft: "1px solid #e5e7eb", background: "rgba(255,255,255,0.94)", display: "flex", flexDirection: "column", gap: 7, alignItems: "center", justifyContent: "center" }}>
+                    <div style={{ width: 84, height: 100, border: "1px solid #cbd5e1", background: "#f9fafb", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      {studentPhoto ? (
+                        <img src={studentPhoto} alt={selectedResult.studentName} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      ) : (
+                        <span style={{ fontSize: 22, fontWeight: 500, color: "#185FA5" }}>{getInitials(selectedResult.studentName || currentStudent.name || "ST")}</span>
+                      )}
+                    </div>
+                    <div style={{ fontSize: 9, fontWeight: 400, color: "#6b7280", textTransform: "uppercase", whiteSpace: "nowrap" }}>Student Photo</div>
+                  </div>
                 </div>
-              ))}
+              </div>
+
+              <div style={{ marginTop: 14, border: "1px solid #cbd5e1", background: "rgba(255,255,255,0.94)", overflowX: "auto" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+                  <thead>
+                    <tr style={{ background: "#f3f4f6" }}>
+                      {["S. No.", "Subject", "Faculty", "Full Marks", "Marks Obtained", "Percentage", "Grade"].map(head => (
+                        <th key={head} style={{ padding: "8px 7px", border: "1px solid #cbd5e1", textAlign: head === "Subject" || head === "Faculty" ? "left" : "center", color: "#111827", fontSize: 9, fontWeight: 500, textTransform: "uppercase", whiteSpace: "nowrap" }}>{head}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {selectedResultSubjects.map((subject, index) => {
+                      const maxMarks = Number(subject.maxMarks) || 0;
+                      const obtainedMarks = getMarksNumber(subject.obtainedMarks);
+                      const pct = maxMarks ? Math.round((obtainedMarks / maxMarks) * 100) : 0;
+                      const subjectRemark = getResultGrade(pct);
+                      return (
+                        <tr key={subject.id}>
+                          <td style={{ padding: "8px 7px", border: "1px solid #d1d5db", textAlign: "center", fontWeight: 400, whiteSpace: "nowrap" }}>{index + 1}</td>
+                          <td style={{ padding: "8px 7px", border: "1px solid #d1d5db", fontWeight: 400, lineHeight: 1.35 }}>{subject.subject}</td>
+                          <td style={{ padding: "8px 7px", border: "1px solid #d1d5db", color: "#374151", fontSize: 11, lineHeight: 1.35 }}>{subject.teacher}</td>
+                          <td style={{ padding: "8px 7px", border: "1px solid #d1d5db", textAlign: "center", fontFamily: "monospace", fontWeight: 400, whiteSpace: "nowrap" }}>{maxMarks}</td>
+                          <td style={{ padding: "8px 7px", border: "1px solid #d1d5db", textAlign: "center", fontFamily: "monospace", fontWeight: 400, whiteSpace: "nowrap" }}>{subject.obtainedMarks}</td>
+                          <td style={{ padding: "8px 7px", border: "1px solid #d1d5db", textAlign: "center", fontFamily: "monospace", fontWeight: 400, whiteSpace: "nowrap" }}>{pct}%</td>
+                          <td style={{ padding: "8px 7px", border: "1px solid #d1d5db", textAlign: "center", color: subjectRemark === "F" ? "#b91c1c" : "#166534", fontWeight: 500, whiteSpace: "nowrap" }}>{subjectRemark}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              <div style={{ marginTop: 14, display: "grid", gridTemplateColumns: "repeat(5, minmax(0, 1fr))", border: "1px solid #cbd5e1", background: "rgba(255,255,255,0.94)" }}>
+                {[
+                  ["Total Marks Obtained", selectedResult.totalObtained],
+                  ["Full Marks", selectedResult.totalMarks],
+                  ["Percentage", `${selectedResult.percentage}%`],
+                  ["Grade", selectedResult.grade],
+                  ["Remark", resultRemark],
+                ].map(([label, value]) => (
+                  <div key={label} style={{ borderRight: "1px solid #d1d5db", padding: "10px 12px", textAlign: "center" }}>
+                    <div style={{ fontSize: 8.5, color: "#4b5563", fontWeight: 500, textTransform: "uppercase", marginBottom: 5, whiteSpace: "nowrap" }}>{label}</div>
+                    <div style={{ fontSize: 15, color: label === "Remark" ? (resultRemark === "PASS" ? "#166534" : "#b91c1c") : "#111827", fontWeight: 500, fontFamily: label === "Remark" ? "inherit" : "monospace", whiteSpace: "nowrap" }}>{value}</div>
+                  </div>
+                ))}
+              </div>
+
+              <div style={{ marginTop: 24, display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 24, alignItems: "end" }}>
+                {["Prepared By", "Controller of Examination", "Principal / Director"].map(label => (
+                  <div key={label} style={{ textAlign: "center", paddingTop: 30, borderTop: "1px solid #64748b", fontSize: 10, color: "#374151", fontWeight: 400, textTransform: "uppercase", whiteSpace: "nowrap" }}>{label}</div>
+                ))}
+              </div>
+
+              <div style={{ marginTop: 18, borderTop: "1px solid #d1d5db", paddingTop: 10, fontSize: 10, color: "#6b7280", lineHeight: 1.5, textAlign: "center" }}>
+                This is a computer generated internal marksheet. Verify details with the examination department for official records.
+                <div style={{ marginTop: 4 }}>
+                  Note: AB: Absent | NA: Not Applicable | CA: Cancellation of Assessment | UMC: UnFair Mean Case | * : Passed Under Regulation(UR) | WEB COPY: Not valid for official purpose.
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -2556,22 +2664,87 @@ const AnnouncementsPage = ({ announcements = ANNOUNCEMENTS, onMarkRead }) => {
   );
 };
 
-const SettingsPage = ({ profile, student = STUDENT, onSave }) => {
+const SettingsPage = ({ profile, student = STUDENT, onSave, onActivity, onPushNotificationsDisabled }) => {
   const currentStudent = normalizeStudentRecord(student);
+  const photoCooldownKey = `profile-photo-cooldown-${currentStudent.id || currentStudent.studentId || profile.email || "student"}`;
   const [draft, setDraft] = useState(profile);
   const [saved, setSaved] = useState(false);
+  const [notificationSettings, setNotificationSettings] = useState({
+    emailAlerts: profile.notificationSettings?.emailAlerts ?? true,
+    smsAlerts: profile.notificationSettings?.smsAlerts ?? false,
+    pushNotifications: profile.notificationSettings?.pushNotifications ?? false,
+  });
+  const [photoNextUpdateAt, setPhotoNextUpdateAt] = useState(() => {
+    if (typeof window === "undefined") return 0;
+    return Number(window.localStorage.getItem(photoCooldownKey)) || 0;
+  });
+  const [photoCountdownNow, setPhotoCountdownNow] = useState(Date.now());
+  const photoCooldownRemaining = Math.max(0, photoNextUpdateAt - photoCountdownNow);
+  const photoUploadLocked = photoCooldownRemaining > 0;
+  const photoCooldownTotalSeconds = Math.ceil(photoCooldownRemaining / 1000);
+  const photoCooldownMinutes = Math.floor(photoCooldownTotalSeconds / 60);
+  const photoCooldownSeconds = photoCooldownTotalSeconds % 60;
+  const photoCountdownLabel = `${String(photoCooldownMinutes).padStart(2, "0")}:${String(photoCooldownSeconds).padStart(2, "0")}`;
+
+  useEffect(() => {
+    if (!photoUploadLocked) return undefined;
+    const timer = window.setInterval(() => setPhotoCountdownNow(Date.now()), 1000);
+    return () => window.clearInterval(timer);
+  }, [photoUploadLocked]);
 
   const updateDraft = (key, value) => {
     setSaved(false);
     setDraft(current => ({ ...current, [key]: value }));
   };
 
+  const updateNotificationSetting = (key) => {
+    const labelByKey = {
+      emailAlerts: "Email alerts",
+      smsAlerts: "SMS alerts",
+      pushNotifications: "Push notifications",
+    };
+
+    setNotificationSettings(current => {
+      const nextSettings = { ...current, [key]: !current[key] };
+      onSave({ ...profile, notificationSettings: nextSettings });
+      if (key === "pushNotifications" && !nextSettings.pushNotifications) {
+        onPushNotificationsDisabled?.();
+      }
+      onActivity?.({
+        title: "Notification setting changed",
+        category: "Settings",
+        details: `${labelByKey[key] || "Notification"} ${nextSettings[key] ? "enabled" : "disabled"}.`,
+        notify: key !== "pushNotifications" || nextSettings.pushNotifications,
+      });
+      return nextSettings;
+    });
+  };
+
   const handlePhotoChange = (event) => {
+    if (photoUploadLocked) {
+      event.target.value = "";
+      return;
+    }
+
     const file = event.target.files?.[0];
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = () => updateDraft("photo", reader.result);
+    reader.onload = () => {
+      const nextUpdateAt = Date.now() + PROFILE_PHOTO_COOLDOWN_MS;
+      const nextProfile = { ...draft, photo: reader.result, email: profile.email };
+      setSaved(false);
+      setDraft(nextProfile);
+      onSave(nextProfile);
+      onActivity?.({
+        title: "Profile photo updated",
+        category: "Profile",
+        details: "Student profile photo was changed and saved automatically.",
+      });
+      setPhotoNextUpdateAt(nextUpdateAt);
+      setPhotoCountdownNow(Date.now());
+      window.localStorage.setItem(photoCooldownKey, String(nextUpdateAt));
+    };
     reader.readAsDataURL(file);
   };
 
@@ -2585,6 +2758,14 @@ const SettingsPage = ({ profile, student = STUDENT, onSave }) => {
     };
     setDraft(cleanedProfile);
     onSave(cleanedProfile);
+    const changes = [];
+    if ((profile.name || "") !== cleanedProfile.name) changes.push(`Name changed to ${cleanedProfile.name}`);
+    if ((profile.phone || "") !== cleanedProfile.phone) changes.push(`Phone changed to ${cleanedProfile.phone || "blank"}`);
+    onActivity?.({
+      title: "Profile details updated",
+      category: "Profile",
+      details: changes.length ? changes.join("; ") : "Profile settings were saved without changing name or phone.",
+    });
     setSaved(true);
   };
 
@@ -2604,14 +2785,33 @@ const SettingsPage = ({ profile, student = STUDENT, onSave }) => {
       <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 24 }}>
         <h3 style={{ fontSize: 14, fontWeight: 600, color: "#111827", marginBottom: 18 }}>Profile settings</h3>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 18, marginBottom: 22 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "auto minmax(0, 1fr)", gap: 18, marginBottom: 22, alignItems: "start" }}>
           <Avatar profile={draft} size={76} fontSize={22} />
-          <div>
-            <label style={{ ...btnStyle, padding: "8px 12px", display: "inline-flex" }}>
-              <Icon name="upload" size={14} /> Upload photo
-              <input type="file" accept="image/*" onChange={handlePhotoChange} style={{ display: "none" }} />
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+              <label
+                title={photoUploadLocked ? `Photo update locked for ${photoCountdownLabel}` : "Upload profile photo"}
+                style={{
+                  ...btnStyle,
+                  padding: "8px 12px",
+                  display: "inline-flex",
+                  opacity: photoUploadLocked ? 0.55 : 1,
+                  cursor: photoUploadLocked ? "not-allowed" : "pointer",
+                  background: photoUploadLocked ? "#f3f4f6" : "#f9fafb",
+                }}
+              >
+                <Icon name="upload" size={14} /> {photoUploadLocked ? "Photo locked" : "Upload photo"}
+                <input type="file" accept="image/*" disabled={photoUploadLocked} onChange={handlePhotoChange} style={{ display: "none" }} />
             </label>
-            <div style={{ fontSize: 11, color: "#6b7280", marginTop: 8 }}>JPG or PNG photo for your student profile.</div>
+              {photoUploadLocked && (
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 7, minHeight: 34, border: "1px solid #fed7aa", background: "#fff7ed", color: "#9a3412", borderRadius: 10, padding: "0 10px", fontSize: 11, fontWeight: 900 }}>
+                  Next update in {photoCountdownLabel}
+                </span>
+              )}
+            </div>
+            <div style={{ border: "1px solid #fecaca", background: "#fff1f2", color: "#991b1b", borderRadius: 12, padding: 12, fontSize: 11, lineHeight: 1.55, fontWeight: 700 }}>
+              Strict photo rule: upload a clear front-facing photo only. Face must be visible, background should be clean, and student must wear formal clothes or college uniform. Do not upload selfie filters, sunglasses, group photos, casual/unclear images, or any edited/misleading photo. After one photo update, the next update is locked for 2 minutes for security.
+            </div>
           </div>
         </div>
 
@@ -2647,15 +2847,155 @@ const SettingsPage = ({ profile, student = STUDENT, onSave }) => {
       </div>
 
       <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 24 }}>
-        <h3 style={{ fontSize: 14, fontWeight: 600, color: "#111827", marginBottom: 16 }}>Notifications</h3>
-        {["Email alerts", "SMS alerts", "Push notifications"].map((label, index) => (
-          <div key={label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: index < 2 ? "1px solid #f9fafb" : "none" }}>
-            <span style={{ fontSize: 13, color: "#374151" }}>{label}</span>
-            <span style={{ fontSize: 13, fontWeight: 500, color: index === 1 ? "#6b7280" : "#111827" }}>{index === 1 ? "Disabled" : "Enabled"}</span>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+          <div style={{ width: 34, height: 34, borderRadius: 11, background: "#eff6ff", color: "#185FA5", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <Icon name="bell" size={16} />
+          </div>
+          <div>
+            <h3 style={{ fontSize: 14, fontWeight: 800, color: "#111827", margin: 0 }}>Notifications setting</h3>
+            <div style={{ fontSize: 11, color: "#6b7280", marginTop: 3 }}>Control how portal alerts reach you.</div>
+          </div>
+        </div>
+
+        {[
+          ["Email alerts", "emailAlerts"],
+          ["SMS alerts", "smsAlerts"],
+          ["Push notifications", "pushNotifications"],
+        ].map(([label, key], index) => {
+          const enabled = Boolean(notificationSettings[key]);
+          return (
+            <div key={key} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 14, padding: "12px 0", borderBottom: index < 2 ? "1px solid #f3f4f6" : "none" }}>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: "#374151" }}>{label}</div>
+                <div style={{ fontSize: 10, color: enabled ? "#166534" : "#6b7280", fontWeight: 800, marginTop: 3 }}>{enabled ? "Enabled" : "Disabled"}</div>
+              </div>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={enabled}
+                onClick={() => updateNotificationSetting(key)}
+                style={{
+                  width: 48,
+                  height: 26,
+                  borderRadius: 999,
+                  border: `1px solid ${enabled ? "#93c5fd" : "#d1d5db"}`,
+                  background: enabled ? "#dbeafe" : "#f3f4f6",
+                  padding: 3,
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: enabled ? "flex-end" : "flex-start",
+                  transition: "all 0.18s ease",
+                  flexShrink: 0,
+                }}
+              >
+                <span style={{ width: 18, height: 18, borderRadius: "50%", background: enabled ? "#185FA5" : "#9ca3af", boxShadow: "0 2px 5px rgba(15,23,42,0.18)", transition: "all 0.18s ease" }} />
+              </button>
+            </div>
+          );
+        })}
+      </div>
+    </form>
+  );
+};
+
+const AboutPortalPage = ({ student = STUDENT }) => {
+  const currentStudent = normalizeStudentRecord(student);
+  const featureGroups = [
+    ["Academic Access", "Attendance, courses, lectures, PYQs, assignments, and published internal results."],
+    ["Student Services", "Fee status, announcements, complaint support, activities history, profile settings, and downloadable/printable marksheet views."],
+    ["Admin Control", "Admins can manage students, faculty, HOD stars, assignments, marksheets, notifications, and complaints."],
+    ["Data Handling", "Student details are shown only for identity, academic records, support, verification, and lawful college workflows."],
+  ];
+  const dataItems = [
+    "Name, student ID, registration number, roll number, course, department, semester, and course session.",
+    "Contact information used for account identity, notices, complaints, and administrative communication.",
+    "Academic records including attendance, assignment data, online test activity, and internal marksheet data.",
+    "Profile photo when uploaded by the student, used inside profile, ID, and printable result views.",
+  ];
+  const socialLinks = [
+    ["Portfolio", "https://github.com/", "profile"],
+    ["GitHub", "https://github.com/", "courses"],
+    ["LinkedIn", "https://www.linkedin.com/", "activities"],
+    ["Email", "mailto:developer@example.com", "send"],
+  ];
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+      <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 22, display: "grid", gridTemplateColumns: "1fr auto", gap: 18, alignItems: "center" }}>
+        <div>
+          <div style={{ width: 44, height: 44, borderRadius: 12, background: "#eff6ff", color: "#185FA5", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 12 }}>
+            <Icon name="about" size={22} />
+          </div>
+          <h3 style={{ fontSize: 24, fontWeight: 900, color: "#111827", margin: "0 0 7px" }}>About CIMAGE Student Portal</h3>
+          <div style={{ fontSize: 13, color: "#4b5563", lineHeight: 1.6, maxWidth: 760 }}>
+            A student-first academic portal built to keep learning resources, records, communication, support, and internal result access in one organized place.
+          </div>
+        </div>
+        <div style={{ width: 84, height: 84, border: "1px solid #e5e7eb", borderRadius: 16, padding: 8, background: "#fff", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <img src={cimageLogo} alt="CIMAGE logo" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+        </div>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))", gap: 14 }}>
+        {featureGroups.map(([title, text]) => (
+          <div key={title} style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 14, padding: 16 }}>
+            <div style={{ fontSize: 13, fontWeight: 900, color: "#111827", marginBottom: 7 }}>{title}</div>
+            <div style={{ fontSize: 12, color: "#4b5563", lineHeight: 1.6 }}>{text}</div>
           </div>
         ))}
       </div>
-    </form>
+
+      <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1.15fr) minmax(280px, 0.85fr)", gap: 16, alignItems: "start" }}>
+        <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 20 }}>
+          <h3 style={{ fontSize: 17, fontWeight: 900, color: "#111827", margin: "0 0 12px" }}>Student Data & Access Policy</h3>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {dataItems.map((item, index) => (
+              <div key={item} style={{ display: "grid", gridTemplateColumns: "30px 1fr", gap: 10, alignItems: "start" }}>
+                <div style={{ width: 30, height: 30, borderRadius: 9, background: "#f3f4f6", color: "#374151", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 900 }}>{index + 1}</div>
+                <div style={{ fontSize: 12, color: "#374151", lineHeight: 1.6 }}>{item}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ marginTop: 16, border: "1px solid #bfdbfe", background: "#eff6ff", color: "#1e40af", borderRadius: 12, padding: 14, fontSize: 12, lineHeight: 1.6, fontWeight: 700 }}>
+            Legal and institutional note: personal and academic data displayed in this portal should be accessed only by authorized students/admins for academic, administrative, support, verification, and lawful institutional purposes. Do not share screenshots, marksheets, IDs, phone numbers, or complaint details without permission.
+          </div>
+        </div>
+
+        <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 20 }}>
+          <h3 style={{ fontSize: 17, fontWeight: 900, color: "#111827", margin: "0 0 12px" }}>Current Portal Identity</h3>
+          {[
+            ["Student", currentStudent.name],
+            ["Student ID", currentStudent.studentId],
+            ["Course", `${currentStudent.course} · Semester ${currentStudent.semester}`],
+            ["Course Session", currentStudent.session],
+          ].map(([label, value]) => (
+            <div key={label} style={{ display: "flex", justifyContent: "space-between", gap: 12, padding: "10px 0", borderBottom: "1px solid #f3f4f6" }}>
+              <span style={{ fontSize: 11, color: "#6b7280", fontWeight: 800 }}>{label}</span>
+              <span style={{ fontSize: 12, color: "#111827", fontWeight: 900, textAlign: "right" }}>{value || "Not set"}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 20 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16, flexWrap: "wrap" }}>
+          <div>
+            <h3 style={{ fontSize: 17, fontWeight: 900, color: "#111827", margin: "0 0 6px" }}>Developer Details</h3>
+            <div style={{ fontSize: 12, color: "#4b5563", lineHeight: 1.6 }}>Designed and developed for the CIMAGE Student Dashboard experience.</div>
+            <div style={{ marginTop: 10, fontSize: 13, fontWeight: 900, color: "#111827" }}>Hrithik Kumar</div>
+            <div style={{ fontSize: 11, color: "#6b7280", marginTop: 3 }}>Frontend Developer · Student Portal UI/UX</div>
+          </div>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            {socialLinks.map(([label, href, icon]) => (
+              <a key={label} href={href} target={href.startsWith("mailto:") ? undefined : "_blank"} rel={href.startsWith("mailto:") ? undefined : "noreferrer"} style={{ display: "inline-flex", alignItems: "center", gap: 7, minHeight: 38, border: "1px solid #e5e7eb", borderRadius: 10, padding: "0 12px", color: "#185FA5", background: "#f9fafb", textDecoration: "none", fontSize: 12, fontWeight: 900 }}>
+                <Icon name={icon} size={14} /> {label}
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
@@ -2682,6 +3022,7 @@ const fieldStyle = {
 const LoginPage = ({ students = [], adminUsers = [], onLogin }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const registeredStudents = normalizeStudentRecords(students);
   const registeredAdmins = normalizeAdminUsers(adminUsers);
@@ -2732,37 +3073,60 @@ const LoginPage = ({ students = [], adminUsers = [], onLogin }) => {
   };
 
   return (
-    <div style={{ minHeight: "100vh", background: "#f8fafc", display: "grid", placeItems: "center", padding: 24, fontFamily: "'Sora', 'Segoe UI', system-ui, sans-serif" }}>
-      <form onSubmit={handleSubmit} style={{ width: "100%", maxWidth: 390, background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 26, boxShadow: "0 18px 40px rgba(15, 23, 42, 0.08)" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 22 }}>
-          <div style={{ width: 48, height: 48, border: "1px solid #e5e7eb", borderRadius: 12, padding: 5, display: "flex", alignItems: "center", justifyContent: "center" }}>
+    <div style={{ minHeight: "100dvh", background: "linear-gradient(135deg, #eef7ff 0%, #f8fafc 52%, #f1f5f9 100%)", display: "grid", placeItems: "center", padding: "clamp(16px, 4vw, 28px)", fontFamily: "'Sora', 'Segoe UI', system-ui, sans-serif", boxSizing: "border-box", overflow: "hidden", position: "relative" }}>
+      <div aria-hidden="true" style={{ position: "absolute", inset: "-18%", display: "grid", gridTemplateColumns: "repeat(8, 150px)", gridAutoRows: 120, gap: "34px 54px", justifyContent: "center", alignContent: "center", transform: "rotate(-20deg)", transformOrigin: "center", opacity: 0.08, pointerEvents: "none" }}>
+        {Array.from({ length: 56 }).map((_, index) => (
+          <img key={`login-watermark-${index}`} src={cimageLogo} alt="" style={{ width: 120, height: 120, objectFit: "contain", filter: "grayscale(1) saturate(0.4)", opacity: index % 3 === 0 ? 0.55 : 0.9 }} />
+        ))}
+      </div>
+      <form onSubmit={handleSubmit} style={{ width: "min(100%, 410px)", background: "rgba(255,255,255,0.96)", border: "1px solid #dbeafe", borderRadius: 18, padding: "clamp(22px, 4vw, 30px)", boxShadow: "0 24px 70px rgba(15, 23, 42, 0.14)", backdropFilter: "blur(12px)", position: "relative", zIndex: 1 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 13, marginBottom: 24 }}>
+          <div style={{ width: 52, height: 52, border: "1px solid #dbeafe", borderRadius: 14, padding: 6, display: "flex", alignItems: "center", justifyContent: "center", background: "#fff", boxShadow: "0 10px 22px rgba(24,95,165,0.10)", flexShrink: 0 }}>
             <img src={cimageLogo} alt="Cimage College" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
           </div>
           <div>
-            <div style={{ fontSize: 18, fontWeight: 800, color: "#111827" }}>Cimage Portal</div>
-            <div style={{ fontSize: 12, color: "#6b7280" }}>Student and admin login</div>
+            <div style={{ fontSize: 20, fontWeight: 900, color: "#0f172a", letterSpacing: 0 }}>Cimage Portal</div>
+            <div style={{ fontSize: 12, color: "#64748b", marginTop: 3 }}>Student and admin login</div>
           </div>
         </div>
 
         <label style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 14 }}>
-          <span style={{ fontSize: 12, fontWeight: 700, color: "#374151" }}>Email</span>
-          <input value={email} onChange={event => { setEmail(event.target.value); setError(""); }} placeholder="registered email" style={fieldStyle} />
+          <span style={{ fontSize: 12, fontWeight: 800, color: "#334155" }}>Email</span>
+          <input type="email" autoComplete="email" value={email} onChange={event => { setEmail(event.target.value); setError(""); }} placeholder="registered email" style={{ ...fieldStyle, borderColor: "#cbd5e1", background: "#f8fafc", padding: "12px 13px", fontSize: 14 }} />
         </label>
 
         <label style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 16 }}>
-          <span style={{ fontSize: 12, fontWeight: 700, color: "#374151" }}>Password</span>
-          <input type="password" value={password} onChange={event => { setPassword(event.target.value); setError(""); }} placeholder="Enter password" style={fieldStyle} />
+          <span style={{ fontSize: 12, fontWeight: 800, color: "#334155" }}>Password</span>
+          <div style={{ position: "relative" }}>
+            <input
+              type={showPassword ? "text" : "password"}
+              autoComplete="current-password"
+              value={password}
+              onChange={event => { setPassword(event.target.value); setError(""); }}
+              placeholder="Enter password"
+              style={{ ...fieldStyle, borderColor: "#cbd5e1", background: "#f8fafc", padding: "12px 48px 12px 13px", fontSize: 14 }}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(current => !current)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              title={showPassword ? "Hide password" : "Show password"}
+              style={{ position: "absolute", right: 7, top: "50%", transform: "translateY(-50%)", width: 34, height: 34, border: "none", borderRadius: 9, background: showPassword ? "#dbeafe" : "transparent", color: showPassword ? "#185FA5" : "#64748b", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", padding: 0 }}
+            >
+              <Icon name={showPassword ? "eyeOff" : "eye"} size={18} />
+            </button>
+          </div>
         </label>
 
         {error && <div style={{ background: "#fee2e2", color: "#991b1b", border: "1px solid #fecaca", borderRadius: 10, padding: "9px 11px", fontSize: 12, marginBottom: 14 }}>{error}</div>}
 
-        <button type="submit" style={{ width: "100%", padding: "11px 0", background: "#185FA5", color: "#fff", border: "none", borderRadius: 10, fontSize: 14, fontWeight: 800, cursor: "pointer" }}>
+        <button type="submit" style={{ width: "100%", padding: "12px 0", background: "#185FA5", color: "#fff", border: "none", borderRadius: 11, fontSize: 14, fontWeight: 900, cursor: "pointer", boxShadow: "0 12px 24px rgba(24,95,165,0.24)" }}>
           Login
         </button>
 
-        <div style={{ marginTop: 14, padding: 12, background: "#f9fafb", borderRadius: 10, fontSize: 11, color: "#6b7280", lineHeight: 1.5 }}>
+        {/* <div style={{ marginTop: 14, padding: 12, background: "#f9fafb", borderRadius: 10, fontSize: 11, color: "#6b7280", lineHeight: 1.5 }}>
           Students can login only after admin registration. Default admin: <strong>{ADMIN_CREDENTIALS.email}</strong> / <strong>{ADMIN_CREDENTIALS.password}</strong>.
-        </div>
+        </div> */}
       </form>
     </div>
   );
@@ -2875,7 +3239,7 @@ const AdminComplaintInbox = ({ complaints = [], onDeleteComplaint, onClearCompla
                   ["Course", selectedComplaint.course],
                   ["Semester", selectedComplaint.semester],
                   ["Department", selectedComplaint.department],
-                  ["Session", selectedComplaint.session],
+                  ["Course Session", selectedComplaint.session],
                 ].map(([label, value]) => (
                   <div key={label} style={{ background: "#f9fafb", border: "1px solid #f3f4f6", borderRadius: 11, padding: "10px 12px" }}>
                     <div style={{ fontSize: 10, color: "#6b7280", marginBottom: 4 }}>{label}</div>
@@ -2975,8 +3339,8 @@ const AdminDashboard = ({ students, loggedInStudents, adminUsers = [], currentAd
     resultDraft.subjects.length &&
     resultDraft.subjects.every(subject =>
       subject.obtainedMarks !== "" &&
-      Number(subject.obtainedMarks) >= 0 &&
-      Number(subject.obtainedMarks) <= Number(subject.maxMarks || 40)
+      getMarksNumber(subject.obtainedMarks) >= 0 &&
+      getMarksNumber(subject.obtainedMarks) <= Number(subject.maxMarks || 40)
     )
   );
   const resultFacultyOptions = assignmentFacultyOptions;
@@ -2991,6 +3355,7 @@ const AdminDashboard = ({ students, loggedInStudents, adminUsers = [], currentAd
     photo: "",
     phone: "",
     whatsapp: "",
+    isHod: false,
   });
 
   const getBlankAssignmentDraft = () => {
@@ -3017,6 +3382,7 @@ const AdminDashboard = ({ students, loggedInStudents, adminUsers = [], currentAd
     return {
       semester: cleanSemester,
       examName: `Semester ${cleanSemester}`,
+      session: student?.session || "",
       sessional: "Sessional 1",
       subjects: [],
     };
@@ -3025,6 +3391,7 @@ const AdminDashboard = ({ students, loggedInStudents, adminUsers = [], currentAd
   const getResultDraftFromRecord = (result) => ({
     semester: result.semester,
     examName: result.examName,
+    session: result.session || "",
     sessional: result.sessional,
     subjects: result.subjects.map(subject => {
       const officialFaculty = normalizedFacultyMembers.find(faculty => faculty.id === subject.facultyId)
@@ -3241,6 +3608,7 @@ const AdminDashboard = ({ students, loggedInStudents, adminUsers = [], currentAd
       photo: String(facultyDraft.photo || "").trim(),
       phone: String(facultyDraft.phone || "").trim(),
       whatsapp: String(facultyDraft.whatsapp || "").trim(),
+      isHod: Boolean(facultyDraft.isHod),
     };
 
     if (creatingFaculty) {
@@ -3381,7 +3749,7 @@ const AdminDashboard = ({ students, loggedInStudents, adminUsers = [], currentAd
     setResultDraft(current => ({
       ...current,
       subjects: (current.subjects || []).map((subject, subjectIndex) =>
-        subjectIndex === index ? { ...subject, obtainedMarks: value === "" ? "" : Number(value) } : subject
+        subjectIndex === index ? { ...subject, obtainedMarks: value } : subject
       ),
     }));
   };
@@ -3428,11 +3796,12 @@ const AdminDashboard = ({ students, loggedInStudents, adminUsers = [], currentAd
     const cleanSubjects = (resultDraft.subjects || []).map(subject => ({
       ...subject,
       facultyId: subject.facultyId || "",
-      obtainedMarks: Number(subject.obtainedMarks) || 0,
+      obtainedMarks: String(subject.obtainedMarks || "").trim(),
       maxMarks: Number(subject.maxMarks) || 40,
     }));
     const totals = getResultTotals(cleanSubjects);
     const cleanSemester = Number(resultDraft.semester) || 1;
+    const cleanSession = String(resultDraft.session || selectedResultStudent.session || selectedResult?.session || "").trim();
     const resultPayload = {
       id: selectedResult?.id,
       studentRecordId: selectedResultStudent.id,
@@ -3443,7 +3812,7 @@ const AdminDashboard = ({ students, loggedInStudents, adminUsers = [], currentAd
       rollNo: selectedResultStudent.rollNo,
       course: selectedResultStudent.course,
       department: selectedResultStudent.department,
-      session: selectedResultStudent.session,
+      session: cleanSession,
       semester: cleanSemester,
       examName: `Semester ${cleanSemester}`,
       sessional: resultDraft.sessional || "Sessional 1",
@@ -3650,7 +4019,7 @@ const AdminDashboard = ({ students, loggedInStudents, adminUsers = [], currentAd
                 >
                   <div style={{ minWidth: 0 }}>
                     <div style={{ fontSize: 12, fontWeight: 900, color: "#111827", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{assignment.title || "Untitled assignment"}</div>
-                    <div style={{ fontSize: 10, color: "#185FA5", marginTop: 3, fontWeight: 800, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{assignment.subject || "Subject"} · {assignment.teacher || "Teacher"}</div>
+                    <div style={{ fontSize: 10, color: "#185FA5", marginTop: 3, fontWeight: 800, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{assignment.subject || "Subject"} · {getOfficialTeacherName(assignment.subject, assignment.teacher)}</div>
                     <div style={{ fontSize: 10, color: "#6b7280", marginTop: 3 }}>Due {assignment.submissionDate || "Not set"} · {assignment.pdfName ? "PDF attached" : "No PDF"}</div>
                   </div>
                   <div style={{ textAlign: "right", flexShrink: 0 }}>
@@ -3780,7 +4149,7 @@ const AdminDashboard = ({ students, loggedInStudents, adminUsers = [], currentAd
               </div>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: 12, marginBottom: 16 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 12, marginBottom: 16 }}>
               <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                 <span style={{ fontSize: 12, fontWeight: 800, color: "#374151" }}>Student ID</span>
                 <select value={selectedResultStudentId} onChange={event => handleResultStudentChange(event.target.value)} style={fieldStyle}>
@@ -3789,6 +4158,20 @@ const AdminDashboard = ({ students, loggedInStudents, adminUsers = [], currentAd
                     <option key={student.id} value={student.id}>{student.studentId || student.id} - {student.name || "Unnamed"}</option>
                   ))}
                 </select>
+              </label>
+
+              <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                <span style={{ fontSize: 12, fontWeight: 800, color: "#374151" }}>Course Session</span>
+                <input
+                  value={resultDraft.session || ""}
+                  disabled={!selectedResultStudent}
+                  onChange={event => {
+                    setResultSaved(false);
+                    setResultDraft(current => ({ ...current, session: event.target.value }));
+                  }}
+                  placeholder="2024 - 2027"
+                  style={{ ...fieldStyle, background: selectedResultStudent ? "#fff" : "#f9fafb" }}
+                />
               </label>
 
               <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
@@ -3819,7 +4202,7 @@ const AdminDashboard = ({ students, loggedInStudents, adminUsers = [], currentAd
                     ["Reg. No.", selectedResultStudent.regNo],
                     ["Roll No.", selectedResultStudent.rollNo],
                     ["Course", selectedResultStudent.course],
-                    ["Session", selectedResultStudent.session],
+                    ["Course Session", selectedResultStudent.session],
                   ].map(([label, value]) => (
                     <div key={label} style={{ background: "#f9fafb", border: "1px solid #f3f4f6", borderRadius: 11, padding: "10px 12px" }}>
                       <div style={{ fontSize: 10, color: "#6b7280", marginBottom: 3 }}>{label}</div>
@@ -3873,12 +4256,11 @@ const AdminDashboard = ({ students, loggedInStudents, adminUsers = [], currentAd
                             <td style={{ padding: "10px 12px", borderBottom: "1px solid #f3f4f6", color: "#4b5563" }}>{subject.teacher}</td>
                             <td style={{ padding: "10px 12px", borderBottom: "1px solid #f3f4f6" }}>
                               <input
-                                type="number"
-                                min="0"
-                                max={subject.maxMarks || 40}
+                                type="text"
+                                inputMode="text"
                                 value={subject.obtainedMarks}
                                 onChange={event => updateResultSubjectMarks(index, event.target.value)}
-                                placeholder="0"
+                                placeholder="0 or 38*"
                                 style={{ ...fieldStyle, padding: "8px 10px", maxWidth: 120 }}
                               />
                             </td>
@@ -4286,7 +4668,7 @@ const AdminDashboard = ({ students, loggedInStudents, adminUsers = [], currentAd
                   ["Age", "age", "number", "20"],
                   ["Father name", "fatherName", "text", "Enter father name"],
                   ["Blood group", "bloodGroup", "text", "B+"],
-                  ["Session", "session", "text", "2024 - 2027"],
+                  ["Course Session", "session", "text", "2024 - 2027"],
                   ["College name", "university", "text", "College name"],
                 ].map(([label, key, type, placeholder]) => (
                   <label key={key} style={{ display: "flex", flexDirection: "column", gap: 6 }}>
@@ -4498,6 +4880,28 @@ const AdminDashboard = ({ students, loggedInStudents, adminUsers = [], currentAd
                   <label style={{ display: "flex", flexDirection: "column", gap: 6, gridColumn: "1 / -1" }}>
                     <span style={{ fontSize: 12, fontWeight: 700, color: "#374151" }}>Photo path or URL</span>
                     <input value={facultyDraft.photo || ""} placeholder="/imgs/faculty-name.jpg" onChange={event => updateFacultyDraft("photo", event.target.value)} style={fieldStyle} />
+                    <span style={{ fontSize: 10, color: "#6b7280", fontWeight: 700 }}>
+                      Put faculty images in public/imgs and use /imgs/file-name.jpg, or paste a full image URL.
+                    </span>
+                  </label>
+                  <label style={{ gridColumn: "1 / -1", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 14, border: "1px solid #e5e7eb", borderRadius: 12, padding: "11px 12px", background: facultyDraft.isHod ? "#fffbeb" : "#f9fafb", cursor: "pointer" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
+                      <span style={{ width: 30, height: 30, borderRadius: 10, border: `1px solid ${facultyDraft.isHod ? "#facc15" : "#e5e7eb"}`, background: facultyDraft.isHod ? "#fef3c7" : "#fff", color: facultyDraft.isHod ? "#b45309" : "#6b7280", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                          <path d="m12 2.6 2.9 5.88 6.49.94-4.7 4.58 1.11 6.46L12 17.41l-5.8 3.05L7.31 14l-4.7-4.58 6.49-.94L12 2.6Z" />
+                        </svg>
+                      </span>
+                      <span style={{ minWidth: 0 }}>
+                        <span style={{ display: "block", fontSize: 12, fontWeight: 900, color: "#111827" }}>Head of Department</span>
+                        <span style={{ display: "block", fontSize: 10, color: "#6b7280", fontWeight: 700, marginTop: 2 }}>Enable to show a single star badge on this faculty card.</span>
+                      </span>
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={Boolean(facultyDraft.isHod)}
+                      onChange={event => updateFacultyDraft("isHod", event.target.checked)}
+                      style={{ width: 18, height: 18, accentColor: "#185FA5", flexShrink: 0 }}
+                    />
                   </label>
                 </div>
 
@@ -4544,10 +4948,13 @@ export default function App() {
   const [loggedInStudents, setLoggedInStudents] = usePersistentState("logged-in-students", []);
   const [testReports, setTestReports] = usePersistentState("test-reports", []);
   const [complaints, setComplaints] = usePersistentState("complaints", []);
+  const [studentActivityRecords, setStudentActivityRecords] = usePersistentState("student-activity-records", []);
   const [seenComplaintIds, setSeenComplaintIds] = usePersistentState("seen-complaint-ids", []);
   const [assignments, setAssignments] = usePersistentState("assignments", normalizeAssignments(ASSIGNMENTS));
   const [publishedResults, setPublishedResults] = usePersistentState("published-results", []);
   const [active, setActive] = usePersistentState("active-page", "dashboard");
+  const [studentTabUpdates, setStudentTabUpdates] = usePersistentState("student-tab-updates", {});
+  const [seenStudentTabUpdates, setSeenStudentTabUpdates] = usePersistentState("seen-student-tab-updates", {});
   const [profileOpen, setProfileOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [aiOpen, setAiOpen] = useState(false);
@@ -4579,6 +4986,83 @@ export default function App() {
   const unreadAnnouncements = visibleAnnouncements.filter(item => item.unread).length;
   const currentDateLabel = now.toLocaleDateString("en-US", { weekday: "short", day: "2-digit", month: "short" });
   const currentTimeLabel = now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
+  const currentStudentUpdateKey = currentStudent.id || currentStudent.studentId || currentStudent.email || "student";
+  const pushNotificationsEnabled = profile.notificationSettings?.pushNotifications === true;
+  const visibleStudentActivityRecords = (Array.isArray(studentActivityRecords) ? studentActivityRecords : [])
+    .filter(record => record.studentKey === currentStudentUpdateKey || record.email === currentStudent.email || record.studentId === currentStudent.studentId);
+  const getStudentUpdateKey = (student = {}) => student.id || student.studentId || student.email || "";
+  const seenUpdatesForStudent = seenStudentTabUpdates?.[currentStudentUpdateKey] || {};
+  const hasUnseenTabUpdate = (page) => {
+    if (!pushNotificationsEnabled) return false;
+
+    const update = studentTabUpdates?.[page];
+    if (!update?.at) return false;
+
+    const targets = Array.isArray(update.targets) ? update.targets.filter(Boolean) : [];
+    if (targets.length && !targets.includes(currentStudentUpdateKey)) return false;
+
+    return Number(update.at) > Number(seenUpdatesForStudent?.[page] || 0);
+  };
+
+  const markStudentTabUpdate = (page, targets = []) => {
+    const cleanTargets = Array.isArray(targets) ? targets.filter(Boolean) : [];
+    setStudentTabUpdates(current => ({
+      ...(current || {}),
+      [page]: {
+        at: Date.now(),
+        targets: cleanTargets,
+      },
+    }));
+  };
+
+  const markStudentTabSeen = (page) => {
+    const updateTime = Number(studentTabUpdates?.[page]?.at || Date.now());
+    setSeenStudentTabUpdates(current => ({
+      ...(current || {}),
+      [currentStudentUpdateKey]: {
+        ...((current || {})[currentStudentUpdateKey] || {}),
+        [page]: updateTime,
+      },
+    }));
+  };
+
+  const markAllStudentTabsSeen = () => {
+    const seenEntries = Object.fromEntries(
+      Object.entries(studentTabUpdates || {}).map(([page, update]) => [page, Number(update?.at || Date.now())])
+    );
+
+    setSeenStudentTabUpdates(current => ({
+      ...(current || {}),
+      [currentStudentUpdateKey]: {
+        ...((current || {})[currentStudentUpdateKey] || {}),
+        ...seenEntries,
+      },
+    }));
+  };
+
+  const navigateStudentPage = (page) => {
+    markStudentTabSeen(page);
+    setActive(page);
+  };
+
+  const addStudentActivityRecord = (activity = {}) => {
+    const timestamp = getActivityTimestamp();
+    const record = {
+      id: `activity-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      studentKey: currentStudentUpdateKey,
+      studentId: currentStudent.studentId,
+      email: currentStudent.email,
+      title: activity.title || "Student activity",
+      category: activity.category || "Activity",
+      details: activity.details || "Student dashboard activity saved.",
+      ...timestamp,
+    };
+
+    setStudentActivityRecords(current => [record, ...(Array.isArray(current) ? current : [])]);
+    if (activity.notify !== false && pushNotificationsEnabled) {
+      markStudentTabUpdate("activities", [currentStudentUpdateKey]);
+    }
+  };
 
   useEffect(() => {
     const timer = setInterval(() => setNow(new Date()), 1000);
@@ -4621,11 +5105,18 @@ export default function App() {
   };
 
   const handleUpdateStudent = (id, updates) => {
+    const targetStudent = visibleStudents.find(student => student.id === id);
+    const targetKey = getStudentUpdateKey(targetStudent);
     setStudents(current =>
       normalizeStudentRecords(current).map((student, index) =>
         student.id === id ? normalizeStudentRecord({ ...student, ...updates }, index) : student
       )
     );
+
+    if (targetKey) {
+      markStudentTabUpdate("dashboard", [targetKey]);
+      markStudentTabUpdate(updates.attendanceRecords ? "attendance" : "settings", [targetKey]);
+    }
   };
 
   const handleAddStudent = () => {
@@ -4684,6 +5175,7 @@ export default function App() {
     setFacultyMembers(current =>
       normalizeFacultyMembers(current).map(faculty => faculty.id === id ? { ...faculty, ...updates, id } : faculty)
     );
+    markStudentTabUpdate("courses");
   };
 
   const handleAddFacultyMember = (faculty) => {
@@ -4699,19 +5191,23 @@ export default function App() {
       photo: faculty.photo || "",
       phone: faculty.phone || "",
       whatsapp: faculty.whatsapp || "",
+      isHod: Boolean(faculty.isHod),
     };
     setFacultyMembers(current => [nextFaculty, ...normalizeFacultyMembers(current)]);
+    markStudentTabUpdate("courses");
     return id;
   };
 
   const handleDeleteFacultyMember = (id) => {
     setFacultyMembers(current => normalizeFacultyMembers(current).filter(faculty => faculty.id !== id));
+    markStudentTabUpdate("courses");
   };
 
   const handleAddAssignment = (assignment) => {
     const id = `assignment-${Date.now()}`;
     const nextAssignment = normalizeAssignments([{ ...assignment, id, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }])[0];
     setAssignments(current => [nextAssignment, ...normalizeAssignments(current)]);
+    markStudentTabUpdate("assignments");
     return id;
   };
 
@@ -4723,6 +5219,7 @@ export default function App() {
           : assignment
       )
     );
+    markStudentTabUpdate("assignments");
   };
 
   const handleDeleteAssignment = (id) => {
@@ -4743,6 +5240,7 @@ export default function App() {
         ? normalizedCurrent.map(item => item.id === id ? nextResult : item)
         : [nextResult, ...normalizedCurrent];
     });
+    markStudentTabUpdate("results", [nextResult.studentRecordId || nextResult.studentId || nextResult.email].filter(Boolean));
     return id;
   };
 
@@ -4760,6 +5258,7 @@ export default function App() {
       unread: true,
     };
     setAnnouncements(current => [nextAnnouncement, ...normalizeAnnouncements(current)]);
+    markStudentTabUpdate("announcements");
   };
 
   const handleReadAnnouncement = (id) => {
@@ -4770,19 +5269,33 @@ export default function App() {
 
   const handleClearAnnouncements = () => {
     setAnnouncements([]);
+    markStudentTabSeen("announcements");
   };
 
   const handleSaveTestReport = (report) => {
     setTestReports(current => [report, ...current]);
+    addStudentActivityRecord({
+      title: "Online test attempt saved",
+      category: "Test",
+      details: `${report.subject || "Subject"} test attempt saved with ${report.obtainedMarks}/${report.totalMarks} marks.`,
+    });
   };
 
   const handleSaveComplaint = (complaint) => {
     const id = String(83000000 + visibleComplaints.length + 1);
     const referenceNo = `CMP-${id}`;
     setComplaints(current => [{ ...complaint, id, referenceNo }, ...normalizeComplaints(current)]);
+    addStudentActivityRecord({
+      title: "Complaint submitted",
+      category: "Complaint",
+      details: `${complaint.type || "Complaint"} submitted with reference no. ${referenceNo}.`,
+    });
     setComplaintOpen(false);
     setComplaintMessage(`Complaint raised successfully. Reference No. ${referenceNo}`);
-    setActive("activities");
+    if (pushNotificationsEnabled) {
+      markStudentTabUpdate("activities", [currentStudentUpdateKey]);
+    }
+    navigateStudentPage("activities");
   };
 
   const handleDeleteComplaint = (id) => {
@@ -4862,22 +5375,26 @@ export default function App() {
     attendance: <AttendancePage student={currentStudent} />,
     courses: <CoursesPage facultyMembers={visibleFacultyMembers} />,
     lectures: <LecturesPage />,
-    gallery: <GalleryPage />,
+    pyqs: <PYQsPage />,
     onlineTest: <OnlineTestPage testReports={testReports} onSaveReport={handleSaveTestReport} />,
     fees: <FeesPage />,
     assignments: <AssignmentsPage assignments={visibleAssignments} />,
-    results: <ResultsPage student={currentStudent} publishedResults={visiblePublishedResults} facultyMembers={visibleFacultyMembers} />,
+    results: <ResultsPage student={currentStudent} profile={profile} publishedResults={visiblePublishedResults} facultyMembers={visibleFacultyMembers} />,
     announcements: <AnnouncementsPage announcements={visibleAnnouncements} onMarkRead={handleReadAnnouncement} />,
-    activities: <ActivitiesPage testReports={testReports} complaints={visibleComplaints} />,
-    settings: <SettingsPage profile={profile} student={currentStudent} onSave={setProfile} />,
+    activities: <ActivitiesPage testReports={testReports} complaints={visibleComplaints} activityRecords={visibleStudentActivityRecords} />,
+    about: <AboutPortalPage student={currentStudent} />,
+    settings: <SettingsPage profile={profile} student={currentStudent} onSave={setProfile} onActivity={addStudentActivityRecord} onPushNotificationsDisabled={markAllStudentTabsSeen} />,
   };
 
-  const sections = [...new Set(NAV_ITEMS.map(n => n.section))];
+  const sidebarNavItems = NAV_ITEMS.filter(item => item.id !== "about");
+  const sections = [...new Set(sidebarNavItems.map(n => n.section))];
+  const visiblePageIds = new Set(NAV_ITEMS.map(item => item.id));
+  const activePage = visiblePageIds.has(active) ? active : "dashboard";
 
   return (
     <div style={{ display: "flex", minHeight: "100vh", background: "#f8fafc", fontFamily: "'Sora', 'Segoe UI', system-ui, sans-serif" }}>
       {/* Sidebar */}
-      <div style={{ width: 200, background: "#fff", borderRight: "1px solid #e5e7eb", display: "flex", flexDirection: "column", paddingTop: 20, flexShrink: 0, position: "fixed", left: 0, top: 0, bottom: 0, height: "100vh", overflowY: "auto", zIndex: 30 }}>
+      <div style={{ width: 200, background: "#fff", borderRight: "1px solid #e5e7eb", display: "flex", flexDirection: "column", paddingTop: 20, flexShrink: 0, position: "fixed", left: 0, top: 0, bottom: 0, height: "100vh", overflow: "hidden", zIndex: 30, boxSizing: "border-box" }}>
           <div style={{ padding: "0 16px 20px", borderBottom: "1px solid #f3f4f6", marginBottom: 8 }}>
             <div style={{ width: 42, height: 42, background: "#fff", border: "1px solid #e5e7eb", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 8, overflow: "hidden", padding: 4 }}>
               <img src={cimageLogo} alt="Cimage College" style={{ width: "100%", height: "100%", objectFit: "contain", display: "block" }} />
@@ -4886,24 +5403,64 @@ export default function App() {
             <div style={{ fontSize: 10, color: "#9ca3af" }}>Student Portal</div>
           </div>
 
+          <div style={{ flex: 1, overflowY: "auto", paddingBottom: 8, minHeight: 0 }}>
           {sections.map(sec => (
             <div key={sec}>
               <div style={{ fontSize: 9, fontWeight: 600, color: "#9ca3af", letterSpacing: "0.1em", textTransform: "uppercase", padding: "10px 16px 4px" }}>{sec}</div>
-              {NAV_ITEMS.filter(n => n.section === sec).map(item => (
-                <button key={item.id} onClick={() => setActive(item.id)} style={{
+              {sidebarNavItems.filter(n => n.section === sec).map(item => {
+                const hasTabUpdate = hasUnseenTabUpdate(item.id);
+
+                return (
+                <button key={item.id} onClick={() => navigateStudentPage(item.id)} style={{
                   display: "flex", alignItems: "center", gap: 10, width: "100%",
-                  padding: "9px 16px", fontSize: 13, fontWeight: active === item.id ? 600 : 400,
-                  color: active === item.id ? "#185FA5" : "#4b5563",
-                  background: active === item.id ? "#eff6ff" : "transparent",
-                  border: "none", borderLeft: `2px solid ${active === item.id ? "#185FA5" : "transparent"}`,
-                  cursor: "pointer", textAlign: "left", transition: "all 0.12s",
+                  padding: "9px 16px", fontSize: 13, fontWeight: activePage === item.id ? 600 : 400,
+                  color: activePage === item.id ? "#185FA5" : "#4b5563",
+                  background: activePage === item.id ? "#eff6ff" : "transparent",
+                  border: "none", borderLeft: `2px solid ${activePage === item.id ? "#185FA5" : "transparent"}`,
+                  cursor: "pointer", textAlign: "left", transition: "all 0.12s", position: "relative",
                 }}>
                   <Icon name={item.id} size={16} />
-                  {item.label}
+                  <span style={{ flex: 1, minWidth: 0 }}>{item.label}</span>
+                  {hasTabUpdate && (
+                    <span
+                      aria-label="New update"
+                      title="New update"
+                      style={{ width: 7, height: 7, borderRadius: "50%", background: "#dc2626", boxShadow: "0 0 0 2px #fff", flexShrink: 0 }}
+                    />
+                  )}
                 </button>
-              ))}
+                );
+              })}
             </div>
           ))}
+          </div>
+
+          <div style={{ padding: "8px 10px 10px", borderTop: "1px solid #f3f4f6", background: "#fff", flexShrink: 0 }}>
+            <button
+              type="button"
+              onClick={() => navigateStudentPage("about")}
+              title="About Portal"
+              style={{
+                width: "100%",
+                minHeight: 34,
+                borderRadius: 10,
+                border: `1px solid ${activePage === "about" ? "#bfdbfe" : "#e5e7eb"}`,
+                background: activePage === "about" ? "#eff6ff" : "#f9fafb",
+                color: activePage === "about" ? "#185FA5" : "#4b5563",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 9,
+                cursor: "pointer",
+                fontSize: 11,
+                fontWeight: 900,
+                boxSizing: "border-box",
+              }}
+            >
+              <Icon name="about" size={14} />
+              About Portal
+            </button>
+          </div>
       </div>
 
       {/* Main */}
@@ -4986,7 +5543,7 @@ export default function App() {
                         key={item.id}
                         onClick={() => {
                           handleReadAnnouncement(item.id);
-                          setActive("announcements");
+                          navigateStudentPage("announcements");
                           setNotificationOpen(false);
                         }}
                         style={{ width: "100%", border: "none", background: item.unread ? "#f8fbff" : "#fff", padding: "13px 16px", display: "flex", gap: 10, textAlign: "left", cursor: "pointer", borderBottom: "1px solid #f3f4f6" }}
@@ -5008,7 +5565,7 @@ export default function App() {
                   <div style={{ padding: 12, display: "grid", gridTemplateColumns: visibleAnnouncements.length ? "1fr 1fr" : "1fr", gap: 8 }}>
                     <button
                       onClick={() => {
-                        setActive("announcements");
+                        navigateStudentPage("announcements");
                         setNotificationOpen(false);
                       }}
                       style={{ ...btnStyle, width: "100%", justifyContent: "center", padding: "9px 10px", background: "#eff6ff", color: "#185FA5", borderColor: "#bfdbfe" }}
@@ -5091,7 +5648,7 @@ export default function App() {
                   <div style={{ padding: 12, borderTop: "1px solid #f3f4f6", display: "flex", gap: 8 }}>
                     <button
                       onClick={() => {
-                        setActive("settings");
+                        navigateStudentPage("settings");
                         setProfileOpen(false);
                       }}
                       style={{ ...btnStyle, flex: 1, justifyContent: "center", padding: "8px 10px" }}
@@ -5112,11 +5669,11 @@ export default function App() {
         </div>
 
         {/* Page content */}
-        <div style={{ flex: 1, padding: "82px 24px 24px", maxWidth: ["dashboard", "attendance", "courses", "lectures", "onlineTest", "activities", "gallery", "results"].includes(active) ? 1240 : 960, width: "100%" }}>
+        <div style={{ flex: 1, padding: "82px 24px 24px", maxWidth: ["dashboard", "attendance", "courses", "lectures", "pyqs", "activities", "gallery", "results", "about"].includes(activePage) ? 1240 : 960, width: "100%" }}>
           <div style={{ fontSize: 20, fontWeight: 700, color: "#111827", marginBottom: 20, textTransform: "capitalize" }}>
-            {active}
+            {activePage}
           </div>
-          {pages[active]}
+          {pages[activePage]}
         </div>
         <AiChatPanel
           open={aiOpen}
@@ -5127,7 +5684,7 @@ export default function App() {
           facultyMembers={visibleFacultyMembers}
           announcements={visibleAnnouncements}
           assignments={visibleAssignments}
-          onNavigate={setActive}
+          onNavigate={navigateStudentPage}
           onOpenComplaint={() => setComplaintOpen(true)}
         />
         <ComplaintModal

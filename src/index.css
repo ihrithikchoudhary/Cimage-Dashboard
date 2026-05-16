@@ -1,1 +1,116 @@
 
+.pyqs-all-answers {
+  display: none !important;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  overflow-x: hidden;
+  scrollbar-color: #185fa5 #eaf2fb;
+  scrollbar-width: thin;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  scrollbar-color: #185fa5 #eaf2fb;
+  scrollbar-width: thin;
+}
+
+*::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #eaf2fb;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #185fa5;
+  border-radius: 999px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #0f477f;
+}
+
+@media (max-width: 900px) {
+  .pyqs-workspace {
+    grid-template-columns: 1fr !important;
+  }
+
+  .pyqs-all-answers {
+    display: grid !important;
+  }
+}
+
+@page {
+  size: A4;
+  margin: 8mm;
+}
+
+#print-marksheet-root {
+  display: none;
+}
+
+@media print {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box !important;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  body.printing-marksheet {
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+
+  body.printing-marksheet #root {
+    display: none !important;
+  }
+
+  body.printing-marksheet #print-marksheet-root {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  body.printing-marksheet .marksheet-screen-only {
+    display: none !important;
+  }
+
+  body.printing-marksheet .marksheet-print-card {
+    box-sizing: border-box !important;
+    width: calc(100% - 4mm) !important;
+    max-width: calc(100% - 4mm) !important;
+    margin: 0 auto !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    border: 1.5px solid #64748b !important;
+    overflow: hidden !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    zoom: 0.9;
+  }
+}

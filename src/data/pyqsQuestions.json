@@ -1,0 +1,422 @@
+{
+  "pyqsQuestions": [
+    {
+      "id": "pyqs-sem1-bm-001",
+      "semester": 1,
+      "subject": "Basic Mathematics",
+      "year": "2025",
+      "question": "What is the concept of set theory and its basic operations?",
+      "marks": 4,
+      "answer": "Set theory is a fundamental concept in mathematics that deals with collections of well-defined objects called sets. Basic operations on sets include union (combining all elements), intersection (common elements), complement (elements not in the set), and difference (elements in one set but not another). Sets are denoted using curly braces and can be represented using roster form or set-builder notation. The concept of sets forms the foundation for modern mathematics and is used extensively in logic, probability, and other branches.",
+      "solutionImage": {
+        "src": "/imgs/pyqs/set-operations.svg",
+        "alt": "Set operations diagram",
+        "caption": "Visual summary of union, intersection, difference, and complement."
+      }
+    },
+    {
+      "id": "pyqs-sem1-bm-002",
+      "semester": 1,
+      "subject": "Basic Mathematics",
+      "year": "2025",
+      "question": "Explain differentiation and its applications in real-world problems.",
+      "marks": 8,
+      "answer": "Differentiation is the process of finding the derivative of a function, which represents the rate of change of that function with respect to a variable. The derivative measures how rapidly a function changes at any given point. In real-world applications, differentiation is used to find instantaneous rates of change, determine optimization points (maxima and minima), analyze motion and acceleration, and solve engineering problems. Successive differentiation involves taking derivatives of derivatives, with the nth derivative providing information about the nth order rate of change. Applications include physics (velocity and acceleration), economics (marginal cost and revenue), and biology (population growth rates)."
+    },
+    {
+      "id": "pyqs-sem1-bm-003",
+      "semester": 1,
+      "subject": "Basic Mathematics",
+      "year": "2025",
+      "question": "What are matrices and how are matrix operations performed?",
+      "marks": 6,
+      "answer": "A matrix is a rectangular array of numbers arranged in rows and columns, enclosed in square brackets or parentheses. Matrices are fundamental in linear algebra and have numerous applications in computer graphics, engineering, and physics. Basic matrix operations include addition (adding corresponding elements), subtraction (subtracting corresponding elements), scalar multiplication (multiplying all elements by a constant), and matrix multiplication (row-by-column multiplication). The product of two matrices A (m×n) and B (n×p) results in a matrix of size m×p. Matrix operations require understanding dimensions and compatibility. Special matrices include identity matrix (diagonal with ones), zero matrix (all zeros), and transpose (swapping rows and columns).",
+      "solutionImage": {
+        "src": "/imgs/pyqs/matrix-multiplication.svg",
+        "alt": "Matrix multiplication diagram",
+        "caption": "Row-by-column method for matrix multiplication."
+      }
+    },
+    {
+      "id": "pyqs-sem1-it-001",
+      "semester": 1,
+      "subject": "Information Technology",
+      "year": "2025",
+      "question": "What are matrices and how are matrix operations performed?",
+      "marks": 6,
+      "answer": "A matrix is a rectangular array of numbers arranged in rows and columns, enclosed in square brackets or parentheses. Matrices are fundamental in linear algebra and have numerous applications in computer graphics, engineering, and physics. Basic matrix operations include addition (adding corresponding elements), subtraction (subtracting corresponding elements), scalar multiplication (multiplying all elements by a constant), and matrix multiplication (row-by-column multiplication). The product of two matrices A (m×n) and B (n×p) results in a matrix of size m×p. Matrix operations require understanding dimensions and compatibility. Special matrices include identity matrix (diagonal with ones), zero matrix (all zeros), and transpose (swapping rows and columns)."
+    },
+    {
+      "id": "pyqs-sem1-it-002",
+      "semester": 1,
+      "subject": "Information Technology",
+      "year": "2025",
+      "question": "What are matrices and how are matrix operations performed?",
+      "marks": 12,
+      "answer": "A matrix is a rectangular array of numbers arranged in rows and columns, enclosed in square brackets or parentheses. Matrices are fundamental in linear algebra and have numerous applications in computer graphics, engineering, and physics. Basic matrix operations include addition (adding corresponding elements), subtraction (subtracting corresponding elements), scalar multiplication (multiplying all elements by a constant), and matrix multiplication (row-by-column multiplication). The product of two matrices A (m×n) and B (n×p) results in a matrix of size m×p. Matrix operations require understanding dimensions and compatibility. Special matrices include identity matrix (diagonal with ones), zero matrix (all zeros), and transpose (swapping rows and columns)."
+    },
+    {
+      "id": "pyqs-sem1-pp-001",
+      "semester": 1,
+      "subject": "Python Programming",
+      "year": "2025",
+      "question": "What are matrices and how are matrix operations performed?",
+      "marks": 6,
+      "answer": "A matrix is a rectangular array of numbers arranged in rows and columns, enclosed in square brackets or parentheses. Matrices are fundamental in linear algebra and have numerous applications in computer graphics, engineering, and physics. Basic matrix operations include addition (adding corresponding elements), subtraction (subtracting corresponding elements), scalar multiplication (multiplying all elements by a constant), and matrix multiplication (row-by-column multiplication). The product of two matrices A (m×n) and B (n×p) results in a matrix of size m×p. Matrix operations require understanding dimensions and compatibility. Special matrices include identity matrix (diagonal with ones), zero matrix (all zeros), and transpose (swapping rows and columns)."
+    },
+    {
+      "id": "pyqs-sem1-pp-002",
+      "semester": 1,
+      "subject": "Python Programming",
+      "year": "2025",
+      "question": "What are matrices and how are matrix operations performed?",
+      "marks": 12,
+      "answer": "A matrix is a rectangular array of numbers arranged in rows and columns, enclosed in square brackets or parentheses. Matrices are fundamental in linear algebra and have numerous applications in computer graphics, engineering, and physics. Basic matrix operations include addition (adding corresponding elements), subtraction (subtracting corresponding elements), scalar multiplication (multiplying all elements by a constant), and matrix multiplication (row-by-column multiplication). The product of two matrices A (m×n) and B (n×p) results in a matrix of size m×p. Matrix operations require understanding dimensions and compatibility. Special matrices include identity matrix (diagonal with ones), zero matrix (all zeros), and transpose (swapping rows and columns)."
+    },
+    {
+      "id": "pyqs-sem1-ce-001",
+      "semester": 1,
+      "subject": "Communicative English",
+      "year": "2025",
+      "question": "What are matrices and how are matrix operations performed?",
+      "marks": 6,
+      "answer": "A matrix is a rectangular array of numbers arranged in rows and columns, enclosed in square brackets or parentheses. Matrices are fundamental in linear algebra and have numerous applications in computer graphics, engineering, and physics. Basic matrix operations include addition (adding corresponding elements), subtraction (subtracting corresponding elements), scalar multiplication (multiplying all elements by a constant), and matrix multiplication (row-by-column multiplication). The product of two matrices A (m×n) and B (n×p) results in a matrix of size m×p. Matrix operations require understanding dimensions and compatibility. Special matrices include identity matrix (diagonal with ones), zero matrix (all zeros), and transpose (swapping rows and columns)."
+    },
+    {
+      "id": "pyqs-sem1-ce-002",
+      "semester": 1,
+      "subject": "Communicative English",
+      "year": "2025",
+      "question": "What are matrices and how are matrix operations performed?",
+      "marks": 12,
+      "answer": "A matrix is a rectangular array of numbers arranged in rows and columns, enclosed in square brackets or parentheses. Matrices are fundamental in linear algebra and have numerous applications in computer graphics, engineering, and physics. Basic matrix operations include addition (adding corresponding elements), subtraction (subtracting corresponding elements), scalar multiplication (multiplying all elements by a constant), and matrix multiplication (row-by-column multiplication). The product of two matrices A (m×n) and B (n×p) results in a matrix of size m×p. Matrix operations require understanding dimensions and compatibility. Special matrices include identity matrix (diagonal with ones), zero matrix (all zeros), and transpose (swapping rows and columns)."
+    },
+    {
+      "id": "pyqs-sem1-pom-001",
+      "semester": 1,
+      "subject": "Principle Of Management",
+      "year": "2025",
+      "question": "What are matrices and how are matrix operations performed?",
+      "marks": 6,
+      "answer": "A matrix is a rectangular array of numbers arranged in rows and columns, enclosed in square brackets or parentheses. Matrices are fundamental in linear algebra and have numerous applications in computer graphics, engineering, and physics. Basic matrix operations include addition (adding corresponding elements), subtraction (subtracting corresponding elements), scalar multiplication (multiplying all elements by a constant), and matrix multiplication (row-by-column multiplication). The product of two matrices A (m×n) and B (n×p) results in a matrix of size m×p. Matrix operations require understanding dimensions and compatibility. Special matrices include identity matrix (diagonal with ones), zero matrix (all zeros), and transpose (swapping rows and columns)."
+    },
+    {
+      "id": "pyqs-sem1-pom-002",
+      "semester": 1,
+      "subject": "Principle Of Management",
+      "year": "2025",
+      "question": "What are matrices and how are matrix operations performed?",
+      "marks": 12,
+      "answer": "A matrix is a rectangular array of numbers arranged in rows and columns, enclosed in square brackets or parentheses. Matrices are fundamental in linear algebra and have numerous applications in computer graphics, engineering, and physics. Basic matrix operations include addition (adding corresponding elements), subtraction (subtracting corresponding elements), scalar multiplication (multiplying all elements by a constant), and matrix multiplication (row-by-column multiplication). The product of two matrices A (m×n) and B (n×p) results in a matrix of size m×p. Matrix operations require understanding dimensions and compatibility. Special matrices include identity matrix (diagonal with ones), zero matrix (all zeros), and transpose (swapping rows and columns)."
+    },
+    {
+      "id": "pyqs-sem2-fp-001",
+      "semester": 2,
+      "subject": "Fundamentals of Programming",
+      "year": "2025",
+      "question": "Explain the concept of variables, data types, and operators in programming.",
+      "marks": 6,
+      "answer": "Variables are named memory locations that store data values during program execution. Data types define the kind of data a variable can hold, including primitive types like int (integers), float (decimal numbers), char (single characters), and boolean (true/false). Composite data types include arrays, strings, and structures. Operators perform operations on variables and include arithmetic operators (+, -, *, /, %), relational operators (==, !=, <, >), logical operators (&&, ||, !), and assignment operators (=, +=, -=). Understanding the proper use of variables, data types, and operators is crucial for writing efficient and correct programs."
+    },
+    {
+      "id": "pyqs-sem2-fp-002",
+      "semester": 2,
+      "subject": "Fundamentals of Programming",
+      "year": "2025",
+      "question": "What are loops and conditional statements? Explain different types.",
+      "marks": 8,
+      "answer": "Loops are programming constructs that allow repetition of code blocks multiple times. For loops iterate a specific number of times, while loops continue as long as a condition is true, and do-while loops execute at least once before checking the condition. Conditional statements control program flow based on conditions. If statements execute code if a condition is true, if-else statements provide alternative execution paths, and if-else-if statements handle multiple conditions. Switch statements are used for selecting among multiple options based on a variable value. Proper use of loops and conditionals is essential for writing effective algorithms and control flow in programs."
+    },
+    {
+      "id": "pyqs-sem3-ds-001",
+      "semester": 3,
+      "subject": "Data Structures",
+      "year": "2025",
+      "question": "What is the time complexity of binary search in a sorted array?",
+      "marks": 4,
+      "answer": "The time complexity of binary search is O(log n), where n is the number of elements in the array. Binary search works by repeatedly dividing the search interval in half. It starts with the entire array and eliminates half of the remaining elements in each iteration. This logarithmic approach makes it much more efficient than linear search, especially for large datasets. However, binary search requires the input array to be sorted first, which adds a preprocessing cost."
+    },
+    {
+      "id": "pyqs-sem3-ds-002",
+      "semester": 3,
+      "subject": "Data Structures",
+      "year": "2025",
+      "question": "Explain the difference between stack and queue data structures.",
+      "marks": 6,
+      "answer": "Stack and queue are both linear data structures with different ordering principles. Stack follows LIFO (Last In First Out) principle, meaning the last element added is the first one removed, like a stack of plates. Queue follows FIFO (First In First Out) principle, where the first element added is the first one removed, like a queue in a supermarket. Stack operations include push (add) and pop (remove) from the top, while queue operations include enqueue (add at rear) and dequeue (remove from front). Stacks are commonly used for function calls and undo operations, while queues are useful for scheduling tasks and breadth-first search.",
+      "solutionImage": {
+        "src": "/imgs/pyqs/stack-queue.svg",
+        "alt": "Stack and queue comparison diagram",
+        "caption": "LIFO stack and FIFO queue operations shown together."
+      }
+    },
+    {
+      "id": "pyqs-sem3-ds-003",
+      "semester": 3,
+      "subject": "Data Structures",
+      "year": "2025",
+      "question": "What are the advantages and disadvantages of linked lists compared to arrays?",
+      "marks": 8,
+      "answer": "Linked lists have several advantages and disadvantages compared to arrays. The main advantage of linked lists is dynamic memory allocation—they can grow or shrink at runtime without reallocating memory, whereas arrays have fixed size. Insertion and deletion in linked lists are efficient at known positions (O(1) if pointer is available) compared to arrays which require shifting elements (O(n)). However, linked lists have slower access time—O(n) for random access versus O(1) for arrays. Linked lists also require extra memory for storing pointers in each node, making them memory-inefficient for small elements. Arrays provide better cache locality and are simpler to implement."
+    },
+    {
+      "id": "pyqs-sem4-dbms-001",
+      "semester": 4,
+      "subject": "DBMS",
+      "year": "2025",
+      "question": "What is database normalization? Explain the first three normal forms.",
+      "marks": 6,
+      "answer": "Database normalization is a process of organizing data in a relational database to reduce redundancy and improve data integrity. First Normal Form (1NF) requires that all attributes contain atomic values only—no repeating groups or multivalued attributes are allowed. Second Normal Form (2NF) builds on 1NF and requires that all non-key attributes are fully functionally dependent on the entire primary key, eliminating partial dependencies. Third Normal Form (3NF) requires that non-key attributes depend only on the primary key and not on other non-key attributes, removing transitive dependencies. These normalization forms help eliminate data anomalies during insertion, update, and deletion operations.",
+      "solutionImage": {
+        "src": "/imgs/pyqs/normalization.svg",
+        "alt": "Database normalization diagram",
+        "caption": "Step flow for 1NF, 2NF, and 3NF."
+      }
+    },
+    {
+      "id": "pyqs-sem4-dbms-002",
+      "semester": 4,
+      "subject": "DBMS",
+      "year": "2025",
+      "question": "Explain the types of database keys: primary key, candidate key, foreign key, and composite key.",
+      "marks": 8,
+      "answer": "Database keys are essential for maintaining data integrity and relationships in relational databases. A primary key is a unique identifier for each row in a table—it must be unique and cannot contain null values. A candidate key is any attribute or set of attributes that could serve as a primary key; a table can have multiple candidate keys but only one is chosen as the primary key. A foreign key is an attribute in one table that references the primary key in another table, establishing relationships between tables. A composite key is a primary key made up of two or more attributes that together uniquely identify a record. Foreign keys are crucial for maintaining referential integrity."
+    },
+    {
+      "id": "pyqs-sem4-se-001",
+      "semester": 4,
+      "subject": "Software Engineering",
+      "year": "2025",
+      "question": "What are the different software development lifecycle (SDLC) models?",
+      "marks": 10,
+      "answer": "The Software Development Lifecycle (SDLC) provides a structured framework for developing software. Waterfall model is a linear sequential approach where each phase completes before the next begins, suitable for well-defined requirements. Agile model emphasizes iterative development, flexibility, and customer feedback, ideal for changing requirements. V-model combines testing at each development stage, ensuring quality. Spiral model incorporates risk assessment and prototyping in a cyclic manner. DevOps model integrates development and operations for continuous delivery. Each model has advantages and disadvantages depending on project requirements, team size, timeline, and budget. Modern approaches often use hybrid models combining elements of different SDLC methodologies."
+    },
+    {
+      "id": "pyqs-sem5-ai-001",
+      "semester": 5,
+      "subject": "Artificial Intelligence",
+      "year": "2025",
+      "question": "Explain the difference between supervised and unsupervised learning.",
+      "marks": 8,
+      "answer": "Supervised learning is a machine learning approach where the algorithm learns from labeled data—data with known output values. The algorithm maps input features to known outputs, learning patterns and relationships. Common supervised learning tasks include classification (predicting categories) and regression (predicting continuous values). Examples include decision trees, support vector machines, and neural networks used for classification. Unsupervised learning works with unlabeled data, discovering hidden patterns and structures. Clustering algorithms group similar data points together, while dimensionality reduction techniques simplify complex data. Unsupervised learning is useful for exploratory data analysis and discovering previously unknown patterns. Semi-supervised learning combines both approaches using limited labeled data with large amounts of unlabeled data."
+    },
+    {
+      "id": "pyqs-sem6-ml-001",
+      "semester": 6,
+      "subject": "Machine Learning",
+      "year": "2025",
+      "question": "What is deep learning and how does it differ from traditional machine learning?",
+      "marks": 12,
+      "answer": "Deep learning is a subset of machine learning that uses artificial neural networks with multiple layers (hence 'deep') to learn complex patterns in data. Traditional machine learning typically uses manually engineered features and simpler models like decision trees and support vector machines. Deep learning automatically discovers feature hierarchies through multiple layers of non-linear transformations, making it powerful for unstructured data like images, videos, and audio. Convolutional Neural Networks (CNNs) excel at image processing, Recurrent Neural Networks (RNNs) handle sequential data, and Transformers revolutionized natural language processing. Deep learning requires large amounts of data and computational power but achieves superior performance on complex tasks. However, traditional machine learning is often more interpretable and efficient for simpler problems with limited data."
+    },
+    {
+      "id": "pyqs-2024-sem1-bm-001",
+      "semester": 1,
+      "subject": "Basic Mathematics",
+      "year": "2024",
+      "question": "What is the concept of set theory and its basic operations?",
+      "marks": 4,
+      "answer": "Set theory is a fundamental concept in mathematics that deals with collections of well-defined objects called sets. Basic operations on sets include union (combining all elements), intersection (common elements), complement (elements not in the set), and difference (elements in one set but not another). Sets are denoted using curly braces and can be represented using roster form or set-builder notation. The concept of sets forms the foundation for modern mathematics and is used extensively in logic, probability, and other branches.",
+      "solutionImage": {
+        "src": "/imgs/pyqs/set-operations.svg",
+        "alt": "Set operations diagram",
+        "caption": "Visual summary of union, intersection, difference, and complement."
+      }
+    },
+    {
+      "id": "pyqs-2024-sem1-bm-002",
+      "semester": 1,
+      "subject": "Basic Mathematics",
+      "year": "2024",
+      "question": "Explain differentiation and its applications in academic and business problems.",
+      "marks": 8,
+      "answer": "Differentiation is the process of finding the derivative of a function, which represents the rate of change of that function with respect to a variable. The derivative measures how rapidly a function changes at any given point. In real-world applications, differentiation is used to find instantaneous rates of change, determine optimization points (maxima and minima), analyze motion and acceleration, and solve engineering problems. Successive differentiation involves taking derivatives of derivatives, with the nth derivative providing information about the nth order rate of change. Applications include physics (velocity and acceleration), economics (marginal cost and revenue), and biology (population growth rates)."
+    },
+    {
+      "id": "pyqs-2024-sem1-bm-003",
+      "semester": 1,
+      "subject": "Basic Mathematics",
+      "year": "2024",
+      "question": "What are matrices and how are matrix operations performed?",
+      "marks": 6,
+      "answer": "A matrix is a rectangular array of numbers arranged in rows and columns, enclosed in square brackets or parentheses. Matrices are fundamental in linear algebra and have numerous applications in computer graphics, engineering, and physics. Basic matrix operations include addition (adding corresponding elements), subtraction (subtracting corresponding elements), scalar multiplication (multiplying all elements by a constant), and matrix multiplication (row-by-column multiplication). The product of two matrices A (m×n) and B (n×p) results in a matrix of size m×p. Matrix operations require understanding dimensions and compatibility. Special matrices include identity matrix (diagonal with ones), zero matrix (all zeros), and transpose (swapping rows and columns).",
+      "solutionImage": {
+        "src": "/imgs/pyqs/matrix-multiplication.svg",
+        "alt": "Matrix multiplication diagram",
+        "caption": "Row-by-column method for matrix multiplication."
+      }
+    },
+    {
+      "id": "pyqs-2024-sem1-it-001",
+      "semester": 1,
+      "subject": "Information Technology",
+      "year": "2024",
+      "question": "What are matrices and how are matrix operations performed?",
+      "marks": 6,
+      "answer": "A matrix is a rectangular array of numbers arranged in rows and columns, enclosed in square brackets or parentheses. Matrices are fundamental in linear algebra and have numerous applications in computer graphics, engineering, and physics. Basic matrix operations include addition (adding corresponding elements), subtraction (subtracting corresponding elements), scalar multiplication (multiplying all elements by a constant), and matrix multiplication (row-by-column multiplication). The product of two matrices A (m×n) and B (n×p) results in a matrix of size m×p. Matrix operations require understanding dimensions and compatibility. Special matrices include identity matrix (diagonal with ones), zero matrix (all zeros), and transpose (swapping rows and columns)."
+    },
+    {
+      "id": "pyqs-2024-sem1-it-002",
+      "semester": 1,
+      "subject": "Information Technology",
+      "year": "2024",
+      "question": "What are matrices and how are matrix operations performed?",
+      "marks": 12,
+      "answer": "A matrix is a rectangular array of numbers arranged in rows and columns, enclosed in square brackets or parentheses. Matrices are fundamental in linear algebra and have numerous applications in computer graphics, engineering, and physics. Basic matrix operations include addition (adding corresponding elements), subtraction (subtracting corresponding elements), scalar multiplication (multiplying all elements by a constant), and matrix multiplication (row-by-column multiplication). The product of two matrices A (m×n) and B (n×p) results in a matrix of size m×p. Matrix operations require understanding dimensions and compatibility. Special matrices include identity matrix (diagonal with ones), zero matrix (all zeros), and transpose (swapping rows and columns)."
+    },
+    {
+      "id": "pyqs-2024-sem1-pp-001",
+      "semester": 1,
+      "subject": "Python Programming",
+      "year": "2024",
+      "question": "What are matrices and how are matrix operations performed?",
+      "marks": 6,
+      "answer": "A matrix is a rectangular array of numbers arranged in rows and columns, enclosed in square brackets or parentheses. Matrices are fundamental in linear algebra and have numerous applications in computer graphics, engineering, and physics. Basic matrix operations include addition (adding corresponding elements), subtraction (subtracting corresponding elements), scalar multiplication (multiplying all elements by a constant), and matrix multiplication (row-by-column multiplication). The product of two matrices A (m×n) and B (n×p) results in a matrix of size m×p. Matrix operations require understanding dimensions and compatibility. Special matrices include identity matrix (diagonal with ones), zero matrix (all zeros), and transpose (swapping rows and columns)."
+    },
+    {
+      "id": "pyqs-2024-sem1-pp-002",
+      "semester": 1,
+      "subject": "Python Programming",
+      "year": "2024",
+      "question": "What are matrices and how are matrix operations performed?",
+      "marks": 12,
+      "answer": "A matrix is a rectangular array of numbers arranged in rows and columns, enclosed in square brackets or parentheses. Matrices are fundamental in linear algebra and have numerous applications in computer graphics, engineering, and physics. Basic matrix operations include addition (adding corresponding elements), subtraction (subtracting corresponding elements), scalar multiplication (multiplying all elements by a constant), and matrix multiplication (row-by-column multiplication). The product of two matrices A (m×n) and B (n×p) results in a matrix of size m×p. Matrix operations require understanding dimensions and compatibility. Special matrices include identity matrix (diagonal with ones), zero matrix (all zeros), and transpose (swapping rows and columns)."
+    },
+    {
+      "id": "pyqs-2024-sem1-ce-001",
+      "semester": 1,
+      "subject": "Communicative English",
+      "year": "2024",
+      "question": "What are matrices and how are matrix operations performed?",
+      "marks": 6,
+      "answer": "A matrix is a rectangular array of numbers arranged in rows and columns, enclosed in square brackets or parentheses. Matrices are fundamental in linear algebra and have numerous applications in computer graphics, engineering, and physics. Basic matrix operations include addition (adding corresponding elements), subtraction (subtracting corresponding elements), scalar multiplication (multiplying all elements by a constant), and matrix multiplication (row-by-column multiplication). The product of two matrices A (m×n) and B (n×p) results in a matrix of size m×p. Matrix operations require understanding dimensions and compatibility. Special matrices include identity matrix (diagonal with ones), zero matrix (all zeros), and transpose (swapping rows and columns)."
+    },
+    {
+      "id": "pyqs-2024-sem1-ce-002",
+      "semester": 1,
+      "subject": "Communicative English",
+      "year": "2024",
+      "question": "What are matrices and how are matrix operations performed?",
+      "marks": 12,
+      "answer": "A matrix is a rectangular array of numbers arranged in rows and columns, enclosed in square brackets or parentheses. Matrices are fundamental in linear algebra and have numerous applications in computer graphics, engineering, and physics. Basic matrix operations include addition (adding corresponding elements), subtraction (subtracting corresponding elements), scalar multiplication (multiplying all elements by a constant), and matrix multiplication (row-by-column multiplication). The product of two matrices A (m×n) and B (n×p) results in a matrix of size m×p. Matrix operations require understanding dimensions and compatibility. Special matrices include identity matrix (diagonal with ones), zero matrix (all zeros), and transpose (swapping rows and columns)."
+    },
+    {
+      "id": "pyqs-2024-sem1-pom-001",
+      "semester": 1,
+      "subject": "Principle Of Management",
+      "year": "2024",
+      "question": "What are matrices and how are matrix operations performed?",
+      "marks": 6,
+      "answer": "A matrix is a rectangular array of numbers arranged in rows and columns, enclosed in square brackets or parentheses. Matrices are fundamental in linear algebra and have numerous applications in computer graphics, engineering, and physics. Basic matrix operations include addition (adding corresponding elements), subtraction (subtracting corresponding elements), scalar multiplication (multiplying all elements by a constant), and matrix multiplication (row-by-column multiplication). The product of two matrices A (m×n) and B (n×p) results in a matrix of size m×p. Matrix operations require understanding dimensions and compatibility. Special matrices include identity matrix (diagonal with ones), zero matrix (all zeros), and transpose (swapping rows and columns)."
+    },
+    {
+      "id": "pyqs-2024-sem1-pom-002",
+      "semester": 1,
+      "subject": "Principle Of Management",
+      "year": "2024",
+      "question": "What are matrices and how are matrix operations performed?",
+      "marks": 12,
+      "answer": "A matrix is a rectangular array of numbers arranged in rows and columns, enclosed in square brackets or parentheses. Matrices are fundamental in linear algebra and have numerous applications in computer graphics, engineering, and physics. Basic matrix operations include addition (adding corresponding elements), subtraction (subtracting corresponding elements), scalar multiplication (multiplying all elements by a constant), and matrix multiplication (row-by-column multiplication). The product of two matrices A (m×n) and B (n×p) results in a matrix of size m×p. Matrix operations require understanding dimensions and compatibility. Special matrices include identity matrix (diagonal with ones), zero matrix (all zeros), and transpose (swapping rows and columns)."
+    },
+    {
+      "id": "pyqs-2024-sem2-fp-001",
+      "semester": 2,
+      "subject": "Fundamentals of Programming",
+      "year": "2024",
+      "question": "Explain the concept of variables, data types, and operators in programming.",
+      "marks": 6,
+      "answer": "Variables are named memory locations that store data values during program execution. Data types define the kind of data a variable can hold, including primitive types like int (integers), float (decimal numbers), char (single characters), and boolean (true/false). Composite data types include arrays, strings, and structures. Operators perform operations on variables and include arithmetic operators (+, -, *, /, %), relational operators (==, !=, <, >), logical operators (&&, ||, !), and assignment operators (=, +=, -=). Understanding the proper use of variables, data types, and operators is crucial for writing efficient and correct programs."
+    },
+    {
+      "id": "pyqs-2024-sem2-fp-002",
+      "semester": 2,
+      "subject": "Fundamentals of Programming",
+      "year": "2024",
+      "question": "What are loops and conditional statements? Explain different types with examples.",
+      "marks": 8,
+      "answer": "Loops are programming constructs that allow repetition of code blocks multiple times. For loops iterate a specific number of times, while loops continue as long as a condition is true, and do-while loops execute at least once before checking the condition. Conditional statements control program flow based on conditions. If statements execute code if a condition is true, if-else statements provide alternative execution paths, and if-else-if statements handle multiple conditions. Switch statements are used for selecting among multiple options based on a variable value. Proper use of loops and conditionals is essential for writing effective algorithms and control flow in programs."
+    },
+    {
+      "id": "pyqs-2024-sem3-ds-001",
+      "semester": 3,
+      "subject": "Data Structures",
+      "year": "2024",
+      "question": "What is the time complexity of binary search in a sorted array?",
+      "marks": 4,
+      "answer": "The time complexity of binary search is O(log n), where n is the number of elements in the array. Binary search works by repeatedly dividing the search interval in half. It starts with the entire array and eliminates half of the remaining elements in each iteration. This logarithmic approach makes it much more efficient than linear search, especially for large datasets. However, binary search requires the input array to be sorted first, which adds a preprocessing cost."
+    },
+    {
+      "id": "pyqs-2024-sem3-ds-002",
+      "semester": 3,
+      "subject": "Data Structures",
+      "year": "2024",
+      "question": "Explain the difference between stack and queue data structures.",
+      "marks": 6,
+      "answer": "Stack and queue are both linear data structures with different ordering principles. Stack follows LIFO (Last In First Out) principle, meaning the last element added is the first one removed, like a stack of plates. Queue follows FIFO (First In First Out) principle, where the first element added is the first one removed, like a queue in a supermarket. Stack operations include push (add) and pop (remove) from the top, while queue operations include enqueue (add at rear) and dequeue (remove from front). Stacks are commonly used for function calls and undo operations, while queues are useful for scheduling tasks and breadth-first search.",
+      "solutionImage": {
+        "src": "/imgs/pyqs/stack-queue.svg",
+        "alt": "Stack and queue comparison diagram",
+        "caption": "LIFO stack and FIFO queue operations shown together."
+      }
+    },
+    {
+      "id": "pyqs-2024-sem3-ds-003",
+      "semester": 3,
+      "subject": "Data Structures",
+      "year": "2024",
+      "question": "What are the advantages and disadvantages of linked lists compared to arrays?",
+      "marks": 8,
+      "answer": "Linked lists have several advantages and disadvantages compared to arrays. The main advantage of linked lists is dynamic memory allocation—they can grow or shrink at runtime without reallocating memory, whereas arrays have fixed size. Insertion and deletion in linked lists are efficient at known positions (O(1) if pointer is available) compared to arrays which require shifting elements (O(n)). However, linked lists have slower access time—O(n) for random access versus O(1) for arrays. Linked lists also require extra memory for storing pointers in each node, making them memory-inefficient for small elements. Arrays provide better cache locality and are simpler to implement."
+    },
+    {
+      "id": "pyqs-2024-sem4-dbms-001",
+      "semester": 4,
+      "subject": "DBMS",
+      "year": "2024",
+      "question": "What is database normalization? Explain the first three normal forms with examples.",
+      "marks": 6,
+      "answer": "Database normalization is a process of organizing data in a relational database to reduce redundancy and improve data integrity. First Normal Form (1NF) requires that all attributes contain atomic values only—no repeating groups or multivalued attributes are allowed. Second Normal Form (2NF) builds on 1NF and requires that all non-key attributes are fully functionally dependent on the entire primary key, eliminating partial dependencies. Third Normal Form (3NF) requires that non-key attributes depend only on the primary key and not on other non-key attributes, removing transitive dependencies. These normalization forms help eliminate data anomalies during insertion, update, and deletion operations.",
+      "solutionImage": {
+        "src": "/imgs/pyqs/normalization.svg",
+        "alt": "Database normalization diagram",
+        "caption": "Step flow for 1NF, 2NF, and 3NF."
+      }
+    },
+    {
+      "id": "pyqs-2024-sem4-dbms-002",
+      "semester": 4,
+      "subject": "DBMS",
+      "year": "2024",
+      "question": "Explain the types of database keys: primary key, candidate key, foreign key, and composite key.",
+      "marks": 8,
+      "answer": "Database keys are essential for maintaining data integrity and relationships in relational databases. A primary key is a unique identifier for each row in a table—it must be unique and cannot contain null values. A candidate key is any attribute or set of attributes that could serve as a primary key; a table can have multiple candidate keys but only one is chosen as the primary key. A foreign key is an attribute in one table that references the primary key in another table, establishing relationships between tables. A composite key is a primary key made up of two or more attributes that together uniquely identify a record. Foreign keys are crucial for maintaining referential integrity."
+    },
+    {
+      "id": "pyqs-2024-sem4-se-001",
+      "semester": 4,
+      "subject": "Software Engineering",
+      "year": "2024",
+      "question": "What are the different software development lifecycle (SDLC) models?",
+      "marks": 10,
+      "answer": "The Software Development Lifecycle (SDLC) provides a structured framework for developing software. Waterfall model is a linear sequential approach where each phase completes before the next begins, suitable for well-defined requirements. Agile model emphasizes iterative development, flexibility, and customer feedback, ideal for changing requirements. V-model combines testing at each development stage, ensuring quality. Spiral model incorporates risk assessment and prototyping in a cyclic manner. DevOps model integrates development and operations for continuous delivery. Each model has advantages and disadvantages depending on project requirements, team size, timeline, and budget. Modern approaches often use hybrid models combining elements of different SDLC methodologies."
+    },
+    {
+      "id": "pyqs-2024-sem5-ai-001",
+      "semester": 5,
+      "subject": "Artificial Intelligence",
+      "year": "2024",
+      "question": "Explain the difference between supervised and unsupervised learning.",
+      "marks": 8,
+      "answer": "Supervised learning is a machine learning approach where the algorithm learns from labeled data—data with known output values. The algorithm maps input features to known outputs, learning patterns and relationships. Common supervised learning tasks include classification (predicting categories) and regression (predicting continuous values). Examples include decision trees, support vector machines, and neural networks used for classification. Unsupervised learning works with unlabeled data, discovering hidden patterns and structures. Clustering algorithms group similar data points together, while dimensionality reduction techniques simplify complex data. Unsupervised learning is useful for exploratory data analysis and discovering previously unknown patterns. Semi-supervised learning combines both approaches using limited labeled data with large amounts of unlabeled data."
+    },
+    {
+      "id": "pyqs-2024-sem6-ml-001",
+      "semester": 6,
+      "subject": "Machine Learning",
+      "year": "2024",
+      "question": "What is deep learning and how does it differ from traditional machine learning in applications?",
+      "marks": 12,
+      "answer": "Deep learning is a subset of machine learning that uses artificial neural networks with multiple layers (hence 'deep') to learn complex patterns in data. Traditional machine learning typically uses manually engineered features and simpler models like decision trees and support vector machines. Deep learning automatically discovers feature hierarchies through multiple layers of non-linear transformations, making it powerful for unstructured data like images, videos, and audio. Convolutional Neural Networks (CNNs) excel at image processing, Recurrent Neural Networks (RNNs) handle sequential data, and Transformers revolutionized natural language processing. Deep learning requires large amounts of data and computational power but achieves superior performance on complex tasks. However, traditional machine learning is often more interpretable and efficient for simpler problems with limited data."
+    }
+  ]
+}

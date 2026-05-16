@@ -1,0 +1,104 @@
+{
+  "teachers": {
+    "amit-kumar-shukla": {
+      "id": "amit-kumar-shukla",
+      "name": "Dr., Amit kumar Shukla",
+      "subject": "Digital Electronics",
+      "education": "M.Tech, Computer Technology",
+      "joined": "July 2010",
+      "photo": "/imgs/amitshuklasir.jpg",
+      "phone": "+91 98765 42001",
+      "whatsapp": "+91 98765 42001"
+    },
+    "niraj-kumar": {
+      "id": "niraj-kumar",
+      "name": "Ass.Pro. Niraj Kumar",
+      "subject": "Web Developement",
+      "education": "M.Tech, Computer Technology",
+      "joined": "July 2010",
+      "photo": "/imgs/NirajSingh.jpg",
+      "phone": "+91 98765 42001",
+      "whatsapp": "+91 98765 42001"
+    },
+    "ravi-soni": {
+      "id": "ravi-soni",
+      "name": "Ass.Pro. Ravi Soni",
+      "subject": "Data Structures",
+      "education": "MCA, Software Engineering",
+      "joined": "May 2012",
+      "photo": "/imgs/ravikumarsonisir.jpg",
+      "phone": "+91 98765 42002",
+      "whatsapp": "+91 98765 42002"
+    },
+    "pankaj-chandra-sinha": {
+      "id": "pankaj-chandra-sinha",
+      "name": "Ass.Pro. Pankaj chandra Sinha",
+      "subject": "DBMS",
+      "education": "Ph.D., Database Systems",
+      "joined": "18 Jun 2019",
+      "photo": "/imgs/pankajchandrasir.jpg",
+      "phone": "+91 98765 42003",
+      "whatsapp": "+91 98765 42003"
+    },
+    "sanjeev-kumar": {
+      "id": "sanjeev-kumar",
+      "name": "Ass.Pro. Sanjeev Kumar",
+      "subject": "Advance Excel",
+      "education": "MCA, Data Analytics",
+      "joined": "May 2025",
+      "photo": "/imgs/sanjeevkumarsir.jpg",
+      "phone": "+91 98765 42004",
+      "whatsapp": "+91 98765 42004"
+    },
+    "kundan-kumar": {
+      "id": "kundan-kumar",
+      "name": "Ass.Pro. Kundan Kumar",
+      "subject": "Mathematics",
+      "education": "M.Sc, Mathematics",
+      "joined": "August 2018",
+      "photo": "/imgs/kundansir.jpg",
+      "phone": "",
+      "whatsapp": ""
+    },
+    "murali-manohar": {
+      "id": "murali-manohar",
+      "name": "Ass.Pro. Murali Manohar",
+      "subject": "Information Technology",
+      "education": "MCA, Computer Applications",
+      "joined": "January 2019",
+      "photo": "/imgs/muralisir.jpg",
+      "phone": "",
+      "whatsapp": ""
+    },
+    "nilanjan-bose": {
+      "id": "nilanjan-bose",
+      "name": "Ass.Pro. Nilanjan Bose",
+      "subject": "English Communication",
+      "education": "M.A., Communication Skills",
+      "joined": "June 2020",
+      "photo": "nilanjanbose.jpg",
+      "phone": "",
+      "whatsapp": ""
+    },
+    "anil-kumar": {
+      "id": "anil-kumar",
+      "name": "Ass.Pro. Anil Kumar",
+      "subject": "Management",
+      "education": "MBA, Business Administration",
+      "joined": "March 2021",
+      "photo": "/imgs/anilkumar.jpg",
+      "phone": "",
+      "whatsapp": ""
+    },
+    "abhinav-deep": {
+      "id": "abhinav-deep",
+      "name": "Ass.Pro. Abhinav Deep",
+      "subject": "Statics",
+      "education": "M.Tech, Civil Engineering",
+      "joined": "April 2022",
+      "photo": "/imgs/abhinavdeep.jpg",
+      "phone": "",
+      "whatsapp": ""
+    }
+  }
+}

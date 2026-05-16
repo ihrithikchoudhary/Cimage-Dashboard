@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+  <title id="title">Set operations solution diagram</title>
+  <desc id="desc">A clean visual showing union, intersection, difference and complement for two sets.</desc>
+  <rect width="960" height="540" rx="28" fill="#f8fafc"/>
+  <rect x="38" y="38" width="884" height="464" rx="24" fill="#ffffff" stroke="#dbeafe" stroke-width="3"/>
+  <text x="70" y="92" fill="#111827" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="800">Set Operations</text>
+  <text x="70" y="128" fill="#64748b" font-family="Segoe UI, Arial, sans-serif" font-size="18">Use two sets A and B to identify common and combined elements.</text>
+  <g transform="translate(92 178)">
+    <rect width="330" height="238" rx="18" fill="#eff6ff" stroke="#bfdbfe" stroke-width="2"/>
+    <circle cx="136" cy="118" r="80" fill="#60a5fa" fill-opacity=".42" stroke="#2563eb" stroke-width="4"/>
+    <circle cx="198" cy="118" r="80" fill="#34d399" fill-opacity=".42" stroke="#059669" stroke-width="4"/>
+    <path d="M167 48a80 80 0 0 1 0 140a80 80 0 0 1 0-140Z" fill="#185fa5" fill-opacity=".58"/>
+    <text x="84" y="58" fill="#1d4ed8" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="800">A</text>
+    <text x="238" y="58" fill="#047857" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="800">B</text>
+    <text x="72" y="214" fill="#111827" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="800">A ∪ B</text>
+    <text x="170" y="214" fill="#111827" font-family="Segoe UI, Arial, sans-serif" font-size="20" font-weight="800">A ∩ B</text>
+  </g>
+  <g transform="translate(472 180)" font-family="Segoe UI, Arial, sans-serif">
+    <rect width="360" height="54" rx="12" fill="#f1f5f9"/>
+    <text x="22" y="35" fill="#111827" font-size="20" font-weight="800">Union:</text>
+    <text x="112" y="35" fill="#334155" font-size="20">all elements in A or B</text>
+    <rect y="72" width="360" height="54" rx="12" fill="#f1f5f9"/>
+    <text x="22" y="107" fill="#111827" font-size="20" font-weight="800">Intersection:</text>
+    <text x="154" y="107" fill="#334155" font-size="20">common elements</text>
+    <rect y="144" width="360" height="54" rx="12" fill="#f1f5f9"/>
+    <text x="22" y="179" fill="#111827" font-size="20" font-weight="800">Difference:</text>
+    <text x="132" y="179" fill="#334155" font-size="20">A - B only in A</text>
+    <rect y="216" width="360" height="54" rx="12" fill="#f1f5f9"/>
+    <text x="22" y="251" fill="#111827" font-size="20" font-weight="800">Complement:</text>
+    <text x="142" y="251" fill="#334155" font-size="20">outside the set</text>
+  </g>
+</svg>

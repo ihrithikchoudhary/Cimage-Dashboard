@@ -18,7 +18,7 @@
     "rollNo": "B-18",
     "age": 20,
     "regNo": "24303310040",
-    "session": "2024 – 2027",
+    "session": "2024 \u2013 2027",
     "university": "Cimage Professional College"
   },
   "defaultProfile": {
@@ -27,44 +27,6 @@
     "phone": "+91 98765 00000",
     "photo": ""
   },
-  "teachers": [
-    {
-      "name": "Dr, Amit kumar Shukla",
-      "subject": "Digital Electronics",
-      "education": "M.Tech, Computer Technology",
-      "joined": "July 2010",
-      "photo": "/imgs/amitshuklasir.jpg",
-      "phone": "+91 98765 42001",
-      "whatsapp": "+91 98765 42001"
-    },
-    {
-      "name": "Pro. Ravi Soni",
-      "subject": "Data Structures",
-      "education": "MCA, Software Engineering",
-      "joined": "May 2012",
-      "photo": "/imgs/ravikumarsonisir.jpg",
-      "phone": "+91 98765 42002",
-      "whatsapp": "+91 98765 42002"
-    },
-    {
-      "name": "Pro. Pankaj chandra Sinha",
-      "subject": "DBMS",
-      "education": "Ph.D., Database Systems",
-      "joined": "18 Jun 2019",
-      "photo": "/imgs/pankajchndrasir.jpg",
-      "phone": "+91 98765 42003",
-      "whatsapp": "+91 98765 42003"
-    },
-    {
-      "name": "Mr Sanjeev Kumar",
-      "subject": "Advance Excel",
-      "education": "MCA, Data Analytics",
-      "joined": "May 2025",
-      "photo": "/imgs/sanjeevkumarsir.jpg",
-      "phone": "+91 98765 42004",
-      "whatsapp": "+91 98765 42004"
-    }
-  ],
 
   "adminCredentials": {
     "email": "admin@cimage.in",
@@ -81,39 +43,6 @@
       "attendance": 85,
       "cgpa": 8.4,
       "phone": "+91 98765 00000",
-      "status": "Active"
-    },
-    {
-      "id": "310-28284",
-      "name": "Anjali Singh",
-      "email": "anjali.singh@cimage.in",
-      "course": "BCA",
-      "semester": 4,
-      "attendance": 91,
-      "cgpa": 8.8,
-      "phone": "+91 98765 41002",
-      "status": "Active"
-    },
-    {
-      "id": "310-28285",
-      "name": "Rohit Raj",
-      "email": "rohit.raj@cimage.in",
-      "course": "BBA",
-      "semester": 2,
-      "attendance": 76,
-      "cgpa": 7.9,
-      "phone": "+91 98765 41003",
-      "status": "Watchlist"
-    },
-    {
-      "id": "310-28286",
-      "name": "Priya Kumari",
-      "email": "priya.kumari@cimage.in",
-      "course": "BCA",
-      "semester": 3,
-      "attendance": 88,
-      "cgpa": 8.5,
-      "phone": "+91 98765 41004",
       "status": "Active"
     }
   ],
@@ -156,49 +85,53 @@
       "id": 1,
       "title": "React Dashboard Project",
       "subject": "React.js",
-      "teacher": "Dr, Amit kumar Shukla",
+      "teacher": "amit-kumar-shukla",
       "desc": "Create a responsive student portal using React and Recharts",
       "givenDate": "8 May 2026",
       "submissionDate": "15 May 2026",
       "deadline": "15 May 2026",
       "totalMarks": 30,
-      "status": "pending"
+      "status": "pending",
+      "facultyId": "amit-kumar-shukla"
     },
     {
       "id": 2,
       "title": "Binary Search Tree Implementation",
       "subject": "Data Structures",
-      "teacher": "Pro. Ravi Soni",
+      "teacher": "ravi-soni",
       "desc": "Write BST with insert, delete, and all traversal methods",
       "givenDate": "25 Apr 2026",
       "submissionDate": "2 May 2026",
       "deadline": "2 May 2026",
       "totalMarks": 25,
-      "status": "submitted"
+      "status": "submitted",
+      "facultyId": "ravi-soni"
     },
     {
       "id": 3,
-      "title": "Integration Calculus — Worksheet 4",
+      "title": "Integration Calculus \u2014 Worksheet 4",
       "subject": "Mathematics",
-      "teacher": "Dr, Amit kumar Shukla",
+      "teacher": "amit-kumar-shukla",
       "desc": "Problem set on definite integrals and area under curves",
       "givenDate": "21 Apr 2026",
       "submissionDate": "28 Apr 2026",
       "deadline": "28 Apr 2026",
       "totalMarks": 20,
-      "status": "late"
+      "status": "late",
+      "facultyId": "amit-kumar-shukla"
     },
     {
       "id": 4,
-      "title": "ER Diagram — Library System",
+      "title": "ER Diagram \u2014 Library System",
       "subject": "DBMS",
-      "teacher": "Pro. Pankaj chandra Sinha",
+      "teacher": "pankaj-chandra-sinha",
       "desc": "Design an entity-relationship diagram for a library management system",
       "givenDate": "12 May 2026",
       "submissionDate": "20 May 2026",
       "deadline": "20 May 2026",
       "totalMarks": 25,
-      "status": "pending"
+      "status": "pending",
+      "facultyId": "pankaj-chandra-sinha"
     }
   ],
   "announcements": [
@@ -272,99 +205,6 @@
       "grade": "O"
     }
   ],
-
-  "galleryEvents": [
-    {
-      "id": 1,
-      "title": "Annual Tech Fest 2026",
-      "date": "10 May 2026",
-      "venue": "Cimage Main Auditorium",
-      "description": "Students presented web apps, AI prototypes, coding projects, and poster demos during the annual technology showcase.",
-      "images": [
-        {
-          "title": "Project presentation",
-          "description": "Student team presenting their React and AI dashboard project to faculty judges.",
-          "uploadDate": "11 May 2026",
-          "url": "https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1600&q=90",
-          "hd": "https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=2400&q=95"
-        },
-        {
-          "title": "Coding competition",
-          "description": "Participants solving timed programming challenges during the tech fest coding round.",
-          "uploadDate": "11 May 2026",
-          "url": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1600&q=90",
-          "hd": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=2400&q=95"
-        },
-        {
-          "title": "Student demo booth",
-          "description": "Final-year students explaining project workflow and features at the demo counter.",
-          "uploadDate": "12 May 2026",
-          "url": "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1600&q=90",
-          "hd": "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=2400&q=95"
-        }
-      ]
-    },
-    {
-      "id": 2,
-      "title": "Placement Preparation Workshop",
-      "date": "8 May 2026",
-      "venue": "Seminar Hall B",
-      "description": "The placement cell conducted a practical session on resume building, interview confidence, group discussion, and aptitude preparation.",
-      "images": [
-        {
-          "title": "Resume review session",
-          "description": "Placement mentor reviewing student resumes and improving profile highlights.",
-          "uploadDate": "8 May 2026",
-          "url": "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1600&q=90",
-          "hd": "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=2400&q=95"
-        },
-        {
-          "title": "Mock interview round",
-          "description": "Students practicing HR and technical interview rounds with faculty feedback.",
-          "uploadDate": "9 May 2026",
-          "url": "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1600&q=90",
-          "hd": "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=2400&q=95"
-        },
-        {
-          "title": "Group discussion",
-          "description": "A group discussion practice round for placement communication preparation.",
-          "uploadDate": "9 May 2026",
-          "url": "https://images.unsplash.com/photo-1556761175-4b46a572b786?auto=format&fit=crop&w=1600&q=90",
-          "hd": "https://images.unsplash.com/photo-1556761175-4b46a572b786?auto=format&fit=crop&w=2400&q=95"
-        }
-      ]
-    },
-    {
-      "id": 3,
-      "title": "Freshers Cultural Evening",
-      "date": "5 May 2026",
-      "venue": "College Open Stage",
-      "description": "Students welcomed the new batch with music, dance, drama, anchoring, and award moments from different departments.",
-      "images": [
-        {
-          "title": "Stage performance",
-          "description": "Freshers cultural evening dance and music performance on the open stage.",
-          "uploadDate": "6 May 2026",
-          "url": "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=1600&q=90",
-          "hd": "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=2400&q=95"
-        },
-        {
-          "title": "Audience moment",
-          "description": "Students and faculty enjoying the cultural performances during the evening event.",
-          "uploadDate": "6 May 2026",
-          "url": "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1600&q=90",
-          "hd": "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=2400&q=95"
-        },
-        {
-          "title": "Award ceremony",
-          "description": "Award distribution moment for student performers and event coordinators.",
-          "uploadDate": "7 May 2026",
-          "url": "https://images.unsplash.com/photo-1523580494863-6f3031224c94?auto=format&fit=crop&w=1600&q=90",
-          "hd": "https://images.unsplash.com/photo-1523580494863-6f3031224c94?auto=format&fit=crop&w=2400&q=95"
-        }
-      ]
-    }
-  ],
   "navItems": [
     {
       "id": "dashboard",
@@ -387,13 +227,8 @@
       "section": "academic"
     },
     {
-      "id": "gallery",
-      "label": "Gallery",
-      "section": "academic"
-    },
-    {
-      "id": "onlineTest",
-      "label": "Online Test",
+      "id": "pyqs",
+      "label": "PYQs",
       "section": "academic"
     },
     {
@@ -414,6 +249,11 @@
     {
       "id": "activities",
       "label": "Activities",
+      "section": "account"
+    },
+    {
+      "id": "about",
+      "label": "About Portal",
       "section": "account"
     },
     {
@@ -452,8 +292,8 @@
       "prompt": "What is my fee due?"
     },
     {
-      "label": "Gallery photos",
-      "prompt": "Download gallery photos"
+      "label": "PYQs practice",
+      "prompt": "Show me PYQs with answers"
     }
   ],
   "aiModels": [
