@@ -1448,11 +1448,14 @@ body {
   body.printing-marksheet {
     margin: 0 !important;
     padding: 0 !important;
-    overflow: hidden !important;
+    width: 210mm !important;
+    min-height: 297mm !important;
+    overflow: visible !important;
   }
 
   body.printing-marksheet #root {
     display: none !important;
+    visibility: hidden !important;
   }
 
   body.printing-marksheet #print-marksheet-root {
@@ -1461,6 +1464,7 @@ body {
     margin: 0 auto !important;
     padding: 0 !important;
     overflow: visible !important;
+    background: #fff !important;
   }
 
   body.printing-marksheet .marksheet-screen-only {
@@ -1469,8 +1473,8 @@ body {
 
   body.printing-marksheet .marksheet-print-card {
     box-sizing: border-box !important;
-    width: calc(100% - 4mm) !important;
-    max-width: calc(100% - 4mm) !important;
+    width: 100% !important;
+    max-width: 100% !important;
     margin: 0 auto !important;
     box-shadow: none !important;
     border-radius: 0 !important;
