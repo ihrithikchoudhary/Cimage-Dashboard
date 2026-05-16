@@ -671,13 +671,30 @@ const getNowReportTime = () => {
   };
 };
 
+const getCurrentYear = () => new Date().getFullYear();
+
 const getSubjectQuestions = (subject, semester) =>
   TEST_QUESTIONS?.[String(semester)]?.[subject] || [];
+
+const PORTAL_AI_SECTIONS = [
+  { id: "dashboard", label: "Dashboard", terms: ["dashboard", "home", "overview", "summary", "status"] },
+  { id: "attendance", label: "Attendance", terms: ["attendance", "present", "absent", "class", "percentage"] },
+  { id: "courses", label: "Courses", terms: ["course", "courses", "faculty", "teacher", "mentor", "subject", "call teacher", "whatsapp teacher"] },
+  { id: "lectures", label: "Lectures", terms: ["lecture", "lectures", "video", "videos", "youtube", "recording", "watch"] },
+  { id: "pyqs", label: "PYQs", terms: ["pyq", "pyqs", "previous year", "question paper", "practice question", "sample question"] },
+  { id: "fees", label: "Fees", terms: ["fee", "fees", "payment", "paid", "due", "balance", "money"] },
+  { id: "assignments", label: "Assignments", terms: ["assignment", "assignments", "deadline", "submit", "homework", "task"] },
+  { id: "results", label: "Results", terms: ["result", "results", "marks", "grade", "cgpa", "marksheet", "print marksheet"] },
+  { id: "activities", label: "Activities", terms: ["activity", "activities", "history", "test report", "complaint history", "score history"] },
+  { id: "about", label: "About Portal", terms: ["about", "developer", "social", "github", "linkedin", "instagram", "portfolio"] },
+  { id: "settings", label: "Settings", terms: ["setting", "settings", "profile", "photo", "account", "notification", "password"] },
+];
 
 const getAiReply = (question, profile, testReports = [], facultyMembers = TEACHERS, announcements = ANNOUNCEMENTS, student = STUDENT, assignments = ASSIGNMENTS) => {
   const text = question.toLowerCase();
   const visibleAssignments = normalizeAssignments(assignments);
   const pendingAssignments = visibleAssignments.filter(item => item.status === "pending");
+  const submittedAssignments = visibleAssignments.filter(item => item.status === "submitted");
   const visibleAnnouncements = normalizeAnnouncements(announcements);
   const unreadAnnouncements = visibleAnnouncements.filter(item => item.unread).length;
   const currentStudent = normalizeStudentRecord(student);
@@ -687,84 +704,91 @@ const getAiReply = (question, profile, testReports = [], facultyMembers = TEACHE
   const bestTest = testReports.length ? [...testReports].sort((a, b) => b.obtainedMarks - a.obtainedMarks)[0] : null;
   const words = (...items) => items.some(item => text.includes(item));
   const trained = (intent) => (AI_TRAINING?.dashboardIntents?.[intent] || []).some(item => text.includes(item));
-  const reply = (message, actions = []) => ({ text: message, actions });
-  const requestedPage = trained("navigate")
-    ? NAV_ITEMS.find(item => text.includes(item.label.toLowerCase()) || text.includes(item.id.toLowerCase()))
-    : null;
+  const reply = (message, action = null) => ({ text: message, actions: action ? [action] : [] });
+  const pageAction = (page, label = null) => ({ label: label || `Open ${PORTAL_AI_SECTIONS.find(item => item.id === page)?.label || page}`, page });
+  const requestedPage = PORTAL_AI_SECTIONS.find(section => section.terms.some(term => text.includes(term)) || text.includes(section.id));
 
-  if (requestedPage) {
-    return reply(`Sure. I found the ${requestedPage.label} section. Use the button below to open it.`, [{ label: `Open ${requestedPage.label}`, page: requestedPage.id }]);
+  if (words("open", "go to", "take me", "navigate") && requestedPage) {
+    return reply(`Opening ${requestedPage.label}. You can also ask me what to check there, for example "what is pending?" or "summarize this section."`, pageAction(requestedPage.id));
   }
 
   if (words("attendance", "present", "absent", "class percentage", "low class")) {
     const lowText = lowAttendance.length
       ? `Your low-attendance subject is ${lowAttendance.map(item => `${item.subject} (${item.pct}%)`).join(", ")}. Prioritize those classes this week.`
       : "All subjects are above the 75% attendance line right now.";
-    return reply(`Your overall attendance is ${attendanceSummary.pct}% from ${attendanceSummary.totalPresent}/${attendanceSummary.totalClasses} classes. ${lowText}`, [{ label: "Open attendance", page: "attendance" }]);
+    return reply(`Your overall attendance is ${attendanceSummary.pct}% from ${attendanceSummary.totalPresent}/${attendanceSummary.totalClasses} classes. ${lowText}`, pageAction("attendance"));
   }
 
   if (words("fee", "payment", "paid", "due", "money", "balance")) {
-    return reply(`Your fee status is clear: Rs ${FEES.paid.toLocaleString("en-IN")} paid out of Rs ${FEES.total.toLocaleString("en-IN")}, with Rs ${FEES.due.toLocaleString("en-IN")} due.`, [{ label: "Open fees", page: "fees" }]);
+    const feeStatus = FEES.due > 0 ? `Rs ${FEES.due.toLocaleString("en-IN")} is still due` : "no fee is due";
+    return reply(`Fee summary: Rs ${FEES.paid.toLocaleString("en-IN")} paid out of Rs ${FEES.total.toLocaleString("en-IN")}; ${feeStatus}. Due date: ${FEES.dueDate || "not available"}.`, pageAction("fees"));
   }
 
   if (words("assignment", "deadline", "submit", "homework", "pdf")) {
     const message = pendingAssignments.length
-      ? `You have ${pendingAssignments.length} pending assignment${pendingAssignments.length === 1 ? "" : "s"}: ${pendingAssignments.map(item => `${item.title} due ${item.deadline || item.submissionDate}`).join("; ")}.`
-      : "You do not have any pending assignments in the dashboard data.";
-    return reply(message, [{ label: "Open assignments", page: "assignments" }]);
+      ? `You have ${pendingAssignments.length} pending assignment${pendingAssignments.length === 1 ? "" : "s"}: ${pendingAssignments.map(item => `${item.title} due ${item.deadline || item.submissionDate}`).join("; ")}. Submitted: ${submittedAssignments.length}.`
+      : `No pending assignments are showing right now. Submitted assignments: ${submittedAssignments.length}.`;
+    return reply(message, pageAction("assignments"));
   }
 
   if (words("lecture", "video", "watch", "youtube", "class video", "recording")) {
     const currentSubjectsText = currentSubjects.join(", ");
-    return reply(`Lecture videos are organized semester-wise. Your current Semester ${currentStudent.semester} subjects include ${currentSubjectsText}. You can select a subject and watch videos inside the portal.`, [{ label: "Open lectures", page: "lectures" }]);
+    return reply(`Lecture videos are organized by semester and subject. Your Semester ${currentStudent.semester} subjects include ${currentSubjectsText}. Ask for a subject name and I can point you to the lecture area.`, pageAction("lectures"));
   }
 
   if (words("pyqs", "previous year", "exam questions", "practice questions", "past exam", "sample questions")) {
-    return reply("PYQs (Previous Year Questions) section contains previous year exam questions organized by year, semester, and subject. You can select from dropdowns and view detailed answers for each question. Answers include explanations tailored to the marks value.", [{ label: "Open PYQs", page: "pyqs" }]);
+    return reply("PYQs are available by year, semester, and subject, with answers and explanations. Use them for exam-style revision after lectures or before internal tests.", pageAction("pyqs"));
   }
 
   if (words("test", "quiz", "mcq", "online exam", "exam")) {
     const completed = testReports.length;
-    return reply(`Online test access is currently removed from the student sidebar. Your saved test attempt count is ${completed}. Contact admin if test access needs to be enabled again.`, [{ label: "Open dashboard", page: "dashboard" }]);
+    const bestText = bestTest ? ` Best saved score: ${bestTest.obtainedMarks}/${bestTest.totalMarks} in ${bestTest.subject}.` : "";
+    return reply(`Saved test attempts: ${completed}.${bestText} Test and complaint activity appears inside Activities.`, pageAction("activities"));
   }
 
   if (words("activity", "activities", "test report", "history", "score history", "marks history")) {
     if (!testReports.length) {
-      return reply("No test activity report is saved yet. Complaint records and saved activity history will appear in Activities automatically.", [{ label: "Open activities", page: "activities" }]);
+      return reply("No saved test report is available yet. Complaint records and student activity history will appear in Activities automatically.", pageAction("activities"));
     }
     const best = [...testReports].sort((a, b) => b.obtainedMarks - a.obtainedMarks)[0];
-    return reply(`You have ${testReports.length} saved test report${testReports.length === 1 ? "" : "s"}. Your best score is ${best.obtainedMarks}/${best.totalMarks} in ${best.subject}.`, [{ label: "Open activities", page: "activities" }]);
+    return reply(`You have ${testReports.length} saved test report${testReports.length === 1 ? "" : "s"}. Your best score is ${best.obtainedMarks}/${best.totalMarks} in ${best.subject}.`, pageAction("activities"));
   }
 
   if (words("result", "grade", "cgpa", "marks", "rank")) {
     const best = [...RESULTS].sort((a, b) => b.total - a.total)[0];
-    return reply(`Your current CGPA is ${currentStudent.cgpa}. Your strongest listed result is ${best.subject} with ${best.total}/100 and grade ${best.grade}.`, [{ label: "Open results", page: "results" }]);
+    return reply(`Your current CGPA is ${currentStudent.cgpa}. Strongest listed result: ${best.subject} with ${best.total}/100 and grade ${best.grade}. You can view or print marksheet details from Results.`, pageAction("results"));
   }
 
   if (words("course", "semester", "subject", "bca", "syllabus")) {
-    return reply(`You are in ${currentStudent.course}, semester ${currentStudent.semester}/${currentStudent.totalSemesters}. Current subjects include ${attendanceSummary.records.map(item => item.subject).join(", ")}.`, [{ label: "Open courses", page: "courses" }, { label: "Open lectures", page: "lectures" }]);
+    return reply(`You are in ${currentStudent.course}, semester ${currentStudent.semester}/${currentStudent.totalSemesters}. Current subjects include ${attendanceSummary.records.map(item => item.subject).join(", ")}. Faculty contact cards are in Courses.`, pageAction("courses"));
   }
 
   if (words("profile", "setting", "settings", "photo", "phone", "account")) {
-    return reply(`Your profile is ${profile.name}, email ${profile.email}, phone ${profile.phone}. You can update profile details and photo from Settings.`, [{ label: "Open settings", page: "settings" }]);
+    return reply(`Your profile is ${profile.name}, email ${profile.email}, phone ${profile.phone}. Settings lets you update profile details, photo, and notification preferences.`, pageAction("settings"));
   }
 
   if (words("notice", "announcement", "news", "reminder")) {
     const unread = visibleAnnouncements.filter(item => item.unread).length;
     const latestNotice = visibleAnnouncements[0]?.title || "No announcements are available right now";
-    return reply(`You have ${unread} unread announcement${unread === 1 ? "" : "s"}. Latest notice: ${latestNotice}.`, [{ label: "Open announcements", page: "announcements" }]);
+    return reply(`You have ${unread} unread announcement${unread === 1 ? "" : "s"}. Latest notice: ${latestNotice}. Use the bell in the top bar to open notices.`, pageAction("dashboard"));
   }
 
   if (words("complaint", "complain", "grievance", "raise ticket", "report issue") || ((words("issue", "problem")) && words("raise", "submit", "complaint"))) {
-    return reply("I can help you raise a student complaint. Click the form button, check your auto-filled student details, choose a category, write the complaint in 30 to 200 words, and submit it.", [{ label: "Complaint form", action: "complaint" }, { label: "View activities", page: "activities" }]);
+    return reply("I can open the complaint form. Your student details are auto-filled; choose a category, write the issue clearly, and submit it. The record will show in Activities.", { label: "Open complaint form", action: "complaint" });
+  }
+
+  if (words("developer", "social", "github", "linkedin", "instagram", "portfolio", "about portal")) {
+    const links = DEVELOPER.socialLinks || {};
+    const availableLinks = Object.entries(links).filter(([, href]) => href).map(([name]) => name).join(", ");
+    return reply(`Developer details are available in About Portal. Available social links: ${availableLinks || "not added yet"}. Email: ${DEVELOPER.email || "not added"}.`, pageAction("about"));
   }
 
   if (trained("identity")) {
-    return reply(`${currentStudent.name || profile.name}'s portal details: Student ID ${currentStudent.studentId}, roll ${currentStudent.rollNo || "not set"}, registration ${currentStudent.regNo || "not set"}, ${currentStudent.course} semester ${currentStudent.semester}, course session ${currentStudent.session}, department ${currentStudent.department}.`, [{ label: "Open settings", page: "settings" }, { label: "Open dashboard", page: "dashboard" }]);
+    return reply(`${currentStudent.name || profile.name}'s portal details: Student ID ${currentStudent.studentId}, roll ${currentStudent.rollNo || "not set"}, registration ${currentStudent.regNo || "not set"}, ${currentStudent.course} semester ${currentStudent.semester}, course session ${currentStudent.session}, department ${currentStudent.department}.`, pageAction("settings"));
   }
 
   if (trained("facultyHelp")) {
-    return reply(`Faculty help is available from the Courses page. Current faculty cards include ${facultyMembers.map(teacher => `${teacher.name} for ${teacher.subject}`).join("; ")}. Each card has Call and WhatsApp buttons.`, [{ label: "Open courses", page: "courses" }]);
+    return reply(`Faculty help is available from Courses. Current faculty cards include ${facultyMembers.map(teacher => `${teacher.name} for ${teacher.subject}`).join("; ")}. Cards include Call and WhatsApp actions when contact data exists.`, pageAction("courses"));
   }
 
   if (trained("todayPlan")) {
@@ -776,7 +800,7 @@ const getAiReply = (question, profile, testReports = [], facultyMembers = TEACHE
       `Revise one current subject today: ${currentSubjects[0]}`,
       testReports.length ? `Review your best test score: ${bestTest.obtainedMarks}/${bestTest.totalMarks} in ${bestTest.subject}` : "Revise one lecture topic and check pending assignments",
     ];
-    return reply(`Today's dashboard plan: ${plan.join(". ")}.`, [{ label: "Open dashboard", page: "dashboard" }, { label: firstPending ? "Open assignments" : "Open lectures", page: firstPending ? "assignments" : "lectures" }]);
+    return reply(`Today's dashboard plan: ${plan.join(". ")}.`, pageAction(firstPending ? "assignments" : "lectures", firstPending ? "Open assignments" : "Open lectures"));
   }
 
   if (trained("riskCheck")) {
@@ -786,38 +810,32 @@ const getAiReply = (question, profile, testReports = [], facultyMembers = TEACHE
       ...(FEES.due > 0 ? [`fee due is Rs ${FEES.due.toLocaleString("en-IN")}`] : []),
       ...(unreadAnnouncements > 0 ? [`${unreadAnnouncements} unread notice${unreadAnnouncements === 1 ? "" : "s"}`] : []),
     ];
-    return reply(risks.length ? `Dashboard risk check: ${risks.join("; ")}. Start with the first item and use the section buttons below.` : "Dashboard risk check: no urgent risk found in attendance, fees, assignments, or announcements.", [{ label: "Open attendance", page: "attendance" }, { label: "Open assignments", page: "assignments" }, { label: "Open announcements", page: "announcements" }]);
+    return reply(risks.length ? `Dashboard risk check: ${risks.join("; ")}. Start with the first item and ask me to open that section.` : "Dashboard risk check: no urgent risk found in attendance, fees, assignments, or announcements.", pageAction(risks.length && lowAttendance.length ? "attendance" : "dashboard"));
   }
 
   if (trained("summary")) {
     const testText = bestTest ? `best test ${bestTest.obtainedMarks}/${bestTest.totalMarks} in ${bestTest.subject}` : "no saved test attempt yet";
-    return reply(`Dashboard summary for ${currentStudent.name || profile.name}: CGPA ${currentStudent.cgpa}, attendance ${attendanceSummary.pct}%, semester ${currentStudent.semester}/${currentStudent.totalSemesters}, fee due Rs ${FEES.due.toLocaleString("en-IN")}, ${pendingAssignments.length} pending assignment${pendingAssignments.length === 1 ? "" : "s"}, ${unreadAnnouncements} unread notice${unreadAnnouncements === 1 ? "" : "s"}, and ${testText}.`, [{ label: "Open dashboard", page: "dashboard" }, { label: "Today's plan", prompt: "What should I do today?" }]);
+    return reply(`Dashboard summary for ${currentStudent.name || profile.name}: CGPA ${currentStudent.cgpa}, attendance ${attendanceSummary.pct}%, semester ${currentStudent.semester}/${currentStudent.totalSemesters}, fee due Rs ${FEES.due.toLocaleString("en-IN")}, ${pendingAssignments.length} pending assignment${pendingAssignments.length === 1 ? "" : "s"}, ${unreadAnnouncements} unread notice${unreadAnnouncements === 1 ? "" : "s"}, and ${testText}.`, pageAction("dashboard"));
   }
 
   if (words("react")) {
-    return reply("For React, focus on components, props, state with useState, effects with useEffect, and clean reusable UI. For your portal project, practice building one section at a time.", [{ label: "Watch lectures", page: "lectures" }]);
+    return reply("For React, focus on components, props, state with useState, effects with useEffect, and clean reusable UI. For your portal project, practice building one section at a time.", pageAction("lectures", "Open lectures"));
   }
 
   if (words("dbms", "database", "sql", "normalization")) {
-    return reply("For DBMS, start with entities, attributes, relationships, keys, SQL queries, joins, and normalization. ER diagrams help convert real-world requirements into database structure.", [{ label: "Watch DBMS videos", page: "lectures" }]);
+    return reply("For DBMS, start with entities, attributes, relationships, keys, SQL queries, joins, and normalization. ER diagrams help convert real-world requirements into database structure.", pageAction("lectures", "Open lectures"));
   }
 
   if (words("data structure", "bst", "tree", "stack", "queue", "linked list")) {
-    return reply("For Data Structures, practice arrays, linked lists, stacks, queues, trees, traversal, searching, and sorting. For BST: smaller values go left, larger values go right.", [{ label: "Watch DS videos", page: "lectures" }]);
+    return reply("For Data Structures, practice arrays, linked lists, stacks, queues, trees, traversal, searching, and sorting. For BST: smaller values go left, larger values go right.", pageAction("lectures", "Open lectures"));
   }
 
   if (words("excel", "pivot", "vlookup", "xlookup")) {
-    return reply("For Advance Excel, practice formulas, sorting, filtering, charts, pivot tables, VLOOKUP/XLOOKUP, and dashboards. These are useful for reports and office work.", [{ label: "Watch Excel videos", page: "lectures" }]);
+    return reply("For Advance Excel, practice formulas, sorting, filtering, charts, pivot tables, VLOOKUP/XLOOKUP, and dashboards. These are useful for reports and office work.", pageAction("lectures", "Open lectures"));
   }
 
-  return reply(`Hi ${profile.name.split(" ")[0]}, I can help with the portal: attendance, fees, assignments, lectures, pyqs, activities, results, announcements, profile, and study topics. Ask naturally, like "show my pending assignments" or "open my results".`, [
-    { label: "Complaint form", action: "complaint" },
-    { label: "Dashboard", page: "dashboard" },
-    { label: "Activities", page: "activities" },
-  ]);
+  return reply(`I can help across the portal: dashboard, attendance, courses, lectures, PYQs, fees, assignments, results, activities, settings, developer details, and complaints. Ask naturally, for example "what is pending?", "open fees", "show developer links", or "check my risks".`);
 };
-
-const AI_SUGGESTIONS = portalData.aiSuggestions;
 
 const AI_MODELS = portalData.aiModels;
 
@@ -827,12 +845,8 @@ const AiChatPanel = ({ open, onClose, profile, student, testReports, facultyMemb
   const [messages, setMessages] = useState([
     {
       role: "assistant",
-      text: AI_TRAINING?.intro || "Hi, I am your free Edu AI helper. Ask me naturally about any portal section, and I can also show action buttons to take you there.",
-      actions: [
-        { label: "Dashboard summary", prompt: "Give my dashboard summary" },
-        { label: "Today's plan", prompt: "What should I do today?" },
-        { label: "Lectures", page: "lectures" },
-      ],
+      text: AI_TRAINING?.intro || "Hi, I can help across your portal. Ask naturally about attendance, fees, assignments, lectures, PYQs, results, activities, settings, complaints, or developer details.",
+      actions: [],
     },
   ]);
   const [input, setInput] = useState("");
@@ -849,8 +863,8 @@ const AiChatPanel = ({ open, onClose, profile, student, testReports, facultyMemb
     setMessages([
       {
         role: "assistant",
-        text: `Chat cleared. ${model} is ready for your next study or dashboard question.`,
-        actions: [{ label: "Dashboard", page: "dashboard" }],
+        text: `Chat cleared. ${model} is ready for your next portal or study question.`,
+        actions: [],
       },
     ]);
   };
@@ -937,17 +951,6 @@ const AiChatPanel = ({ open, onClose, profile, student, testReports, facultyMemb
         </button>
       </div>
 
-      <div style={{ padding: 14, borderBottom: "1px solid #eef2ff", background: "#fff" }}>
-        <div style={{ fontSize: 10, fontWeight: 900, color: "#6b7280", textTransform: "uppercase", marginBottom: 9 }}>Quick actions</div>
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-        {AI_SUGGESTIONS.map(item => (
-          <button key={item.label} onClick={() => sendMessage(item.prompt)} style={{ border: "1px solid #bfdbfe", background: "#eff6ff", color: "#185FA5", borderRadius: 999, padding: "8px 12px", fontSize: 11, fontWeight: 800, cursor: "pointer", textAlign: "center" }}>
-            {item.label}
-          </button>
-        ))}
-        </div>
-      </div>
-
       <div style={{ flex: 1, overflowY: "auto", padding: 16, display: "flex", flexDirection: "column", gap: 12, background: "#f8fafc" }}>
         {messages.map((message, index) => {
           const isStudent = message.role === "student";
@@ -990,7 +993,7 @@ const AiChatPanel = ({ open, onClose, profile, student, testReports, facultyMemb
         <input
           value={input}
           onChange={event => setInput(event.target.value)}
-          placeholder="Ask: open my fees, show test report, explain DBMS..."
+          placeholder="Ask anything about your portal..."
           style={{ flex: 1, minWidth: 0, border: "1px solid #d1d5db", borderRadius: 12, padding: "12px 13px", fontSize: 12, outline: "none" }}
         />
         <button type="submit" aria-label="Send message" style={{ width: 44, height: 44, border: "none", borderRadius: 12, background: "#185FA5", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0 }}>
@@ -2533,7 +2536,7 @@ const ResultsPage = ({ student = STUDENT, profile = DEFAULT_PROFILE, publishedRe
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                       <path d="M4.75 3h14.5A2.75 2.75 0 0 1 22 5.75v12.5A2.75 2.75 0 0 1 19.25 21H4.75A2.75 2.75 0 0 1 2 18.25V5.75A2.75 2.75 0 0 1 4.75 3Zm0 2A.75.75 0 0 0 4 5.75v12.5c0 .41.34.75.75.75h14.5c.41 0 .75-.34.75-.75V5.75a.75.75 0 0 0-.75-.75H4.75ZM7 8h9.5a1 1 0 1 1 0 2H7a1 1 0 0 1 0-2Zm0 4h6.5a1 1 0 1 1 0 2H7a1 1 0 1 1 0-2Zm0 4h3.5a1 1 0 1 1 0 2H7a1 1 0 1 1 0-2Z" />
                     </svg>
-                    INTERNAL SEMESTER EXAM RESULT
+                    INTERNAL SEMESTER EXAM RESULT {getCurrentYear()}
                   </div>
                   <div style={{ fontSize: 12, color: "#111827", fontWeight: 500, marginTop: 9, textTransform: "uppercase", whiteSpace: "nowrap" }}>
                     {selectedResult.examName} · {selectedResult.sessional}
@@ -3096,7 +3099,7 @@ const LoginPage = ({ students = [], adminUsers = [], onLogin }) => {
   };
 
   return (
-    <div style={{ minHeight: "100dvh", background: "linear-gradient(135deg, #eef7ff 0%, #f8fafc 52%, #f1f5f9 100%)", display: "grid", placeItems: "center", padding: "clamp(16px, 4vw, 28px)", fontFamily: "'Sora', 'Segoe UI', system-ui, sans-serif", boxSizing: "border-box", overflow: "hidden", position: "relative" }}>
+    <div style={{ minHeight: "100dvh", background: "linear-gradient(135deg, #eef7ff 0%, #f8fafc 52%, #f1f5f9 100%)", display: "grid", placeItems: "center", padding: "clamp(16px, 4vw, 28px)", paddingBottom: 58, fontFamily: "'Sora', 'Segoe UI', system-ui, sans-serif", boxSizing: "border-box", overflow: "hidden", position: "relative" }}>
       <div aria-hidden="true" style={{ position: "absolute", inset: "-18%", display: "grid", gridTemplateColumns: "repeat(8, 150px)", gridAutoRows: 120, gap: "34px 54px", justifyContent: "center", alignContent: "center", transform: "rotate(-20deg)", transformOrigin: "center", opacity: 0.08, pointerEvents: "none" }}>
         {Array.from({ length: 56 }).map((_, index) => (
           <img key={`login-watermark-${index}`} src={cimageLogo} alt="" style={{ width: 120, height: 120, objectFit: "contain", filter: "grayscale(1) saturate(0.4)", opacity: index % 3 === 0 ? 0.55 : 0.9 }} />
@@ -3151,6 +3154,13 @@ const LoginPage = ({ students = [], adminUsers = [], onLogin }) => {
           Students can login only after admin registration. Default admin: <strong>{ADMIN_CREDENTIALS.email}</strong> / <strong>{ADMIN_CREDENTIALS.password}</strong>.
         </div> */}
       </form>
+      <footer style={{ position: "fixed", left: 0, right: 0, bottom: 0, zIndex: 2, padding: "11px 16px", textAlign: "center", fontSize: 11, fontWeight: 700, color: "#334155" }}>
+        &copy; <span style={{ textDecoration: "underline", textUnderlineOffset: 3, color: "#185FA5", fontWeight: 900 }}>CIMAGE Group Of Institutions</span>
+        <span style={{ color: "#64748b", margin: "0 7px" }}>·</span>
+        All rights reserved
+        <span style={{ color: "#64748b", margin: "0 7px" }}>·</span>
+        {getCurrentYear()}
+      </footer>
     </div>
   );
 };
