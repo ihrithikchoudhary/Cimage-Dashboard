@@ -1119,9 +1119,9 @@ const DashboardPage = ({ profile, student = STUDENT, announcements = ANNOUNCEMEN
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+    <div className="dashboard-page" style={{ display: "flex", flexDirection: "column", gap: 20 }}>
       {/* Welcome Banner */}
-      <div style={{
+      <div className="dashboard-welcome" style={{
         background: "linear-gradient(135deg, #185FA5 0%, #0c3d7a 100%)",
         borderRadius: 16,
         padding: "24px 28px",
@@ -1135,7 +1135,7 @@ const DashboardPage = ({ profile, student = STUDENT, announcements = ANNOUNCEMEN
       }}>
         <div style={{ position: "absolute", right: -30, top: -30, width: 180, height: 180, borderRadius: "50%", background: "rgba(255,255,255,0.06)" }} />
         <div style={{ position: "absolute", right: 60, bottom: -50, width: 140, height: 140, borderRadius: "50%", background: "rgba(255,255,255,0.04)" }} />
-        <div style={{ zIndex: 1 }}>
+        <div className="dashboard-welcome-copy" style={{ zIndex: 1 }}>
           <h2 style={{ fontSize: 22, fontWeight: 700, color: "#fff", marginBottom: 4 }}>Welcome back, {(currentStudent.name || profile.name).split(" ")[0]} 👋</h2>
           <p style={{ color: "rgba(255,255,255,0.7)", fontSize: 13, marginBottom: 14 }}>{currentStudent.course} — Semester {currentStudent.semester} · {currentStudent.university}</p>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 14 }}>
@@ -1176,7 +1176,7 @@ const DashboardPage = ({ profile, student = STUDENT, announcements = ANNOUNCEMEN
           </div>
           <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 11, fontStyle: "italic", maxWidth: 280 }}>"Education is the most powerful weapon you can use to change the world."</p>
         </div>
-        <div style={{ display: "flex", gap: 12, zIndex: 1 }}>
+        <div className="dashboard-stat-strip" style={{ display: "flex", gap: 12, zIndex: 1 }}>
           {[{ val: currentStudent.cgpa, lbl: "CGPA" }, { val: `${currentStudent.semester}/${currentStudent.totalSemesters}`, lbl: "Semester" }, { val: `${attendanceSummary.pct}%`, lbl: "Attendance" }].map(s => (
             <div key={s.lbl} style={{ background: "rgba(255,255,255,0.13)", borderRadius: 12, padding: "12px 18px", textAlign: "center", minWidth: 72 }}>
               <div style={{ fontSize: 20, fontWeight: 700, color: "#fff", fontFamily: "monospace" }}>{s.val}</div>
@@ -1187,7 +1187,7 @@ const DashboardPage = ({ profile, student = STUDENT, announcements = ANNOUNCEMEN
       </div>
 
       {/* Info Cards */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 12 }}>
+      <div className="dashboard-info-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 12 }}>
         {[
           { label: "Student ID", value: currentStudent.studentId || "Not set", bg: "#dbeafe", color: "#1e40af" },
           { label: "Roll Number", value: currentStudent.rollNo || "Not set", bg: "#dcfce7", color: "#166534" },
@@ -1209,7 +1209,7 @@ const DashboardPage = ({ profile, student = STUDENT, announcements = ANNOUNCEMEN
       </div>
 
       {/* Mid Row */}
-      <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1.25fr) minmax(340px, 0.75fr)", gap: 16, alignItems: "start" }}>
+      <div className="dashboard-mid-grid" style={{ display: "grid", gridTemplateColumns: "minmax(0, 1.25fr) minmax(340px, 0.75fr)", gap: 16, alignItems: "start" }}>
         {/* Attendance */}
         <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 20 }}>
           <h3 style={{ fontSize: 14, fontWeight: 600, color: "#111827", marginBottom: 16 }}>Attendance overview</h3>
@@ -1278,7 +1278,7 @@ const DashboardPage = ({ profile, student = STUDENT, announcements = ANNOUNCEMEN
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1.15fr 0.85fr", gap: 16, alignItems: "start" }}>
+      <div className="dashboard-lower-grid" style={{ display: "grid", gridTemplateColumns: "1.15fr 0.85fr", gap: 16, alignItems: "start" }}>
         {/* Upcoming deadlines */}
         <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 20 }}>
           <h3 style={{ fontSize: 14, fontWeight: 700, color: "#111827", marginBottom: 14 }}>Upcoming deadlines</h3>
@@ -1338,30 +1338,31 @@ const CurrentMonthCalendar = () => {
   const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   return (
-    <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 18, height: "100%", boxSizing: "border-box" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center", marginBottom: 14 }}>
+    <div className="current-month-calendar" style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 18, height: "100%", boxSizing: "border-box" }}>
+      <div className="calendar-header" style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center", marginBottom: 14 }}>
         <div>
           <h3 style={{ fontSize: 15, fontWeight: 900, color: "#111827", margin: 0 }}>This Month Calendar</h3>
           <div style={{ fontSize: 11, color: "#6b7280", marginTop: 4 }}>{monthName}</div>
         </div>
-        <div style={{ width: 38, height: 38, borderRadius: 11, background: "#eff6ff", color: "#185FA5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 900, fontFamily: "monospace", flexShrink: 0 }}>
+        <div className="calendar-today-badge" style={{ width: 38, height: 38, borderRadius: 11, background: "#eff6ff", color: "#185FA5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, fontWeight: 900, fontFamily: "monospace", flexShrink: 0 }}>
           {today.getDate()}
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 6, marginBottom: 8 }}>
+      <div className="calendar-weekdays" style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 6, marginBottom: 8 }}>
         {weekDays.map(day => (
-          <div key={day} style={{ textAlign: "center", fontSize: 10, color: "#6b7280", fontWeight: 900 }}>
+          <div className="calendar-weekday" key={day} style={{ textAlign: "center", fontSize: 10, color: "#6b7280", fontWeight: 900 }}>
             {day}
           </div>
         ))}
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 6 }}>
+      <div className="calendar-days" style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 6 }}>
         {days.map((day, index) => {
           const isToday = day === today.getDate();
           return (
             <div
+              className="calendar-day-cell"
               key={`${day || "blank"}-${index}`}
               style={{
                 minHeight: 34,
@@ -4991,6 +4992,7 @@ export default function App() {
   const [profileOpen, setProfileOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [aiOpen, setAiOpen] = useState(false);
+  const [studentSidebarOpen, setStudentSidebarOpen] = useState(false);
   const [complaintOpen, setComplaintOpen] = useState(false);
   const [complaintMessage, setComplaintMessage] = useState("");
   const [now, setNow] = useState(new Date());
@@ -5423,12 +5425,22 @@ export default function App() {
   const sections = [...new Set(sidebarNavItems.map(n => n.section))];
   const visiblePageIds = new Set(NAV_ITEMS.map(item => item.id));
   const activePage = visiblePageIds.has(active) ? active : "dashboard";
+  const goToStudentPage = (page) => {
+    navigateStudentPage(page);
+    setStudentSidebarOpen(false);
+  };
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh", background: "#f8fafc", fontFamily: "'Sora', 'Segoe UI', system-ui, sans-serif" }}>
+    <div className="student-shell app-shell" style={{ display: "flex", minHeight: "100vh", background: "#f8fafc", fontFamily: "'Sora', 'Segoe UI', system-ui, sans-serif" }}>
+      <button
+        type="button"
+        className={`mobile-sidebar-backdrop ${studentSidebarOpen ? "is-open" : ""}`}
+        aria-label="Close student menu"
+        onClick={() => setStudentSidebarOpen(false)}
+      />
       {/* Sidebar */}
-      <div style={{ width: 200, background: "#fff", borderRight: "1px solid #e5e7eb", display: "flex", flexDirection: "column", paddingTop: 20, flexShrink: 0, position: "fixed", left: 0, top: 0, bottom: 0, height: "100vh", overflow: "hidden", zIndex: 30, boxSizing: "border-box" }}>
-          <div style={{ padding: "0 16px 20px", borderBottom: "1px solid #f3f4f6", marginBottom: 8 }}>
+      <div className={`student-sidebar app-sidebar ${studentSidebarOpen ? "is-open" : ""}`} style={{ width: 200, background: "#fff", borderRight: "1px solid #e5e7eb", display: "flex", flexDirection: "column", paddingTop: 20, flexShrink: 0, position: "fixed", left: 0, top: 0, bottom: 0, height: "100vh", overflow: "hidden", zIndex: 30, boxSizing: "border-box" }}>
+          <div className="app-sidebar-brand" style={{ padding: "0 16px 20px", borderBottom: "1px solid #f3f4f6", marginBottom: 8 }}>
             <div style={{ width: 42, height: 42, background: "#fff", border: "1px solid #e5e7eb", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 8, overflow: "hidden", padding: 4 }}>
               <img src={cimageLogo} alt="Cimage College" style={{ width: "100%", height: "100%", objectFit: "contain", display: "block" }} />
             </div>
@@ -5436,7 +5448,7 @@ export default function App() {
             <div style={{ fontSize: 10, color: "#9ca3af" }}>Student Portal</div>
           </div>
 
-          <div style={{ flex: 1, overflowY: "auto", paddingBottom: 8, minHeight: 0 }}>
+          <div className="app-nav-scroll" style={{ flex: 1, overflowY: "auto", paddingBottom: 8, minHeight: 0 }}>
           {sections.map(sec => (
             <div key={sec}>
               <div style={{ fontSize: 9, fontWeight: 600, color: "#9ca3af", letterSpacing: "0.1em", textTransform: "uppercase", padding: "10px 16px 4px" }}>{sec}</div>
@@ -5444,7 +5456,7 @@ export default function App() {
                 const hasTabUpdate = hasUnseenTabUpdate(item.id);
 
                 return (
-                <button key={item.id} onClick={() => navigateStudentPage(item.id)} style={{
+                <button className="app-nav-button" key={item.id} onClick={() => goToStudentPage(item.id)} style={{
                   display: "flex", alignItems: "center", gap: 10, width: "100%",
                   padding: "9px 16px", fontSize: 13, fontWeight: activePage === item.id ? 600 : 400,
                   color: activePage === item.id ? "#185FA5" : "#4b5563",
@@ -5468,10 +5480,10 @@ export default function App() {
           ))}
           </div>
 
-          <div style={{ padding: "8px 10px 10px", borderTop: "1px solid #f3f4f6", background: "#fff", flexShrink: 0 }}>
+          <div className="app-sidebar-footer" style={{ padding: "8px 10px 10px", borderTop: "1px solid #f3f4f6", background: "#fff", flexShrink: 0 }}>
             <button
               type="button"
-              onClick={() => navigateStudentPage("about")}
+              onClick={() => goToStudentPage("about")}
               title="About Portal"
               style={{
                 width: "100%",
@@ -5497,15 +5509,24 @@ export default function App() {
       </div>
 
       {/* Main */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0, marginLeft: 200 }}>
+      <div className="student-main app-main" style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0, marginLeft: 200 }}>
         {/* Topbar */}
-        <div style={{ background: "#fff", borderBottom: "1px solid #e5e7eb", padding: "12px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "fixed", top: 0, left: 200, right: 0, zIndex: 25 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <div className="student-topbar app-topbar" style={{ background: "#fff", borderBottom: "1px solid #e5e7eb", padding: "12px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "fixed", top: 0, left: 200, right: 0, zIndex: 25 }}>
+          <div className="topbar-meta" style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <button
+              type="button"
+              className="mobile-sidebar-toggle"
+              aria-label={studentSidebarOpen ? "Close student menu" : "Open student menu"}
+              aria-expanded={studentSidebarOpen}
+              onClick={() => setStudentSidebarOpen(open => !open)}
+            >
+              <Icon name={studentSidebarOpen ? "x" : "menu"} size={18} />
+            </button>
             <span style={{ fontSize: 13, color: "#6b7280" }}>
               <strong style={{ color: "#111827" }}>{currentDateLabel}</strong> · {currentTimeLabel} — Semester {currentStudent.semester}
             </span>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <div className="topbar-actions" style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <button
               onClick={() => {
                 setAiOpen(open => !open);
@@ -5548,7 +5569,7 @@ export default function App() {
               )}
 
               {notificationOpen && (
-                <div style={{
+                <div className="topbar-popover notification-popover" style={{
                   position: "absolute",
                   right: -8,
                   top: 46,
@@ -5639,12 +5660,12 @@ export default function App() {
                 }}
               >
                 <Avatar profile={{ ...profile, name: currentStudent.name || profile.name }} />
-                <span style={{ fontSize: 13, fontWeight: 600, color: "#111827" }}>{currentStudent.name || profile.name}</span>
+                <span className="topbar-profile-name" style={{ fontSize: 13, fontWeight: 600, color: "#111827" }}>{currentStudent.name || profile.name}</span>
                 <Icon name="chevronDown" size={14} />
               </button>
 
               {profileOpen && (
-                <div style={{
+                <div className="topbar-popover profile-popover" style={{
                   position: "absolute",
                   right: 0,
                   top: 48,
@@ -5702,8 +5723,8 @@ export default function App() {
         </div>
 
         {/* Page content */}
-        <div style={{ flex: 1, padding: "82px 24px 24px", maxWidth: ["dashboard", "attendance", "courses", "lectures", "pyqs", "activities", "gallery", "results", "about"].includes(activePage) ? 1240 : 960, width: "100%" }}>
-          <div style={{ fontSize: 20, fontWeight: 700, color: "#111827", marginBottom: 20, textTransform: "capitalize" }}>
+        <div className="app-page-content student-page-content" style={{ flex: 1, padding: "82px 24px 24px", maxWidth: ["dashboard", "attendance", "courses", "lectures", "pyqs", "activities", "gallery", "results", "about"].includes(activePage) ? 1240 : 960, width: "100%" }}>
+          <div className="app-page-title" style={{ fontSize: 20, fontWeight: 700, color: "#111827", marginBottom: 20, textTransform: "capitalize" }}>
             {activePage}
           </div>
           {pages[activePage]}
