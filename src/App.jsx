@@ -4,6 +4,7 @@ import cimageLogo from "./assets/cimagelogo.jpg";
 import { usePersistentState } from "./services/portalStorage";
 import portalData from "./data/portalData.json";
 import videosData from "./data/videosData.json";
+import semesterSubjectsData from "./data/semesterSubjects.json";
 import commonData from "./data/commonData.json";
 import pyqsQuestions from "./data/pyqsQuestions.json";
 import facultyImagesData from "./data/facultyImages.json";
@@ -65,7 +66,29 @@ const ANNOUNCEMENTS = portalData.announcements;
 
 const RESULTS = portalData.results;
 
-const LECTURES_BY_SEMESTER = videosData.lecturesBySemester;
+const SEMESTER_SUBJECTS_BY_SEMESTER = semesterSubjectsData.semesterSubjectsBySemester || {};
+
+const getSemesterSubjectMeta = (semester, subject) =>
+  (SEMESTER_SUBJECTS_BY_SEMESTER[String(semester)] || []).find(item => item.subject === subject) || {};
+
+const getSemesterSubjects = (semester) =>
+  SEMESTER_SUBJECTS_BY_SEMESTER[String(semester)] || [];
+
+const SEMESTER_OPTIONS = Object.keys(SEMESTER_SUBJECTS_BY_SEMESTER)
+  .map(Number)
+  .filter(Boolean)
+  .sort((a, b) => a - b);
+
+const LECTURES_BY_SEMESTER = Object.fromEntries(
+  Object.entries(videosData.lecturesBySemester || {}).map(([semester, lectures]) => [
+    semester,
+    (Array.isArray(lectures) ? lectures : []).map(lecture => ({
+      ...getSemesterSubjectMeta(semester, lecture.subject),
+      ...lecture,
+      semester: Number(semester),
+    })),
+  ])
+);
 
 const TEST_SETTINGS = portalData.testSettings;
 
@@ -517,18 +540,24 @@ const normalizeAttendanceRecords = (records = ATTENDANCE_DATA) => {
   const source = Array.isArray(records) ? records : ATTENDANCE_DATA;
 
   return source.map((record, index) => {
-    const held = clampNumber(record.held ?? record.totalClasses ?? record.classesHeld ?? 24, 0, 999);
-    const inferredPresent = Math.round(((Number(record.pct) || 0) / 100) * held);
-    const present = clampNumber(record.present ?? record.presentClasses ?? inferredPresent, 0, held);
-    const pct = held > 0 ? Math.round((present / held) * 100) : 0;
+    const heldSource = record.held ?? record.totalClasses ?? record.classesHeld;
+    const heldIsBlank = heldSource === "" || heldSource === null || heldSource === undefined;
+    const held = heldIsBlank ? "" : clampNumber(heldSource, 0, 999);
+    const heldNumber = Number(held) || 0;
+    const inferredPresent = Math.round(((Number(record.pct) || 0) / 100) * heldNumber);
+    const presentSource = record.present ?? record.presentClasses;
+    const presentIsBlank = presentSource === "" || presentSource === null || presentSource === undefined;
+    const present = presentIsBlank ? "" : clampNumber(presentSource ?? inferredPresent, 0, heldNumber);
+    const presentNumber = Number(present) || 0;
+    const pct = heldNumber > 0 ? Math.round((presentNumber / heldNumber) * 100) : 0;
 
     return {
       id: record.id || `${String(record.subject || "subject").toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${index + 1}`,
       subject: record.subject || `Subject ${index + 1}`,
       held,
       present,
-      totalClasses: held,
-      presentClasses: present,
+      totalClasses: heldNumber,
+      presentClasses: presentNumber,
       pct,
       color: getAttendanceColor(pct),
       warn: pct < 75,
@@ -3429,6 +3458,9 @@ const AdminDashboard = ({ students, loggedInStudents, adminUsers = [], currentAd
   const selectedResult = normalizedPublishedResults.find(result => result.id === selectedResultId) || null;
   const selectedResultStudent = students.find(student => student.id === selectedResultStudentId) || null;
   const selectedAttendanceSummary = getAttendanceSummary(selected?.attendanceRecords || []);
+  const selectedSemesterSubjects = getSemesterSubjects(selected?.semester);
+  const selectedAttendanceSubjectNames = new Set(selectedAttendanceSummary.records.map(record => record.subject).filter(Boolean));
+  const availableAttendanceSubjects = selectedSemesterSubjects.filter(item => !selectedAttendanceSubjectNames.has(item.subject));
   const [facultyDraft, setFacultyDraft] = useState(selectedFaculty || {});
   const [assignmentDraft, setAssignmentDraft] = useState({});
   const [resultDraft, setResultDraft] = useState({});
@@ -3610,20 +3642,28 @@ const AdminDashboard = ({ students, loggedInStudents, adminUsers = [], currentAd
       if (recordIndex !== index) return record;
       
       if (key === "subject") {
-        return { ...record, [key]: value };
+        const subjectMeta = getSemesterSubjectMeta(selected.semester, value);
+        return {
+          ...record,
+          id: subjectMeta.id || record.id,
+          subject: value,
+          teacherId: subjectMeta.teacherId || record.teacherId || "",
+        };
       }
       
       const numValue = value === "" ? 0 : Number(value) || 0;
       
       // If updating held, ensure present doesn't exceed held
       if (key === "held") {
+        if (value === "") return { ...record, held: "", present: record.present === "" ? "" : Math.min(Number(record.present) || 0, 0) };
         const newHeld = Math.max(0, numValue);
-        return { ...record, held: newHeld, present: Math.min(record.present || 0, newHeld) };
+        return { ...record, held: newHeld, present: record.present === "" ? "" : Math.min(record.present || 0, newHeld) };
       }
       
       // If updating present, cap it at held value
       if (key === "present") {
-        return { ...record, present: Math.min(numValue, record.held || 0) };
+        if (value === "") return { ...record, present: "" };
+        return { ...record, present: Math.min(numValue, Number(record.held) || 0) };
       }
       
       return { ...record, [key]: numValue };
@@ -3642,10 +3682,17 @@ const AdminDashboard = ({ students, loggedInStudents, adminUsers = [], currentAd
   const handleAddAttendanceSubject = () => {
     if (!selected) return;
     setAttendanceSaved(false);
+    const nextSubject = availableAttendanceSubjects[0];
     onUpdateStudent(selected.id, {
       attendanceRecords: [
         ...selectedAttendanceSummary.records,
-        { id: `subject-${Date.now()}`, subject: "", held: 0, present: 0 },
+        {
+          id: nextSubject?.id || `subject-${Date.now()}`,
+          subject: nextSubject?.subject || "",
+          teacherId: nextSubject?.teacherId || "",
+          held: "",
+          present: "",
+        },
       ],
     });
   };
@@ -4827,16 +4874,29 @@ const AdminDashboard = ({ students, loggedInStudents, adminUsers = [], currentAd
                 ].map(([label, key, type, placeholder]) => (
                   <label key={key} style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                     <span style={{ fontSize: 12, fontWeight: 700, color: "#374151" }}>{label}</span>
-                    <input
-                      type={type}
-                      min={type === "number" ? "0" : undefined}
-                      max={key === "cgpa" ? "10" : undefined}
-                      step={key === "cgpa" ? "0.1" : undefined}
-                      value={selected[key] ?? ""}
-                      placeholder={placeholder}
-                      onChange={event => updateSelected(key, type === "number" ? event.target.value === "" ? "" : Number(event.target.value) : event.target.value)}
-                      style={fieldStyle}
-                    />
+                    {key === "semester" ? (
+                      <select
+                        value={selected.semester || ""}
+                        onChange={event => updateSelected("semester", event.target.value === "" ? "" : Number(event.target.value))}
+                        style={fieldStyle}
+                      >
+                        <option value="">Select semester</option>
+                        {SEMESTER_OPTIONS.map(semester => (
+                          <option key={semester} value={semester}>Semester {semester}</option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        type={type}
+                        min={type === "number" ? "0" : undefined}
+                        max={key === "cgpa" ? "10" : undefined}
+                        step={key === "cgpa" ? "0.1" : undefined}
+                        value={selected[key] ?? ""}
+                        placeholder={placeholder}
+                        onChange={event => updateSelected(key, type === "number" ? event.target.value === "" ? "" : Number(event.target.value) : event.target.value)}
+                        style={fieldStyle}
+                      />
+                    )}
                   </label>
                 ))}
                 <label style={{ display: "flex", flexDirection: "column", gap: 6, gridColumn: "1 / -1" }}>
@@ -4862,12 +4922,24 @@ const AdminDashboard = ({ students, loggedInStudents, adminUsers = [], currentAd
                 <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center", marginBottom: 12 }}>
                   <div>
                     <h4 style={{ fontSize: 14, fontWeight: 900, color: "#111827", margin: 0 }}>Manual attendance</h4>
-                    <div style={{ fontSize: 11, color: "#6b7280", marginTop: 3 }}>Edit present classes and total classes held for each subject.</div>
+                    <div style={{ fontSize: 11, color: "#6b7280", marginTop: 3 }}>
+                      Select Semester {selected.semester || "N/A"} subjects from data, then edit present and held classes.
+                    </div>
                   </div>
-                  <button onClick={handleAddAttendanceSubject} style={{ ...btnStyle, padding: "8px 10px", background: "#eff6ff", color: "#185FA5", borderColor: "#bfdbfe" }}>
+                  <button
+                    onClick={handleAddAttendanceSubject}
+                    disabled={!selectedSemesterSubjects.length}
+                    style={{ ...btnStyle, padding: "8px 10px", background: selectedSemesterSubjects.length ? "#eff6ff" : "#f3f4f6", color: selectedSemesterSubjects.length ? "#185FA5" : "#9ca3af", borderColor: selectedSemesterSubjects.length ? "#bfdbfe" : "#e5e7eb", cursor: selectedSemesterSubjects.length ? "pointer" : "not-allowed" }}
+                  >
                     <Icon name="attendance" size={14} /> Add subject
                   </button>
                 </div>
+
+                {!selectedSemesterSubjects.length && (
+                  <div style={{ border: "1px solid #fde68a", background: "#fffbeb", color: "#92400e", borderRadius: 12, padding: "10px 12px", fontSize: 12, fontWeight: 800, marginBottom: 10 }}>
+                    No subjects found for this student's semester. Add semester subjects in semesterSubjects.json or update the student semester.
+                  </div>
+                )}
 
                 <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                   {selectedAttendanceSummary.records.length ? selectedAttendanceSummary.records.map((record, index) => (
@@ -4875,15 +4947,31 @@ const AdminDashboard = ({ students, loggedInStudents, adminUsers = [], currentAd
                       <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.6fr 0.6fr 0.45fr 36px", gap: 8, alignItems: "end" }}>
                         <label style={{ display: "flex", flexDirection: "column", gap: 5 }}>
                           <span style={{ fontSize: 10, fontWeight: 800, color: "#6b7280" }}>Subject</span>
-                          <input value={record.subject} placeholder="Subject name" onChange={event => updateSelectedAttendance(index, "subject", event.target.value)} style={{ ...fieldStyle, padding: "9px 10px" }} />
+                          <select
+                            value={selectedSemesterSubjects.some(subject => subject.subject === record.subject) ? record.subject : ""}
+                            onChange={event => updateSelectedAttendance(index, "subject", event.target.value)}
+                            style={{ ...fieldStyle, padding: "9px 10px", background: "#fff" }}
+                          >
+                            <option value="">Select subject</option>
+                            {selectedSemesterSubjects.map(subject => (
+                              <option key={subject.id} value={subject.subject}>{subject.subject}</option>
+                            ))}
+                          </select>
+                          <span style={{ fontSize: 10, color: "#6b7280", fontWeight: 700 }}>
+                            {selectedSemesterSubjects.some(subject => subject.subject === record.subject)
+                              ? resolveTeacherName(getSemesterSubjectMeta(selected.semester, record.subject).teacherId || record.teacherId, "Select subject")
+                              : record.subject
+                                ? `${record.subject} is not in Semester ${selected.semester} subjects`
+                                : "Select subject"}
+                          </span>
                         </label>
                         <label style={{ display: "flex", flexDirection: "column", gap: 5 }}>
                           <span style={{ fontSize: 10, fontWeight: 800, color: "#6b7280" }}>Present</span>
-                          <input type="number" min="0" max={record.held > 0 ? record.held : 0} value={record.present ?? 0} placeholder="0" disabled={!record.held || record.held === 0} onChange={event => updateSelectedAttendance(index, "present", event.target.value)} style={{ ...fieldStyle, padding: "9px 10px", background: !record.held || record.held === 0 ? "#f9fafb" : "#fff" }} />
+                          <input type="number" min="0" max={Number(record.held) > 0 ? Number(record.held) : 0} value={record.present ?? ""} placeholder="Enter present" disabled={!Number(record.held)} onChange={event => updateSelectedAttendance(index, "present", event.target.value)} style={{ ...fieldStyle, padding: "9px 10px", background: !Number(record.held) ? "#f9fafb" : "#fff" }} />
                         </label>
                         <label style={{ display: "flex", flexDirection: "column", gap: 5 }}>
                           <span style={{ fontSize: 10, fontWeight: 800, color: "#6b7280" }}>Held</span>
-                          <input type="number" min="0" value={record.held ?? 0} placeholder="0" onChange={event => updateSelectedAttendance(index, "held", event.target.value)} style={{ ...fieldStyle, padding: "9px 10px" }} />
+                          <input type="number" min="0" value={record.held ?? ""} placeholder="Enter held" onChange={event => updateSelectedAttendance(index, "held", event.target.value)} style={{ ...fieldStyle, padding: "9px 10px" }} />
                         </label>
                         <div style={{ fontSize: 16, fontWeight: 900, color: record.warn ? "#dc2626" : "#111827", fontFamily: "monospace", textAlign: "right", paddingBottom: 9 }}>{record.pct}%</div>
                         <button

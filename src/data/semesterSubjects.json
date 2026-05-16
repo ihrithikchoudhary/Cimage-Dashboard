@@ -1,0 +1,42 @@
+{
+  "semesterSubjectsBySemester": {
+    "1": [
+      { "id": "sem-1-basic-mathematics", "semester": 1, "subject": "Basic Mathematics", "teacherId": "kundan-kumar", "color": "#dc2626" },
+      { "id": "sem-1-information-technology", "semester": 1, "subject": "Information Technology", "teacherId": "murali-manohar", "color": "#185FA5" },
+      { "id": "sem-1-python-programming", "semester": 1, "subject": "Python Programming", "teacherId": "ravi-soni", "color": "#15803d" },
+      { "id": "sem-1-communicative-english", "semester": 1, "subject": "Communicative English", "teacherId": "nilanjan-bose", "color": "#7c3aed" },
+      { "id": "sem-1-principle-of-management", "semester": 1, "subject": "Principle Of Management", "teacherId": "anil-kumar", "color": "#c203fc" }
+    ],
+    "2": [
+      { "id": "sem-2-operating-system", "semester": 2, "subject": "Operating System", "teacherId": "murali-manohar", "color": "#dc2626" },
+      { "id": "sem-2-business-english", "semester": 2, "subject": "Business English", "teacherId": "nilanjan-bose", "color": "#0f766e" },
+      { "id": "sem-2-system-analysis-design", "semester": 2, "subject": "System Analysis & Design", "teacherId": "pankaj-chandra-sinha", "color": "#ea580c" },
+      { "id": "sem-2-mathematics", "semester": 2, "subject": "Mathematics", "teacherId": "kundan-kumar", "color": "#15803d" },
+      { "id": "sem-2-programming-in-c", "semester": 2, "subject": "Programming in C", "teacherId": "ravi-soni", "color": "#7c3aed" }
+    ],
+    "3": [
+      { "id": "sem-3-software-engineering", "semester": 3, "subject": "Software Engineering", "teacherId": "pankaj-chandra-sinha", "color": "#185FA5" },
+      { "id": "sem-3-oop-using-cpp", "semester": 3, "subject": "OOP using C++", "teacherId": "ravi-soni", "color": "#15803d" },
+      { "id": "sem-3-internet-web-design", "semester": 3, "subject": "Internet & Web Design", "teacherId": "pankaj-chandra-sinha", "color": "#7c3aed" },
+      { "id": "sem-3-java-programming", "semester": 3, "subject": "Java Programming", "teacherId": "ravi-soni", "color": "#0f766e" }
+    ],
+    "4": [
+      { "id": "sem-4-digital-electronics", "semester": 4, "subject": "Digital Electronics", "teacherId": "amit-kumar-shukla", "color": "#185FA5" },
+      { "id": "sem-4-data-structures", "semester": 4, "subject": "Data Structures", "teacherId": "ravi-soni", "color": "#15803d" },
+      { "id": "sem-4-introduction-to-statics", "semester": 4, "subject": "Introduction to Statics", "teacherId": "abhinav-deep", "color": "#185FA5" },
+      { "id": "sem-4-relational-dbms", "semester": 4, "subject": "RDBMS", "teacherId": "pankaj-chandra-sinha", "color": "#7c3aed" },
+      { "id": "sem-4-advance-excel", "semester": 4, "subject": "Advance Excel", "teacherId": "sanjeev-kumar", "color": "#0f766e" }
+    ],
+    "5": [
+      { "id": "sem-5-java-programming", "semester": 5, "subject": "Java Programming", "teacherId": "ravi-soni", "color": "#dc2626" },
+      { "id": "sem-5-cloud-computing", "semester": 5, "subject": "Cloud Computing", "teacherId": "pankaj-chandra-sinha", "color": "#0f766e" },
+      { "id": "sem-5-artificial-intelligence", "semester": 5, "subject": "Artificial Intelligence", "teacherId": "sanjeev-kumar", "color": "#7c3aed" }
+    ],
+    "6": [
+      { "id": "sem-6-project-work", "semester": 6, "subject": "Project Work", "teacherId": "pankaj-chandra-sinha", "color": "#15803d" },
+      { "id": "sem-6-cyber-security", "semester": 6, "subject": "Cyber Security", "teacherId": "amit-kumar-shukla", "color": "#7c3aed" },
+      { "id": "sem-6-data-analytics", "semester": 6, "subject": "Data Analytics", "teacherId": "sanjeev-kumar", "color": "#ea580c" },
+      { "id": "sem-6-mobile-app-development", "semester": 6, "subject": "Mobile App Development", "teacherId": "ravi-soni", "color": "#185FA5" }
+    ]
+  }
+}
